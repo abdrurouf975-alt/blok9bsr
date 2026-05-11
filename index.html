@@ -92,7 +92,7 @@
                 <div class="mb-6 bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                     <h2 class="text-xl font-black text-gray-800 mb-1 uppercase">Layanan Surat</h2>
                     <p class="text-sm text-gray-500 mb-5">Ajukan surat pengantar RT/RW.</p>
-                    <form onsubmit="kirimSuratKeSpreadsheet(event)">
+                    <form id="form-surat" onsubmit="kirimSuratKeSpreadsheet(event)">
                         <div class="mb-4">
                             <label class="block text-xs font-bold text-gray-700 mb-1">JENIS SURAT</label>
                             <select id="input-jenis-surat" class="w-full p-3 border rounded-xl bg-gray-50 text-sm font-bold" required>
@@ -149,7 +149,7 @@
                         </div>
                     </div>
 
-                    <form onsubmit="kirimIuranKeSpreadsheet(event)">
+                    <form id="form-iuran" onsubmit="kirimIuranKeSpreadsheet(event)">
                         <div class="mb-4">
                             <label class="block text-xs font-bold text-gray-700 mb-2 uppercase">Pilih Bulan</label>
                             <div class="grid grid-cols-4 gap-2" id="grid-bulan">
@@ -198,7 +198,7 @@
             <div id="section-lapor" class="p-4 hidden section-warga">
                 <div class="mb-6 bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                     <h2 class="text-xl font-black text-gray-800 mb-1 uppercase">Lapor Warga</h2>
-                    <form onsubmit="kirimLaporanKeSpreadsheet(event)">
+                    <form id="form-lapor" onsubmit="kirimLaporanKeSpreadsheet(event)">
                         <div class="mb-4"><label class="block text-xs font-bold text-gray-700 mb-1">JUDUL MASALAH</label><input type="text" id="input-judul" class="w-full p-3.5 border rounded-xl bg-gray-50 text-sm font-bold uppercase" required></div>
                         <div class="mb-4"><label class="block text-xs font-bold text-gray-700 mb-1">LOKASI</label><input type="text" id="input-lokasi" class="w-full p-3.5 border rounded-xl bg-gray-50 text-sm font-bold uppercase" required></div>
                         <div class="mb-6"><textarea id="input-deskripsi" rows="3" class="w-full p-3.5 border rounded-xl bg-gray-50 text-sm" required></textarea></div>
@@ -219,7 +219,7 @@
                 
                 <div class="w-full bg-white p-5 rounded-2xl shadow-sm border border-gray-100 text-left mb-4">
                     <h3 class="font-bold text-gray-800 mb-4 border-b pb-2 uppercase text-sm"><i class="fas fa-lock mr-2 text-gray-400"></i> Ganti Password</h3>
-                    <form onsubmit="prosesGantiPassword(event)">
+                    <form id="form-ganti-password" onsubmit="prosesGantiPassword(event)">
                         <div class="mb-3"><input type="password" id="input-pass-lama" placeholder="Password Lama" class="w-full p-3 border rounded-xl bg-gray-50 text-sm" required></div>
                         <div class="mb-4"><input type="password" id="input-pass-baru" placeholder="Password Baru (Min. 4)" class="w-full p-3 border rounded-xl bg-gray-50 text-sm" required minlength="4"></div>
                         <button type="submit" id="btn-submit-password" class="w-full bg-indigo-600 text-white font-bold py-3.5 rounded-xl uppercase text-xs w-full">Simpan Password Baru</button>
@@ -267,7 +267,7 @@
             <div id="section-admin-pengumuman" class="p-5 section-admin hidden">
                 <h2 class="text-xl font-black text-gray-800 mb-4 uppercase">Buat Siaran Baru</h2>
                 <div class="bg-white p-5 rounded-2xl shadow-sm border">
-                    <form onsubmit="kirimPengumumanAdmin(event)">
+                    <form id="form-admin-pengumuman" onsubmit="kirimPengumumanAdmin(event)">
                         <textarea id="input-admin-pengumuman" rows="5" class="w-full p-4 border rounded-xl bg-gray-50 text-sm" required></textarea>
                         <button type="submit" id="btn-submit-pengumuman" class="mt-4 w-full bg-amber-500 text-white font-bold py-3.5 rounded-xl uppercase text-sm">Siarkan Sekarang</button>
                     </form>
@@ -468,7 +468,8 @@
 
             await fetchAPI("simpanPengumuman", isi);
             tampilkanModal('Disiarkan!', 'Pengumuman diubah.', 'sukses');
-            btn.innerHTML = 'Siarkan Sekarang'; btn.disabled = false; document.getElementById('input-admin-pengumuman').value = '';
+            btn.innerHTML = 'Siarkan Sekarang'; btn.disabled = false; 
+            document.getElementById('form-admin-pengumuman').reset();
         }
 
         // --- FETCHING DATA ---
@@ -491,6 +492,7 @@
             const btn = document.getElementById('btn-submit-surat'); btn.innerHTML = 'Mengajukan...'; btn.disabled = true;
             await fetchAPI("simpanSurat", { jenis: document.getElementById('input-jenis-surat').value, keperluan: document.getElementById('input-keperluan-surat').value, pemohon: getUserFullName() });
             tampilkanModal('Berhasil', 'Terkirim', 'sukses'); tarikDataSurat(); btn.innerHTML = 'Ajukan Surat'; btn.disabled = false;
+            document.getElementById('form-surat').reset();
         }
 
         async function tarikDataLaporan() {
@@ -507,6 +509,7 @@
             const btn = document.getElementById('btn-submit-lapor'); btn.innerHTML = 'Mengirim...'; btn.disabled = true;
             await fetchAPI("simpanLaporan", { judul: document.getElementById('input-judul').value, lokasi: document.getElementById('input-lokasi').value, deskripsi: document.getElementById('input-deskripsi').value, pelapor: getUserFullName() });
             tampilkanModal('Berhasil', 'Terkirim', 'sukses'); tarikDataLaporan(); btn.innerHTML = 'Kirim Laporan'; btn.disabled = false;
+            document.getElementById('form-lapor').reset();
         }
 
         function hitungTotalIuran() { document.getElementById('input-nominal').value = document.querySelectorAll('#grid-bulan input[type="checkbox"]:checked').length * 20000; }
