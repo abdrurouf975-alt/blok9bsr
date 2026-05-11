@@ -144,7 +144,7 @@
                         <!-- Gambar QR Code Tampil Langsung -->
                         <div class="bg-white p-4 rounded-xl border border-blue-50 shadow-sm relative z-10 flex flex-col items-center">
                             <p class="text-[11px] text-gray-500 font-bold uppercase mb-2"><i class="fas fa-qrcode mr-1"></i> Scan QRIS Pembayaran</p>
-                            <img src="https://i.ibb.co/Y58h5dR/QRISARUNIKA.jpg" alt="QR Code QRIS" class="w-full max-w-[200px] rounded-lg border border-gray-100 mb-2" onerror="this.onerror=null; this.src='qris.jpg';">
+                            <img src="https://i.ibb.co/Y58h5dR/QRISARUNIKA.jpg" alt="QR Code QRIS" class="w-full max-w-[200px] rounded-lg border border-gray-100 mb-2">
                             <p class="text-[10px] text-gray-600 font-black uppercase tracking-widest">A/N ARUNIKA CREATIVE</p>
                         </div>
                     </div>
@@ -171,7 +171,7 @@
                         
                         <div class="mb-4">
                             <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Metode Pembayaran</label>
-                            <select id="input-metode" onchange="toggleUploadBukti()" class="w-full p-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-50 bg-gray-50 text-sm font-bold" required>
+                            <select id="input-metode" onchange="toggleUploadBukti()" class="w-full p-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 bg-gray-50 text-sm font-bold" required>
                                 <option value="BCA">Transfer BCA</option>
                                 <option value="BRI">Transfer BRI</option>
                                 <option value="QRIS">QRIS</option>
@@ -245,7 +245,6 @@
                     <div class="grid grid-cols-2 gap-3">
                         <button onclick="switchTab('admin-verifikasi')" class="bg-indigo-50 text-indigo-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-indigo-100 transition"><i class="fas fa-check-double text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Verifikasi</span></button>
                         <button onclick="switchTab('admin-pengumuman')" class="bg-amber-50 text-amber-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-amber-100 transition"><i class="fas fa-bullhorn text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Buat Siaran</span></button>
-                        <!-- Pintasan Tegur Warga Dikembalikan Sesuai Permintaan -->
                         <button onclick="switchTab('admin-warga')" class="col-span-2 bg-emerald-50 text-emerald-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-emerald-100 transition"><i class="fab fa-whatsapp text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Tegur/Chat Warga</span></button>
                     </div>
                 </div>
@@ -294,7 +293,7 @@
                 </div>
             </div>
 
-            <!-- SECTION ADMIN: DAFTAR WARGA & WA -->
+            <!-- SECTION ADMIN: DAFTAR WARGA (TARIK DARI DATABASE) -->
             <div id="section-admin-warga" class="p-5 section-admin hidden">
                 <div class="flex justify-between items-center mb-5">
                     <div>
@@ -934,4 +933,132 @@
 
             data.forEach(item => {
                 let badgeWa = item.no_wa && item.no_wa !== "-" && item.no_wa !== "" 
-                    ? `<span class="bg-emerald-100
+                    ? `<span class="bg-emerald-100 text-emerald-700 text-[9px] font-black px-2 py-1 rounded tracking-widest">TERSEDIA</span>` 
+                    : `<span class="bg-red-100 text-red-500 text-[9px] font-black px-2 py-1 rounded tracking-widest">KOSONG</span>`;
+                
+                container.innerHTML += `
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-3 relative transition-all duration-300 animate-slide-down">
+                        <div class="flex justify-between items-center mb-1">
+                            <h4 class="font-bold text-gray-800 text-sm uppercase">${item.nama}</h4>
+                            ${badgeWa}
+                        </div>
+                        <p class="text-[10px] font-bold text-gray-400 mb-3">No. Rumah: ${item.no_rumah} | Akun: ${item.username}</p>
+                        <button onclick="bukaModalWA('${item.nama}', '${item.no_wa}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl shadow-sm text-xs uppercase tracking-wide flex justify-center items-center transition">
+                            <i class="fab fa-whatsapp text-lg mr-2"></i> Kirim Peringatan
+                        </button>
+                    </div>`;
+            });
+        }
+
+
+        // --- UTILS ---
+        function muatProfilData(userObj) {
+            const nama = userObj.nama ? userObj.nama.toUpperCase() : 'WARGA';
+            document.getElementById(userObj.role === 'admin' ? 'sapaan-admin' : 'sapaan-beranda').innerText = 'HALO, ' + nama + '!';
+            document.getElementById('header-role').innerText = userObj.role === 'admin' ? 'Mode Administrator' : 'Portal Layanan Warga';
+            document.getElementById('display-nama-profil').innerText = nama;
+            document.getElementById('display-role-profil').innerText = userObj.role.toUpperCase();
+            document.getElementById('header-avatar').innerText = nama.charAt(0);
+        }
+        function getUserFullName() { try { return JSON.parse(localStorage.getItem('wargaSessionAktif')).nama.toUpperCase(); } catch(e) { return 'WARGA'; } }
+        function getUserUsername() { try { return JSON.parse(localStorage.getItem('wargaSessionAktif')).username.toUpperCase(); } catch(e) { return 'WARGA'; } }
+        
+        function switchTab(tabId) {
+            ['section-beranda','section-surat','section-iuran','section-lapor','section-profil','section-admin-home','section-admin-verifikasi','section-admin-pengumuman','section-admin-warga'].forEach(s => { const el = document.getElementById(s); if(el) el.classList.add('hidden'); });
+            document.getElementById('section-' + tabId).classList.remove('hidden');
+            document.querySelectorAll('.nav-btn-warga, .nav-btn-admin').forEach(b => { b.classList.remove('text-indigo-600', 'text-indigo-400'); b.classList.add('text-gray-400', 'text-gray-500'); });
+            const btnW = document.querySelector(`.nav-btn-warga[data-target="${tabId}"]`); if(btnW) { btnW.classList.remove('text-gray-400'); btnW.classList.add('text-indigo-600'); }
+            const btnA = document.querySelector(`.nav-btn-admin[data-target="${tabId}"]`); if(btnA) { btnA.classList.remove('text-gray-500'); btnA.classList.add('text-indigo-400'); }
+            
+            if(tabId === 'beranda') tarikDataPengumuman(); 
+            if(tabId === 'lapor') tarikDataLaporan(); 
+            if(tabId === 'iuran') tarikDataIuran(); 
+            if(tabId === 'surat') tarikDataSurat();
+            
+            if(tabId === 'admin-verifikasi') { 
+                tarikDataIuranAdmin(); 
+                tarikDataSuratAdmin(); 
+                tarikDataLaporanAdmin(); 
+            }
+            if(tabId === 'admin-home') loadAdminDashboardStats();
+            if(tabId === 'admin-warga') tarikDataWargaAdmin(); // Tarik otomatis dari DB saat dibuka
+        }
+        
+        function salinTeks(teks) {
+            navigator.clipboard.writeText(teks).then(() => {
+                tampilkanModal('Tersalin!', 'Nomor rekening ' + teks + ' berhasil disalin.', 'sukses');
+            }).catch(err => {
+                tampilkanModal('Gagal!', 'Nomor rekening gagal disalin.', 'gagal');
+            });
+        }
+
+        // Modals Functions
+        function tampilkanModal(judul, pesan, tipe) {
+            document.getElementById('modal-title').innerText = judul; document.getElementById('modal-message').innerText = pesan;
+            document.getElementById('custom-modal').classList.remove('hidden'); document.getElementById('custom-modal').style.display = 'flex';
+            
+            const box = document.getElementById('custom-modal-box');
+            box.style.transform = 'scale(0.8)';
+            setTimeout(() => { box.style.transform = 'scale(1)'; }, 50);
+        }
+        function tutupModal() { document.getElementById('custom-modal').classList.add('hidden'); document.getElementById('custom-modal').style.display = 'none'; }
+        
+        // ADMIN BUKTI MODAL
+        function bukaModalBukti(urlGambar) {
+            document.getElementById('img-bukti-transfer').src = urlGambar;
+            document.getElementById('link-bukti-transfer').href = urlGambar;
+            const modal = document.getElementById('bukti-modal');
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+        }
+        function tutupModalBukti() {
+            const modal = document.getElementById('bukti-modal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
+
+        // CHAT WA ADMIN MODAL
+        function bukaModalWA(nama, noWa) {
+            if(!noWa || noWa === "-" || noWa.trim() === "") {
+                tampilkanModal('Peringatan', 'Warga ini tidak memiliki data nomor WhatsApp di Database Excel.', 'gagal');
+                return;
+            }
+            document.getElementById('wa-nama-warga').innerText = nama;
+            document.getElementById('wa-no-hp').value = noWa;
+            document.getElementById('wa-nama').value = nama;
+            document.getElementById('wa-bulan').value = '';
+            document.getElementById('wa-nominal').value = '';
+            
+            const modal = document.getElementById('wa-modal');
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+        }
+
+        function tutupModalWA() {
+            const modal = document.getElementById('wa-modal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
+
+        function prosesKirimWA() {
+            const nama = document.getElementById('wa-nama').value;
+            const noWa = document.getElementById('wa-no-hp').value;
+            const bulan = document.getElementById('wa-bulan').value || 'beberapa bulan';
+            let nominal = document.getElementById('wa-nominal').value;
+            
+            nominal = nominal ? 'Rp ' + parseInt(nominal).toLocaleString('id-ID') : 'yang belum ditentukan';
+
+            let waClean = noWa.replace(/[^0-9]/g, '');
+            if (waClean.startsWith('0')) {
+                waClean = '62' + waClean.substring(1);
+            }
+            
+            const teks = `Halo Bpk/Ibu *${nama}*,\n\nKami dari Pengurus RT BLOK 9 BSR ingin menginformasikan bahwa tagihan iuran kas Anda untuk *${bulan}* dengan total *${nominal}* belum terbayar/terkonfirmasi.\n\nMohon untuk segera melakukan konfirmasi pembayaran di Aplikasi. Terima kasih 🙏`;
+            
+            const url = `https://wa.me/${waClean}?text=${encodeURIComponent(teks)}`;
+            window.open(url, '_blank');
+            tutupModalWA();
+        }
+    </script>
+</body>
+</html>
