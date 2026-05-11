@@ -234,7 +234,7 @@
                 <div class="mb-5 bg-gradient-to-r from-gray-800 to-indigo-900 p-6 rounded-3xl shadow-lg text-white relative overflow-hidden">
                     <i class="fas fa-shield-alt absolute right-[-20px] bottom-[-20px] text-8xl opacity-10"></i>
                     <h2 class="text-2xl font-black mb-1 uppercase" id="sapaan-admin">HALO, ADMIN!</h2>
-                    <p class="text-xs text-indigo-200 font-medium mb-6">Pusat Kendali Pengurus BLOK 9 BSR</p>
+                    <p class="text-xs text-indigo-200 font-medium mb-6">Pusat Kendali Pengurus RT</p>
                     <div class="grid grid-cols-2 gap-4 mt-4 relative z-10">
                         <div class="bg-white/10 p-4 rounded-2xl border border-white/20"><h3 id="count-iuran-menunggu" class="text-3xl font-black text-green-400">-</h3><p class="text-[10px] font-bold uppercase mt-1">Iuran Menunggu</p></div>
                         <div class="bg-white/10 p-4 rounded-2xl border border-white/20"><h3 id="count-surat-laporan" class="text-3xl font-black text-amber-400">-</h3><p class="text-[10px] font-bold uppercase mt-1">Surat & Laporan</p></div>
@@ -245,7 +245,7 @@
                     <div class="grid grid-cols-2 gap-3">
                         <button onclick="switchTab('admin-verifikasi')" class="bg-indigo-50 text-indigo-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-indigo-100 transition"><i class="fas fa-check-double text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Verifikasi</span></button>
                         <button onclick="switchTab('admin-pengumuman')" class="bg-amber-50 text-amber-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-amber-100 transition"><i class="fas fa-bullhorn text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Buat Siaran</span></button>
-                        <button onclick="switchTab('admin-warga')" class="col-span-2 bg-emerald-50 text-emerald-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-emerald-100 transition"><i class="fab fa-whatsapp text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Tegur/Chat Warga</span></button>
+                        <button onclick="switchTab('admin-warga')" class="col-span-2 bg-emerald-50 text-emerald-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-emerald-100 transition"><i class="fab fa-whatsapp text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Daftar & Chat Warga</span></button>
                     </div>
                 </div>
             </div>
@@ -295,12 +295,20 @@
 
             <!-- SECTION ADMIN: DAFTAR WARGA (TARIK DARI DATABASE) -->
             <div id="section-admin-warga" class="p-5 section-admin hidden">
-                <div class="flex justify-between items-center mb-5">
+                <div class="flex justify-between items-center mb-4">
                     <div>
                         <h2 class="text-xl font-black text-gray-800 uppercase">Daftar Warga</h2>
                         <p class="text-xs text-gray-500">Hubungi warga terkait iuran (Otomatis dari Database)</p>
                     </div>
                     <button onclick="tarikDataWargaAdmin()" class="text-xs text-indigo-600 bg-indigo-50 px-3 py-2 rounded-full shadow-sm"><i class="fas fa-sync-alt"></i></button>
+                </div>
+
+                <!-- KOLOM PENCARIAN -->
+                <div class="mb-5 relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input type="text" id="input-cari-warga" onkeyup="cariWargaAdmin()" placeholder="Cari nama warga atau nomor rumah..." class="w-full pl-10 p-3 border border-gray-200 rounded-xl bg-white text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-sm transition">
                 </div>
 
                 <div id="admin-warga-list" class="flex flex-col gap-3">
@@ -385,6 +393,9 @@
     <!-- SCRIPT KONEKSI KE GOOGLE SCRIPT (VERCEL) -->
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_koZ4yBOXDvk8hAsRaVWi-lnCJyXYkD5GBozgW45Ie6fxGYJr0gv-qftwntSuTzADaA/exec";
+
+        // Global Variable untuk menyimpan data warga agar fitur cari lebih cepat
+        let globalWargaData = [];
 
         async function fetchAPI(action, payloadData = {}) {
             try {
@@ -908,15 +919,17 @@
             }
         }
 
-        // 4. Daftar Warga untuk Chat WA Admin (Otomatis dari Database)
+        // 4. Daftar Warga & Fitur Pencarian (Otomatis dari Database)
         async function tarikDataWargaAdmin() {
             const container = document.getElementById('admin-warga-list');
             if(!container) return;
             container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20"></div>`;
+            document.getElementById('input-cari-warga').value = ''; // Reset form cari
             
             let res = await fetchAPI("getWarga");
             if(res && res.data) {
-                tampilkanDataWargaAdminUI(res.data);
+                globalWargaData = res.data; // Simpan ke global untuk fitur cari
+                tampilkanDataWargaAdminUI(globalWargaData);
             } else {
                 container.innerHTML = `<p class="text-center text-xs text-red-500 font-bold mt-4">Gagal memuat data warga.</p>`;
             }
@@ -927,7 +940,7 @@
             container.innerHTML = '';
             
             if(!data || data.length === 0) {
-                container.innerHTML = `<p class="text-center text-xs text-gray-500 font-bold uppercase mt-4">Data warga kosong.</p>`;
+                container.innerHTML = `<p class="text-center text-xs text-gray-500 font-bold uppercase mt-4">Data warga tidak ditemukan.</p>`;
                 return;
             }
 
@@ -948,6 +961,21 @@
                         </button>
                     </div>`;
             });
+        }
+
+        // FUNGSI CARI WARGA
+        function cariWargaAdmin() {
+            const keyword = document.getElementById('input-cari-warga').value.toLowerCase();
+            
+            if(!globalWargaData || globalWargaData.length === 0) return;
+
+            const filteredData = globalWargaData.filter(item => 
+                (item.nama && item.nama.toLowerCase().includes(keyword)) || 
+                (item.no_rumah && item.no_rumah.toLowerCase().includes(keyword)) ||
+                (item.username && item.username.toLowerCase().includes(keyword))
+            );
+
+            tampilkanDataWargaAdminUI(filteredData);
         }
 
 
@@ -981,7 +1009,7 @@
                 tarikDataLaporanAdmin(); 
             }
             if(tabId === 'admin-home') loadAdminDashboardStats();
-            if(tabId === 'admin-warga') tarikDataWargaAdmin(); // Tarik otomatis dari DB saat dibuka
+            if(tabId === 'admin-warga') tarikDataWargaAdmin(); 
         }
         
         function salinTeks(teks) {
@@ -1053,7 +1081,7 @@
                 waClean = '62' + waClean.substring(1);
             }
             
-            const teks = `Halo Bpk/Ibu *${nama}*,\n\nKami dari Pengurus BLOK 9 BSR ingin menginformasikan bahwa tagihan iuran kas Anda untuk *${bulan}* dengan total *${nominal}* belum terbayar/terkonfirmasi.\n\nMohon untuk segera melakukan konfirmasi pembayaran. Terima kasih 🙏`;
+            const teks = `Halo Bpk/Ibu *${nama}*,\n\nKami dari Pengurus RT BLOK 9 BSR ingin menginformasikan bahwa tagihan iuran kas Anda untuk *${bulan}* dengan total *${nominal}* belum terbayar/terkonfirmasi.\n\nMohon untuk segera melakukan konfirmasi pembayaran di Aplikasi. Terima kasih 🙏`;
             
             const url = `https://wa.me/${waClean}?text=${encodeURIComponent(teks)}`;
             window.open(url, '_blank');
