@@ -186,7 +186,7 @@
                         <div class="mb-6" id="container-bukti">
                             <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Upload Bukti Transfer</label>
                             <input type="file" id="input-bukti" accept="image/*" class="w-full p-2.5 border border-gray-200 rounded-xl bg-white text-sm focus:outline-none" required>
-                            <p class="text-[10px] text-gray-500 mt-1">*Wajib dilampirkan agar bisa diverifikasi pengurus.</p>
+                            <p class="text-[10px] text-gray-500 mt-1">*Gambar akan dikompres otomatis sebelum diunggah agar cepat.</p>
                         </div>
 
                         <button type="submit" id="btn-submit-iuran" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 rounded-xl uppercase tracking-wide text-sm transition"><i class="fas fa-check-circle mr-2"></i> Konfirmasi Bayar</button>
@@ -741,11 +741,44 @@
             } else {
                 const file = fileInput.files[0];
                 const reader = new FileReader();
-                reader.onload = async function() {
-                    dataPayload.fileBase64 = reader.result.split(',')[1];
-                    dataPayload.fileName = file.name;
-                    dataPayload.mimeType = file.type;
-                    await kirimDataSelesai(dataPayload);
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = async function() {
+                        const MAX_WIDTH = 800;
+                        const MAX_HEIGHT = 800;
+                        let width = img.width;
+                        let height = img.height;
+
+                        // Perhitungan dimensi untuk kompresi (resize)
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+
+                        // Menggambar ke canvas
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Kompres jadi JPEG kualitas 60%
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
+                        
+                        dataPayload.fileBase64 = compressedDataUrl.split(',')[1];
+                        dataPayload.fileName = file.name.split('.')[0] + '.jpg';
+                        dataPayload.mimeType = 'image/jpeg';
+                        
+                        await kirimDataSelesai(dataPayload);
+                    };
+                    img.src = event.target.result;
                 };
                 reader.readAsDataURL(file);
             }
