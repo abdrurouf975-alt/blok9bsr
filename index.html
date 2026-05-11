@@ -59,7 +59,7 @@
                 Pesan Error
             </div>
 
-            <!-- FORM LOGIN (Kembali menggunakan Form agar native & anti-macet) -->
+            <!-- FORM LOGIN -->
             <form id="form-login" onsubmit="return prosesLogin(event)" class="text-left mt-2 relative z-10">
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-gray-700 mb-1">USERNAME</label>
@@ -231,7 +231,7 @@
                         
                         <div class="mb-6">
                             <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Metode Pembayaran</label>
-                            <select id="input-metode" class="w-full p-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 bg-gray-50 text-sm font-bold text-gray-800" required>
+                            <select id="input-metode" class="w-full p-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-gray-50 text-sm font-bold text-gray-800" required>
                                 <option value="BCA">Transfer BCA</option>
                                 <option value="BRI">Transfer BRI</option>
                                 <option value="QRIS">QRIS</option>
@@ -544,41 +544,50 @@
             <p class="text-[11px] text-gray-500 mb-5 font-bold">Gunakan aplikasi M-Banking atau e-Wallet Anda</p>
             
             <div class="p-3 border-2 border-gray-100 rounded-2xl mb-4 bg-white flex flex-col justify-center items-center shadow-inner">
-                <img src="https://i.ibb.co/Y58h5dR/QRISARUNIKA.jpg" alt="QR Code QRIS" class="w-full max-w-[250px] rounded-xl" onerror="document.getElementById('qris-fallback').classList.remove('hidden');">
-                <a href="https://i.ibb.co/Y58h5dR/QRISARUNIKA.jpg" target="_blank" id="qris-fallback" class="hidden text-xs text-blue-500 underline font-bold mt-4">
-                    <i class="fas fa-external-link-alt mr-1"></i> Klik untuk Buka QRIS
-                </a>
+                <img src="qris.jpg" alt="QR Code QRIS" class="w-full max-w-[250px] rounded-xl" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=Menunggu%20Upload%20qris.jpg'; document.getElementById('qris-fallback').classList.remove('hidden');">
+                <p id="qris-fallback" class="hidden text-xs text-red-500 font-bold mt-4 text-center">
+                    <i class="fas fa-exclamation-triangle mr-1"></i> Gambar qris.jpg belum diupload ke GitHub!
+                </p>
             </div>
             
             <p class="text-sm font-black text-gray-800 uppercase tracking-widest">A/N ARUNIKA CREATIVE</p>
         </div>
     </div>
 
-    <!-- SCRIPT LOGIKA APLIKASI -->
+    <!-- SCRIPT KONEKSI KE GOOGLE SCRIPT (VERCEL) -->
     <script>
-        // --- TANGKAP ERROR BROWSER AGAR BISA DIBACA ---
-        window.onerror = function(msg, url, line) {
-            tampilkanErrorLogin("Terjadi Error Sistem (Baris " + line + "): " + msg);
-        };
+        // SCRIPT URL MILIK BAPAK DARI GAMBAR SUDAH OTOMATIS TERPASANG DI BAWAH INI
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_koZ4yBOXDvk8hAsRaVWi-lnCJyXYkD5GBozgW45Ie6fxGYJr0gv-qftwntSuTzADaA/exec";
 
-        // --- INISIALISASI & SESSION ---
+        // Fungsi fetch pengganti google.script.run untuk Vercel
+        async function fetchAPI(action, payloadData = {}) {
+            try {
+                let response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: action, data: payloadData })
+                });
+                return await response.json();
+            } catch (err) {
+                console.error(err);
+                return { success: false, message: "Gagal terhubung! Pastikan Deploy Code.gs disetting 'Anyone' (Siapa saja)." };
+            }
+        }
+
+        // --- SISTEM APLIKASI ---
         function inisialisasiAplikasi() {
             const sessionStr = localStorage.getItem('wargaSessionAktif');
-            
-            if (!sessionStr || sessionStr === "undefined") {
+            if (!sessionStr) {
                 document.getElementById('login-overlay').classList.remove('hidden');
                 document.getElementById('main-app').classList.add('hidden');
                 return;
             }
-
             try {
                 const userObj = JSON.parse(sessionStr);
                 document.getElementById('login-overlay').classList.add('hidden');
                 document.getElementById('main-app').classList.remove('hidden');
-
                 muatProfilData(userObj); 
 
-                // Route based on Role
                 if (userObj.role === 'admin') {
                     document.getElementById('nav-warga').classList.add('hidden');
                     document.getElementById('nav-admin').classList.remove('hidden');
@@ -589,583 +598,165 @@
                     document.getElementById('nav-warga').classList.remove('hidden');
                     document.querySelectorAll('.section-admin').forEach(el => el.classList.add('hidden'));
                     switchTab('beranda');
-                    
-                    tarikDataPengumuman(); 
-                    tarikDataLaporan(); 
-                    tarikDataIuran();
-                    tarikDataSurat(); 
+                    tarikDataPengumuman(); tarikDataLaporan(); tarikDataIuran(); tarikDataSurat(); 
                 }
             } catch(e) {
-                tampilkanErrorLogin("Sesi Anda tidak valid. Silakan login kembali.");
                 localStorage.removeItem('wargaSessionAktif');
                 document.getElementById('login-overlay').classList.remove('hidden');
-                document.getElementById('main-app').classList.add('hidden');
             }
         }
 
-        // Tampilkan error langsung di bawah judul (Anti-Macet)
         function tampilkanErrorLogin(pesan) {
             const errDiv = document.getElementById('login-error-msg');
-            errDiv.innerText = pesan;
-            errDiv.classList.remove('hidden');
+            errDiv.innerText = pesan; errDiv.classList.remove('hidden');
             setTimeout(() => { errDiv.classList.add('hidden'); }, 5000);
         }
 
-        // --- AUTH: LOGIN ---
-        function prosesLogin(e) {
-            if(e) e.preventDefault(); // Mencegah reload form
+        function handleEnter(e) { if (e.key === 'Enter') { e.preventDefault(); prosesLogin(); } }
+
+        // --- AUTH: LOGIN DARI VERCEL ---
+        async function prosesLogin() {
+            const userRaw = document.getElementById('login-username').value.trim();
+            const pass = document.getElementById('login-password').value;
+            const btn = document.getElementById('btn-submit-login');
             
-            try {
-                const userRaw = document.getElementById('login-username').value.trim();
-                const pass = document.getElementById('login-password').value;
-                const btn = document.getElementById('btn-submit-login');
-                const errDiv = document.getElementById('login-error-msg');
-                
-                errDiv.classList.add('hidden'); // Sembunyikan error lama
+            if (!userRaw || !pass) return false;
 
-                if (!userRaw || !pass) {
-                    tampilkanErrorLogin('Username dan Password wajib diisi!');
-                    return false;
-                }
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> MEMPROSES...'; btn.disabled = true;
 
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> MEMPROSES...';
-                btn.disabled = true;
-
-                // Pastikan Apps Script siap
-                if (typeof google !== 'undefined' && google.script && google.script.run) {
-                    google.script.run
-                        .withSuccessHandler(function(res) {
-                            if(res && res.success) {
-                                // Login berhasil
-                                let dataUser = res.data;
-                                if(!dataUser) {
-                                    let isAd = (userRaw.toUpperCase() === 'ADMIN');
-                                    dataUser = { username: userRaw, nama: isAd?'PENGURUS RT':userRaw, role: isAd?'admin':'warga' };
-                                }
-                                localStorage.setItem('wargaSessionAktif', JSON.stringify(dataUser));
-                                inisialisasiAplikasi();
-                            } else {
-                                // Tampilkan alasan gagal
-                                tampilkanErrorLogin(res ? res.message : 'Username/Password salah!');
-                            }
-                            btn.innerHTML = 'MASUK APLIKASI <i class="fas fa-sign-in-alt ml-2"></i>';
-                            btn.disabled = false;
-                        })
-                        .withFailureHandler(function(err) {
-                            tampilkanErrorLogin('Gagal memproses: ' + err.message + ' (Pastikan Anda sudah klik Deploy Versi Baru)');
-                            btn.innerHTML = 'MASUK APLIKASI <i class="fas fa-sign-in-alt ml-2"></i>';
-                            btn.disabled = false;
-                        })
-                        .loginWarga(userRaw.toString(), pass.toString());
-                } else {
-                    // SIMULASI LOKAL (JIKA DIBUKA DI LUAR GOOGLE SCRIPT)
-                    setTimeout(() => {
-                        let roleStr = 'warga';
-                        let namaStr = userRaw.toUpperCase();
-                        
-                        if (userRaw.toUpperCase() === 'ADMIN') {
-                            roleStr = 'admin';
-                            namaStr = 'PENGURUS RT';
-                        }
-
-                        const dummyData = {
-                            username: userRaw,
-                            nama: namaStr,
-                            role: roleStr,
-                            no_rumah: '',
-                            no_wa: ''
-                        };
-
-                        localStorage.setItem('wargaSessionAktif', JSON.stringify(dummyData));
-                        inisialisasiAplikasi();
-                        btn.innerHTML = 'MASUK APLIKASI <i class="fas fa-sign-in-alt ml-2"></i>';
-                        btn.disabled = false;
-                    }, 1000);
-                }
-            } catch (error) {
-                tampilkanErrorLogin('Crash UI: ' + error.message);
-                document.getElementById('btn-submit-login').disabled = false;
-                document.getElementById('btn-submit-login').innerHTML = 'MASUK APLIKASI <i class="fas fa-sign-in-alt ml-2"></i>';
+            // Mengirim request ke SCRIPT_URL menggunakan fetchAPI
+            let res = await fetchAPI("login", { username: userRaw, password: pass });
+            
+            if(res && res.success) {
+                localStorage.setItem('wargaSessionAktif', JSON.stringify(res.data));
+                inisialisasiAplikasi();
+            } else {
+                tampilkanErrorLogin(res.message || 'Username/Password salah!');
             }
+            btn.innerHTML = 'MASUK APLIKASI <i class="fas fa-sign-in-alt ml-2"></i>'; btn.disabled = false;
             return false;
         }
 
         function prosesLogout() {
             if(confirm('Yakin ingin keluar?')) {
                 localStorage.removeItem('wargaSessionAktif');
-                
-                // Clear inputs manually
                 document.getElementById('login-username').value = '';
                 document.getElementById('login-password').value = '';
-                
-                // Switch UI instead of reloading
                 document.getElementById('main-app').classList.add('hidden');
                 document.getElementById('login-overlay').classList.remove('hidden');
             }
         }
 
-        function prosesGantiPassword(e) {
-            if(e) e.preventDefault();
+        async function prosesGantiPassword(e) {
+            e.preventDefault();
             const sessionData = JSON.parse(localStorage.getItem('wargaSessionAktif'));
-            const user = sessionData.username;
-            const passLama = document.getElementById('input-pass-lama').value.trim();
-            const passBaru = document.getElementById('input-pass-baru').value.trim();
-            
-            if (!passLama || !passBaru) {
-                tampilkanModal('Peringatan', 'Harap isi password dengan lengkap!', 'gagal');
-                return false;
-            }
-
+            const passLama = document.getElementById('input-pass-lama').value;
+            const passBaru = document.getElementById('input-pass-baru').value;
             const btn = document.getElementById('btn-submit-password');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> MENYIMPAN...';
-            btn.disabled = true;
+            btn.innerHTML = 'MENYIMPAN...'; btn.disabled = true;
 
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler(function(res) {
-                        if(res && res.success) {
-                            tampilkanModal('Berhasil!', res.message, 'sukses');
-                            document.getElementById('input-pass-lama').value = '';
-                            document.getElementById('input-pass-baru').value = '';
-                        } else {
-                            tampilkanModal('Gagal!', res ? res.message : 'Error sistem', 'gagal');
-                        }
-                        btn.innerHTML = 'SIMPAN PASSWORD BARU';
-                        btn.disabled = false;
-                    })
-                    .withFailureHandler(function(err) {
-                        tampilkanModal('Error!', err.message, 'gagal');
-                        btn.innerHTML = 'SIMPAN PASSWORD BARU';
-                        btn.disabled = false;
-                    })
-                    .ubahPasswordWarga(user.toString(), passLama.toString(), passBaru.toString());
-            } else {
-                setTimeout(() => {
-                    tampilkanModal('Simulasi Sukses', 'Password berhasil diubah (Offline).', 'sukses');
-                    document.getElementById('input-pass-lama').value = '';
-                    document.getElementById('input-pass-baru').value = '';
-                    btn.innerHTML = 'SIMPAN PASSWORD BARU';
-                    btn.disabled = false;
-                }, 1000);
-            }
+            let res = await fetchAPI("ubahPassword", { username: sessionData.username, passLama: passLama, passBaru: passBaru });
+            if(res.success) { tampilkanModal('Berhasil', res.message, 'sukses'); document.getElementById('form-ganti-password').reset(); } 
+            else { tampilkanModal('Gagal', res.message, 'gagal'); }
+            btn.innerHTML = 'Simpan Password Baru'; btn.disabled = false;
             return false;
         }
 
-        // --- FUNGSI ADMIN: KIRIM WA ---
-        function kirimWAPeringatan(namaLengkap, noWa, tagihan) {
-            const waClean = noWa.replace(/[^0-9]/g, '');
-            const teks = `Halo Bpk/Ibu *${namaLengkap}*,\n\nKami dari Pengurus RT BLOK 9 BSR ingin menginformasikan bahwa tagihan iuran kas Anda sebesar *${tagihan}* belum terkonfirmasi.\n\nMohon untuk segera melakukan pembayaran dan konfirmasi melalui *Aplikasi Warga BSR*.\n\nTerima kasih atas kerja samanya 🙏`;
-            
-            const url = `https://wa.me/${waClean}?text=${encodeURIComponent(teks)}`;
-            window.open(url, '_blank');
-        }
-
-        function kirimPengumumanAdmin(e) {
-            if(e) e.preventDefault();
-            const isi = document.getElementById('input-admin-pengumuman').value.trim();
-            if(!isi) {
-                tampilkanModal('Peringatan', 'Isi pengumuman tidak boleh kosong!', 'gagal');
-                return false;
-            }
-
+        async function kirimPengumumanAdmin(e) {
+            e.preventDefault();
+            const isi = document.getElementById('input-admin-pengumuman').value;
             const btn = document.getElementById('btn-submit-pengumuman');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
-            
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler(function(res) {
-                        tampilkanModal('Disiarkan!', 'Pengumuman berhasil diubah.', 'sukses');
-                        btn.innerHTML = '<i class="fas fa-broadcast-tower mr-2"></i> Siarkan Sekarang';
-                        document.getElementById('input-admin-pengumuman').value = '';
-                    })
-                    .withFailureHandler(function(err) {
-                        tampilkanModal('Error', err.message, 'gagal');
-                        btn.innerHTML = '<i class="fas fa-broadcast-tower mr-2"></i> Siarkan Sekarang';
-                    })
-                    .simpanPengumumanBSR(isi.toString());
-            } else {
-                setTimeout(() => {
-                    tampilkanModal('Simulasi', 'Pengumuman: "' + isi + '" disiarkan.', 'sukses');
-                    btn.innerHTML = '<i class="fas fa-broadcast-tower mr-2"></i> Siarkan Sekarang';
-                    document.getElementById('input-admin-pengumuman').value = '';
-                }, 1000);
-            }
+            btn.innerHTML = 'Menyimpan...'; btn.disabled = true;
+
+            await fetchAPI("simpanPengumuman", isi);
+            tampilkanModal('Disiarkan!', 'Pengumuman diubah.', 'sukses');
+            btn.innerHTML = 'Siarkan Sekarang'; btn.disabled = false; document.getElementById('input-admin-pengumuman').value = '';
             return false;
         }
 
-
-        // ==========================================
-        // UI & NAVIGASI GLOBAL
-        // ==========================================
-
-        function muatProfilData(userObj) {
-            const namaTampil = userObj.nama ? userObj.nama.toUpperCase() : 'WARGA';
-            const roleTampil = userObj.role ? userObj.role.toUpperCase() : 'WARGA';
-
-            if(roleTampil === 'ADMIN') {
-                document.getElementById('sapaan-admin').innerText = 'HALO, ' + namaTampil + '!';
-                document.getElementById('header-role').innerText = 'Mode Administrator';
-            } else {
-                document.getElementById('sapaan-beranda').innerText = 'HALO, ' + namaTampil + '!';
-                document.getElementById('header-role').innerText = 'Portal Layanan Warga';
-            }
-            
-            document.getElementById('display-nama-profil').innerText = namaTampil;
-            document.getElementById('display-role-profil').innerText = roleTampil;
-            
-            document.getElementById('header-avatar').innerText = namaTampil ? namaTampil.charAt(0) : 'W';
+        // --- FETCHING DATA ---
+        async function tarikDataPengumuman() {
+            let res = await fetchAPI("getPengumuman");
+            document.getElementById('tempat-pengumuman').innerHTML = `<p>${res.data || 'Tidak ada pengumuman'}</p>`;
         }
 
-        function getUserFullName() {
-            try {
-                const data = JSON.parse(localStorage.getItem('wargaSessionAktif'));
-                return data.nama ? data.nama.toUpperCase() : 'WARGA';
-            } catch(e) {
-                return 'WARGA';
-            }
+        async function tarikDataSurat() {
+            let res = await fetchAPI("getSurat");
+            tampilkanDataSuratUI(res.data);
         }
-
-        function switchTab(tabId) {
-            const sections = [
-                'section-beranda','section-surat','section-iuran','section-lapor','section-profil',
-                'section-admin-home','section-admin-verifikasi','section-admin-pengumuman','section-admin-warga'
-            ];
-            sections.forEach(s => { 
-                const el = document.getElementById(s); 
-                if(el) el.classList.add('hidden'); 
-            });
-            
-            document.getElementById('section-' + tabId).classList.remove('hidden');
-
-            document.querySelectorAll('.nav-btn-warga').forEach(btn => {
-                btn.classList.remove('text-indigo-600');
-                btn.classList.add('text-gray-400');
-            });
-            document.querySelectorAll('.nav-btn-admin').forEach(btn => {
-                btn.classList.remove('text-indigo-400');
-                btn.classList.add('text-gray-500');
-            });
-            
-            const activeBtnWarga = document.querySelector(`.nav-btn-warga[data-target="${tabId}"]`);
-            if(activeBtnWarga) {
-                activeBtnWarga.classList.remove('text-gray-400');
-                activeBtnWarga.classList.add('text-indigo-600');
-            }
-            const activeBtnAdmin = document.querySelector(`.nav-btn-admin[data-target="${tabId}"]`);
-            if(activeBtnAdmin) {
-                activeBtnAdmin.classList.remove('text-gray-500');
-                activeBtnAdmin.classList.add('text-indigo-400');
-            }
-            
-            if(tabId === 'beranda') tarikDataPengumuman();
-            if(tabId === 'lapor') tarikDataLaporan();
-            if(tabId === 'iuran') tarikDataIuran();
-            if(tabId === 'surat') tarikDataSurat();
-        }
-
-        function salinTeks(teks) {
-            navigator.clipboard.writeText(teks).then(() => {
-                tampilkanModal('Tersalin!', 'Nomor rekening ' + teks + ' berhasil disalin.', 'sukses');
-            }).catch(err => {
-                tampilkanModal('Gagal!', 'Nomor rekening gagal disalin.', 'gagal');
-            });
-        }
-
-        function tampilkanModal(judul, pesan, tipe) {
-            document.getElementById('modal-title').innerText = judul;
-            document.getElementById('modal-message').innerText = pesan;
-            const iconContainer = document.getElementById('modal-icon-container');
-            const icon = document.getElementById('modal-icon');
-            
-            if(tipe === 'sukses') {
-                iconContainer.className = 'mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-green-100 mb-4 shadow-inner border-4 border-white';
-                icon.className = 'fas fa-check text-green-600 text-4xl';
-            } else {
-                iconContainer.className = 'mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-red-100 mb-4 shadow-inner border-4 border-white';
-                icon.className = 'fas fa-exclamation-triangle text-red-600 text-4xl';
-            }
-            const modal = document.getElementById('custom-modal');
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-        }
-
-        function tutupModal() {
-            const modal = document.getElementById('custom-modal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
-        }
-
-        function bukaModalQRIS() {
-            const modal = document.getElementById('qris-modal');
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-        }
-
-        function tutupModalQRIS() {
-            const modal = document.getElementById('qris-modal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
-        }
-
-        // ==========================================
-        // DATA FETCHING & SUBMISSIONS (WARGA)
-        // ==========================================
-        
-        function tarikDataPengumuman() {
-            const tempatPengumuman = document.getElementById('tempat-pengumuman');
-            tempatPengumuman.innerHTML = `<div class="shimmer h-3 w-3/4 rounded mb-1"></div><div class="shimmer h-3 w-1/2 rounded"></div>`;
-
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler(function(teks) {
-                        tempatPengumuman.innerHTML = (teks && teks.trim() !== "") ? `<p>${teks}</p>` : `<p class="italic opacity-70">Tidak ada pengumuman.</p>`;
-                    })
-                    .withFailureHandler(function(error) { tempatPengumuman.innerHTML = `<p class="text-red-500">Error memuat data.</p>`; })
-                    .getPengumumanBSR();
-            } else {
-                setTimeout(() => { tempatPengumuman.innerHTML = `<p>SIMULASI: Kerja bakti hari minggu pukul 08.00 WIB.</p>`; }, 1000);
-            }
-        }
-
-        function tarikDataSurat() {
-            const listSurat = document.getElementById('surat-list');
-            listSurat.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20 rounded-xl"></div>`;
-
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler(tampilkanDataSuratUI)
-                    .withFailureHandler(function(err) { listSurat.innerHTML = `<p class="text-red-500 p-2 text-center text-xs">Error: ${err.message}</p>`; })
-                    .getSuratBSR();
-            } else {
-                setTimeout(() => { tampilkanDataSuratUI([{jenis: "PENGANTAR RT", keperluan: "PERPANJANG KTP", status: "Selesai"}]); }, 1000);
-            }
-        }
-
         function tampilkanDataSuratUI(data) {
-            const list = document.getElementById('surat-list');
-            list.innerHTML = '';
-            if(!data || data.length === 0) return list.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-gray-500 text-xs font-bold uppercase shadow-sm">Belum ada riwayat.</div>`;
-
-            data.forEach(item => {
-                let bClass = "bg-amber-100 text-amber-700"; 
-                let st = (item.status||"").toLowerCase();
-                if(st.includes('selesai')||st.includes('cetak')) bClass = "bg-green-100 text-green-700";
-                if(st.includes('tolak')) bClass = "bg-red-100 text-red-700";
-
-                list.innerHTML += `
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 flex items-start animate-slide-down">
-                        <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mr-3 shrink-0"><i class="fas fa-envelope-open-text"></i></div>
-                        <div class="flex-1 min-w-0">
-                            <h4 class="font-bold text-gray-800 text-sm uppercase">${item.jenis}</h4>
-                            <p class="text-[10px] font-bold text-gray-400 mt-0.5 truncate uppercase">${item.keperluan}</p>
-                        </div>
-                        <div class="shrink-0 ml-2"><span class="${bClass} text-[9px] font-black px-2 py-1 rounded tracking-wider">${item.status||'MENUNGGU'}</span></div>
-                    </div>`;
-            });
+            const list = document.getElementById('surat-list'); list.innerHTML = '';
+            if(!data || data.length === 0) return list.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-xs font-bold uppercase shadow-sm">Belum ada riwayat.</div>`;
+            data.forEach(item => { list.innerHTML += `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 flex items-start animate-slide-down"><div class="flex-1 min-w-0"><h4 class="font-bold text-gray-800 text-sm uppercase">${item.jenis}</h4><p class="text-[10px] text-gray-400 mt-0.5 uppercase">${item.keperluan}</p></div><span class="text-[9px] font-black px-2 py-1 rounded ml-2 bg-amber-100 text-amber-700">${item.status||'MENUNGGU'}</span></div>`; });
         }
-
-        function kirimSuratKeSpreadsheet(e) {
-            if(e) e.preventDefault();
-            const jenis = document.getElementById('input-jenis-surat').value;
-            const keperluan = document.getElementById('input-keperluan-surat').value.trim().toUpperCase();
-            
-            if (!jenis || !keperluan) {
-                tampilkanModal('Peringatan', 'Harap isi semua kolom surat!', 'gagal');
-                return false;
-            }
-
-            const btn = document.getElementById('btn-submit-surat');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> MENGAJUKAN...';
-            btn.disabled = true;
-
-            const data = { jenis: jenis, keperluan: keperluan, pemohon: getUserFullName() };
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler(() => {
-                        tampilkanModal('Berhasil!', 'Pengajuan terkirim.', 'sukses');
-                        tarikDataSurat(); 
-                        document.getElementById('input-jenis-surat').value = '';
-                        document.getElementById('input-keperluan-surat').value = '';
-                        btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> AJUKAN SURAT';
-                        btn.disabled = false;
-                    })
-                    .withFailureHandler((err) => {
-                        tampilkanModal('Error', err.message, 'gagal');
-                        btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> AJUKAN SURAT';
-                        btn.disabled = false;
-                    })
-                    .simpanSuratBSR(data);
-            } else {
-                setTimeout(() => { 
-                    btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> AJUKAN SURAT'; 
-                    btn.disabled = false; 
-                }, 1000);
-            }
+        async function kirimSuratKeSpreadsheet(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-surat'); btn.innerHTML = 'Mengajukan...'; btn.disabled = true;
+            await fetchAPI("simpanSurat", { jenis: document.getElementById('input-jenis-surat').value, keperluan: document.getElementById('input-keperluan-surat').value, pemohon: getUserFullName() });
+            tampilkanModal('Berhasil', 'Terkirim', 'sukses'); tarikDataSurat(); btn.innerHTML = 'Ajukan Surat'; btn.disabled = false;
             return false;
         }
 
-        // LAPORAN
-        function tarikDataLaporan() {
-            const list = document.getElementById('laporan-list');
-            list.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20 rounded-xl"></div>`;
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler(tampilkanDataLaporanUI)
-                    .withFailureHandler(function(err) { list.innerHTML = `<p class="text-red-500 p-2 text-center text-xs">Error: ${err.message}</p>`; })
-                    .getLaporanBSR();
-            } else {
-                setTimeout(() => { tampilkanDataLaporanUI([{judul: "LAMPU MATI", lokasi: "BLOK A", status: "Selesai"}]); }, 1000);
-            }
+        async function tarikDataLaporan() {
+            let res = await fetchAPI("getLaporan");
+            tampilkanDataLaporanUI(res.data);
         }
-
         function tampilkanDataLaporanUI(data) {
-            const list = document.getElementById('laporan-list');
-            list.innerHTML = '';
-            if(!data || data.length === 0) return list.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-gray-500 text-xs font-bold uppercase shadow-sm">Belum ada laporan.</div>`;
-
-            data.forEach(item => {
-                let bClass = "bg-amber-100 text-amber-700"; 
-                let st = (item.status||"").toLowerCase();
-                if(st.includes('selesai')) bClass = "bg-green-100 text-green-700";
-                if(st.includes('tolak')) bClass = "bg-red-100 text-red-700";
-
-                list.innerHTML += `
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 flex items-start animate-slide-down">
-                        <div class="flex-1 min-w-0">
-                            <h4 class="font-bold text-gray-800 text-sm uppercase">${item.judul}</h4>
-                            <p class="text-[10px] font-bold text-gray-400 uppercase"><i class="fas fa-map-marker-alt text-red-400 mr-1"></i> ${item.lokasi}</p>
-                        </div>
-                        <span class="${bClass} text-[9px] font-black px-2 py-1 rounded tracking-wider ml-2">${item.status||'MENUNGGU'}</span>
-                    </div>`;
-            });
+            const list = document.getElementById('laporan-list'); list.innerHTML = '';
+            if(!data || data.length === 0) return list.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-xs font-bold uppercase shadow-sm">Belum ada laporan.</div>`;
+            data.forEach(item => { list.innerHTML += `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 flex items-start animate-slide-down"><div class="flex-1 min-w-0"><h4 class="font-bold text-gray-800 text-sm uppercase">${item.judul}</h4><p class="text-[10px] text-gray-400 uppercase">${item.lokasi}</p></div><span class="text-[9px] font-black px-2 py-1 rounded ml-2 bg-amber-100 text-amber-700">${item.status||'MENUNGGU'}</span></div>`; });
         }
-
-        function kirimLaporanKeSpreadsheet(e) {
-            if(e) e.preventDefault();
-            const judul = document.getElementById('input-judul').value.trim().toUpperCase();
-            const lokasi = document.getElementById('input-lokasi').value.trim().toUpperCase();
-            const deskripsi = document.getElementById('input-deskripsi').value.trim();
-
-            if (!judul || !lokasi || !deskripsi) {
-                tampilkanModal('Peringatan', 'Harap isi semua kolom laporan!', 'gagal');
-                return false;
-            }
-
-            const btn = document.getElementById('btn-submit-lapor');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> MENGIRIM...';
-            btn.disabled = true;
-            
-            const data = { judul: judul, lokasi: lokasi, deskripsi: deskripsi, pelapor: getUserFullName() };
-
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler(() => {
-                        tampilkanModal('Berhasil!', 'Laporan tersimpan.', 'sukses');
-                        tarikDataLaporan(); 
-                        document.getElementById('input-judul').value = '';
-                        document.getElementById('input-lokasi').value = '';
-                        document.getElementById('input-deskripsi').value = '';
-                        btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> KIRIM LAPORAN';
-                        btn.disabled = false;
-                    })
-                    .withFailureHandler((err) => {
-                        tampilkanModal('Error', err.message, 'gagal');
-                        btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> KIRIM LAPORAN';
-                        btn.disabled = false;
-                    })
-                    .simpanLaporanBSR(data);
-            } else {
-                setTimeout(() => { 
-                    btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> KIRIM LAPORAN'; 
-                    btn.disabled = false; 
-                }, 1000);
-            }
+        async function kirimLaporanKeSpreadsheet(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-lapor'); btn.innerHTML = 'Mengirim...'; btn.disabled = true;
+            await fetchAPI("simpanLaporan", { judul: document.getElementById('input-judul').value, lokasi: document.getElementById('input-lokasi').value, deskripsi: document.getElementById('input-deskripsi').value, pelapor: getUserFullName() });
+            tampilkanModal('Berhasil', 'Terkirim', 'sukses'); tarikDataLaporan(); btn.innerHTML = 'Kirim Laporan'; btn.disabled = false;
             return false;
         }
 
-        // IURAN
-        function hitungTotalIuran() {
-            document.getElementById('input-nominal').value = document.querySelectorAll('#grid-bulan input[type="checkbox"]:checked').length * 20000;
+        function hitungTotalIuran() { document.getElementById('input-nominal').value = document.querySelectorAll('#grid-bulan input[type="checkbox"]:checked').length * 20000; }
+        
+        async function tarikDataIuran() {
+            let res = await fetchAPI("getIuran");
+            tampilkanDataIuranUI(res.data);
         }
-
-        function tarikDataIuran() {
-            const list = document.getElementById('iuran-list');
-            list.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20 rounded-xl"></div>`;
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler(tampilkanDataIuranUI)
-                    .withFailureHandler(function(err) { list.innerHTML = `<p class="text-red-500 p-2 text-center text-xs">Error: ${err.message}</p>`; })
-                    .getIuranBSR();
-            } else {
-                setTimeout(() => { tampilkanDataIuranUI([{bulan: "JAN, FEB", nominal: "40000", status: "Lunas"}]); }, 1000);
-            }
-        }
-
         function tampilkanDataIuranUI(data) {
-            const list = document.getElementById('iuran-list');
-            list.innerHTML = '';
-            if(!data || data.length === 0) return list.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-gray-500 text-xs font-bold uppercase shadow-sm">Belum ada riwayat.</div>`;
-
-            data.forEach(item => {
-                let bClass = "bg-amber-100 text-amber-700"; 
-                let st = (item.status||"").toLowerCase();
-                if(st.includes('lunas')||st.includes('selesai')) bClass = "bg-green-100 text-green-700";
-                if(st.includes('tolak')||st.includes('gagal')) bClass = "bg-red-100 text-red-700";
-
-                list.innerHTML += `
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 flex items-start animate-slide-down">
-                        <div class="w-10 h-10 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mr-3 shrink-0"><i class="fas fa-receipt"></i></div>
-                        <div class="flex-1 min-w-0">
-                            <h4 class="font-bold text-gray-800 text-sm uppercase">${item.bulan}</h4>
-                            <p class="text-[10px] font-bold text-indigo-500 uppercase">${item.bulan}</p>
-                            <p class="text-xs font-black text-gray-700 mt-1">Rp ${parseInt(item.nominal).toLocaleString('id-ID')}</p>
-                        </div>
-                        <span class="${bClass} text-[9px] font-black px-2 py-1 rounded tracking-wider ml-2">${item.status||'MENUNGGU'}</span>
-                    </div>`;
-            });
+            const list = document.getElementById('iuran-list'); list.innerHTML = '';
+            if(!data || data.length === 0) return list.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-xs font-bold uppercase shadow-sm">Belum ada riwayat.</div>`;
+            data.forEach(item => { list.innerHTML += `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 flex items-start animate-slide-down"><div class="flex-1 min-w-0"><h4 class="font-bold text-gray-800 text-sm uppercase">${item.bulan}</h4><p class="text-xs font-black text-gray-700 mt-1">Rp ${item.nominal}</p></div><span class="text-[9px] font-black px-2 py-1 rounded ml-2 bg-amber-100 text-amber-700">${item.status||'MENUNGGU'}</span></div>`; });
         }
-
-        function kirimIuranKeSpreadsheet(e) {
-            if(e) e.preventDefault();
+        async function kirimIuranKeSpreadsheet(e) {
+            e.preventDefault();
             const cb = document.querySelectorAll('#grid-bulan input[type="checkbox"]:checked');
-            if (cb.length === 0) return tampilkanModal('Perhatian', 'Pilih minimal 1 bulan.', 'gagal');
-            
-            const btn = document.getElementById('btn-submit-iuran');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> MENGIRIM...';
-            btn.disabled = true;
-            
-            let catatan = document.getElementById('input-metode').value;
-            const data = { 
-                bulan: Array.from(cb).map(c => c.value.toUpperCase()).join(', '), 
-                nominal: document.getElementById('input-nominal').value, 
-                catatan: catatan, 
-                warga: getUserFullName() 
-            };
-
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler(() => {
-                        tampilkanModal('Berhasil!', 'Konfirmasi iuran terkirim.', 'sukses');
-                        tarikDataIuran(); 
-                        cb.forEach(c => c.checked = false); 
-                        document.getElementById('input-nominal').value = 0;
-                        btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> KONFIRMASI BAYAR';
-                        btn.disabled = false;
-                    })
-                    .withFailureHandler((err) => {
-                        tampilkanModal('Error', err.message, 'gagal');
-                        btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> KONFIRMASI BAYAR';
-                        btn.disabled = false;
-                    })
-                    .simpanIuranBSR(data);
-            } else {
-                setTimeout(() => { 
-                    btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> KONFIRMASI BAYAR'; 
-                    btn.disabled = false;
-                }, 1000);
-            }
+            if (cb.length === 0) return false;
+            const btn = document.getElementById('btn-submit-iuran'); btn.innerHTML = 'Mengirim...'; btn.disabled = true;
+            await fetchAPI("simpanIuran", { bulan: Array.from(cb).map(c=>c.value).join(','), nominal: document.getElementById('input-nominal').value, catatan: document.getElementById('input-metode').value, warga: getUserFullName() });
+            tampilkanModal('Berhasil', 'Terkirim', 'sukses'); tarikDataIuran(); btn.innerHTML = 'Konfirmasi Bayar'; btn.disabled = false;
             return false;
         }
+
+        // --- UTILS ---
+        function muatProfilData(userObj) {
+            const nama = userObj.nama ? userObj.nama.toUpperCase() : 'WARGA';
+            document.getElementById(userObj.role === 'admin' ? 'sapaan-admin' : 'sapaan-beranda').innerText = 'HALO, ' + nama + '!';
+            document.getElementById('header-role').innerText = userObj.role === 'admin' ? 'Mode Administrator' : 'Portal Layanan Warga';
+            document.getElementById('display-nama-profil').innerText = nama;
+            document.getElementById('display-role-profil').innerText = userObj.role.toUpperCase();
+            document.getElementById('header-avatar').innerText = nama.charAt(0);
+        }
+        function getUserFullName() { try { return JSON.parse(localStorage.getItem('wargaSessionAktif')).nama.toUpperCase(); } catch(e) { return 'WARGA'; } }
+        function switchTab(tabId) {
+            ['section-beranda','section-surat','section-iuran','section-lapor','section-profil','section-admin-home','section-admin-verifikasi','section-admin-pengumuman','section-admin-warga'].forEach(s => { const el = document.getElementById(s); if(el) el.classList.add('hidden'); });
+            document.getElementById('section-' + tabId).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(b => { b.classList.remove('text-indigo-600'); b.classList.add('text-gray-400'); });
+            const btn = document.querySelector(`button[data-target="${tabId}"]`); if(btn) { btn.classList.remove('text-gray-400'); btn.classList.add('text-indigo-600'); }
+            if(tabId === 'beranda') tarikDataPengumuman(); if(tabId === 'lapor') tarikDataLaporan(); if(tabId === 'iuran') tarikDataIuran(); if(tabId === 'surat') tarikDataSurat();
+        }
+        function tampilkanModal(judul, pesan, tipe) {
+            document.getElementById('modal-title').innerText = judul; document.getElementById('modal-message').innerText = pesan;
+            document.getElementById('custom-modal').style.display = 'flex'; document.getElementById('custom-modal').classList.remove('hidden');
+        }
+        function tutupModal() { document.getElementById('custom-modal').style.display = 'none'; }
     </script>
 </body>
 </html>
