@@ -77,11 +77,6 @@
                         <div class="w-12 h-12 bg-green-50 text-green-600 rounded-full flex items-center justify-center text-xl mb-3 shadow-inner"><i class="fas fa-wallet"></i></div>
                         <span class="text-sm font-bold text-gray-700">Iuran</span>
                     </div>
-                    <!-- Opsi Chat WA Pengurus untuk Warga -->
-                    <div class="bg-emerald-50 p-4 rounded-2xl shadow-sm border border-emerald-100 flex flex-col items-center justify-center cursor-pointer col-span-2" onclick="window.open('https://wa.me/6282230280004?text=Halo%20Pengurus%20RT%20Blok%209,%20saya%20izin%20bertanya...', '_blank')">
-                        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-xl mb-2 shadow-inner"><i class="fab fa-whatsapp"></i></div>
-                        <span class="text-xs font-bold text-emerald-700 uppercase tracking-wide">Hubungi Pengurus (WA)</span>
-                    </div>
                 </div>
                 <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-2xl text-left flex items-start shadow-sm">
                     <div class="w-10 h-10 bg-indigo-200 text-indigo-600 rounded-full flex justify-center items-center mr-3 shrink-0"><i class="fas fa-bullhorn text-lg"></i></div>
@@ -149,7 +144,7 @@
                         <!-- Gambar QR Code Tampil Langsung -->
                         <div class="bg-white p-4 rounded-xl border border-blue-50 shadow-sm relative z-10 flex flex-col items-center">
                             <p class="text-[11px] text-gray-500 font-bold uppercase mb-2"><i class="fas fa-qrcode mr-1"></i> Scan QRIS Pembayaran</p>
-                            <img src="https://i.ibb.co/Y58h5dR/QRISARUNIKA.jpg" alt="QR Code QRIS" class="w-full max-w-[200px] rounded-lg border border-gray-100 mb-2">
+                            <img src="https://i.ibb.co/Y58h5dR/QRISARUNIKA.jpg" alt="QR Code QRIS" class="w-full max-w-[200px] rounded-lg border border-gray-100 mb-2" onerror="this.onerror=null; this.src='qris.jpg';">
                             <p class="text-[10px] text-gray-600 font-black uppercase tracking-widest">A/N ARUNIKA CREATIVE</p>
                         </div>
                     </div>
@@ -250,6 +245,7 @@
                     <div class="grid grid-cols-2 gap-3">
                         <button onclick="switchTab('admin-verifikasi')" class="bg-indigo-50 text-indigo-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-indigo-100 transition"><i class="fas fa-check-double text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Verifikasi</span></button>
                         <button onclick="switchTab('admin-pengumuman')" class="bg-amber-50 text-amber-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-amber-100 transition"><i class="fas fa-bullhorn text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Buat Siaran</span></button>
+                        <!-- Pintasan Tegur Warga Dikembalikan Sesuai Permintaan -->
                         <button onclick="switchTab('admin-warga')" class="col-span-2 bg-emerald-50 text-emerald-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-emerald-100 transition"><i class="fab fa-whatsapp text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Tegur/Chat Warga</span></button>
                     </div>
                 </div>
@@ -514,10 +510,10 @@
                     pendingIuran = resIuran.data.filter(item => item.status.toLowerCase().includes('menunggu')).length;
                 }
                 if(resSurat && resSurat.data) {
-                    pendingSuratLaporan += resSurat.data.filter(item => item.status.toLowerCase().includes('menunggu')).length;
+                    pendingSuratLaporan += resSurat.data.filter(item => item.status.toLowerCase().includes('menunggu') || item.status.toLowerCase().includes('diproses')).length;
                 }
                 if(resLaporan && resLaporan.data) {
-                    pendingSuratLaporan += resLaporan.data.filter(item => item.status.toLowerCase().includes('menunggu')).length;
+                    pendingSuratLaporan += resLaporan.data.filter(item => item.status.toLowerCase().includes('menunggu') || item.status.toLowerCase().includes('diproses')).length;
                 }
 
                 if(elIuran) elIuran.innerText = pendingIuran;
@@ -930,7 +926,7 @@
                 tarikDataSuratAdmin(); 
                 tarikDataLaporanAdmin(); 
             }
-            if(tabId === 'admin-home') loadAdminDashboardStats();
+            if(tabId === 'admin-home') loadAdminDashboardStats(); // Panggil fungsi hitung dashboard
         }
         
         function salinTeks(teks) {
