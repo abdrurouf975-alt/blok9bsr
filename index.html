@@ -245,7 +245,6 @@
                     <div class="grid grid-cols-2 gap-3">
                         <button onclick="switchTab('admin-verifikasi')" class="bg-indigo-50 text-indigo-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-indigo-100 transition"><i class="fas fa-check-double text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Verifikasi</span></button>
                         <button onclick="switchTab('admin-pengumuman')" class="bg-amber-50 text-amber-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-amber-100 transition"><i class="fas fa-bullhorn text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Buat Siaran</span></button>
-                        <!-- Pintasan Tegur Warga Dikembalikan Sesuai Permintaan -->
                         <button onclick="switchTab('admin-warga')" class="col-span-2 bg-emerald-50 text-emerald-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-emerald-100 transition"><i class="fab fa-whatsapp text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Tegur/Chat Warga</span></button>
                     </div>
                 </div>
@@ -772,7 +771,7 @@
                     loadAdminDashboardStats(); 
                 }, 300);
             } else {
-                tampilkanModal('Gagal', 'Gagal update status', 'gagal');
+                tampilkanModal('Gagal', res.message || (typeof res.data === 'string' ? res.data : 'Gagal update status di Database'), 'gagal');
                 btn.innerHTML = originalText; btn.disabled = false;
             }
         }
@@ -832,7 +831,7 @@
                     loadAdminDashboardStats(); 
                 }, 300);
             } else {
-                tampilkanModal('Gagal', 'Gagal update status', 'gagal');
+                tampilkanModal('Gagal', res.message || (typeof res.data === 'string' ? res.data : 'Gagal update status di Database'), 'gagal');
                 btn.innerHTML = originalText; btn.disabled = false;
             }
         }
@@ -891,7 +890,7 @@
                     loadAdminDashboardStats(); 
                 }, 300);
             } else {
-                tampilkanModal('Gagal', 'Gagal update status', 'gagal');
+                tampilkanModal('Gagal', res.message || (typeof res.data === 'string' ? res.data : 'Gagal update status di Database'), 'gagal');
                 btn.innerHTML = originalText; btn.disabled = false;
             }
         }
