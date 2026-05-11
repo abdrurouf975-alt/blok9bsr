@@ -149,7 +149,7 @@
                         <!-- Gambar QR Code Tampil Langsung -->
                         <div class="bg-white p-4 rounded-xl border border-blue-50 shadow-sm relative z-10 flex flex-col items-center">
                             <p class="text-[11px] text-gray-500 font-bold uppercase mb-2"><i class="fas fa-qrcode mr-1"></i> Scan QRIS Pembayaran</p>
-                            <img src="qris.jpg" alt="QR Code QRIS" class="w-full max-w-[200px] rounded-lg border border-gray-100 mb-2" onerror="this.onerror=null; this.src='https://i.ibb.co/Y58h5dR/QRISARUNIKA.jpg';">
+                            <img src="https://i.ibb.co/Y58h5dR/QRISARUNIKA.jpg" alt="QR Code QRIS" class="w-full max-w-[200px] rounded-lg border border-gray-100 mb-2">
                             <p class="text-[10px] text-gray-600 font-black uppercase tracking-widest">A/N ARUNIKA CREATIVE</p>
                         </div>
                     </div>
@@ -250,7 +250,6 @@
                     <div class="grid grid-cols-2 gap-3">
                         <button onclick="switchTab('admin-verifikasi')" class="bg-indigo-50 text-indigo-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-indigo-100 transition"><i class="fas fa-check-double text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Verifikasi</span></button>
                         <button onclick="switchTab('admin-pengumuman')" class="bg-amber-50 text-amber-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-amber-100 transition"><i class="fas fa-bullhorn text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Buat Siaran</span></button>
-                        <!-- Pintasan Tegur Warga Dikembalikan Sesuai Permintaan -->
                         <button onclick="switchTab('admin-warga')" class="col-span-2 bg-emerald-50 text-emerald-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-emerald-100 transition"><i class="fab fa-whatsapp text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Tegur/Chat Warga</span></button>
                     </div>
                 </div>
@@ -260,16 +259,33 @@
             <div id="section-admin-verifikasi" class="p-5 section-admin hidden">
                 <h2 class="text-xl font-black text-gray-800 mb-4 uppercase">Pusat Verifikasi</h2>
                 
+                <!-- IURAN ADMIN -->
                 <div class="mb-6">
                     <h3 class="font-bold text-sm text-gray-700 uppercase mb-3 px-1 flex justify-between items-center">
                         Verifikasi Iuran 
                         <button onclick="tarikDataIuranAdmin()" class="text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded-full"><i class="fas fa-sync-alt"></i></button>
                     </h3>
-                    
-                    <div id="admin-verifikasi-iuran-list">
-                        <!-- Data iuran yang perlu diverifikasi akan muncul di sini via JavaScript -->
-                    </div>
+                    <div id="admin-verifikasi-iuran-list"></div>
                 </div>
+
+                <!-- SURAT ADMIN -->
+                <div class="mb-6">
+                    <h3 class="font-bold text-sm text-gray-700 uppercase mb-3 px-1 flex justify-between items-center">
+                        Verifikasi Surat 
+                        <button onclick="tarikDataSuratAdmin()" class="text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded-full"><i class="fas fa-sync-alt"></i></button>
+                    </h3>
+                    <div id="admin-verifikasi-surat-list"></div>
+                </div>
+
+                <!-- LAPORAN ADMIN -->
+                <div class="mb-6">
+                    <h3 class="font-bold text-sm text-gray-700 uppercase mb-3 px-1 flex justify-between items-center">
+                        Tindak Lanjut Laporan 
+                        <button onclick="tarikDataLaporanAdmin()" class="text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded-full"><i class="fas fa-sync-alt"></i></button>
+                    </h3>
+                    <div id="admin-verifikasi-laporan-list"></div>
+                </div>
+
             </div>
 
             <div id="section-admin-pengumuman" class="p-5 section-admin hidden">
@@ -485,7 +501,6 @@
             if(elSuratLapor) elSuratLapor.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i>';
 
             try {
-                // Panggil API secara paralel agar lebih cepat
                 const [resIuran, resSurat, resLaporan] = await Promise.all([
                     fetchAPI("getIuran"),
                     fetchAPI("getSurat"),
@@ -515,7 +530,7 @@
             }
         }
 
-        // --- FETCHING DATA ---
+        // --- FETCHING DATA WARGA ---
         async function tarikDataPengumuman() {
             let res = await fetchAPI("getPengumuman");
             document.getElementById('tempat-pengumuman').innerHTML = `<p>${res.data || 'Tidak ada pengumuman'}</p>`;
@@ -527,13 +542,24 @@
         }
         function tampilkanDataSuratUI(data) {
             const list = document.getElementById('surat-list'); list.innerHTML = '';
-            if(!data || data.length === 0) return list.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-xs font-bold uppercase shadow-sm">Belum ada riwayat.</div>`;
-            data.forEach(item => { list.innerHTML += `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 flex items-start animate-slide-down"><div class="flex-1 min-w-0"><h4 class="font-bold text-gray-800 text-sm uppercase">${item.jenis}</h4><p class="text-[10px] text-gray-400 mt-0.5 uppercase">${item.keperluan}</p></div><span class="text-[9px] font-black px-2 py-1 rounded ml-2 bg-amber-100 text-amber-700">${item.status||'MENUNGGU'}</span></div>`; });
+            
+            const username = getUserUsername().toLowerCase();
+            const myData = data.filter(d => (d.pemohon||'').toLowerCase() === username);
+            
+            if(!myData || myData.length === 0) return list.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-xs font-bold uppercase shadow-sm">Belum ada riwayat.</div>`;
+            myData.forEach(item => { 
+                let st = (item.status||"").toLowerCase();
+                let bClass = "bg-amber-100 text-amber-700";
+                if(st.includes('selesai')) bClass = "bg-green-100 text-green-700";
+                if(st.includes('tolak')) bClass = "bg-red-100 text-red-700";
+                
+                list.innerHTML += `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 flex items-start animate-slide-down"><div class="flex-1 min-w-0"><h4 class="font-bold text-gray-800 text-sm uppercase">${item.jenis}</h4><p class="text-[10px] text-gray-400 mt-0.5 uppercase">${item.keperluan}</p></div><span class="text-[9px] font-black px-2 py-1 rounded ml-2 ${bClass}">${item.status||'MENUNGGU'}</span></div>`; 
+            });
         }
         async function kirimSuratKeSpreadsheet(e) {
             if (e) e.preventDefault();
             const btn = document.getElementById('btn-submit-surat'); btn.innerHTML = 'Mengajukan...'; btn.disabled = true;
-            await fetchAPI("simpanSurat", { jenis: document.getElementById('input-jenis-surat').value, keperluan: document.getElementById('input-keperluan-surat').value, pemohon: getUserFullName() });
+            await fetchAPI("simpanSurat", { jenis: document.getElementById('input-jenis-surat').value, keperluan: document.getElementById('input-keperluan-surat').value, pemohon: getUserUsername() });
             tampilkanModal('Berhasil', 'Terkirim', 'sukses'); tarikDataSurat(); btn.innerHTML = 'Ajukan Surat'; btn.disabled = false;
             document.getElementById('form-surat').reset();
         }
@@ -544,20 +570,30 @@
         }
         function tampilkanDataLaporanUI(data) {
             const list = document.getElementById('laporan-list'); list.innerHTML = '';
-            if(!data || data.length === 0) return list.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-xs font-bold uppercase shadow-sm">Belum ada laporan.</div>`;
-            data.forEach(item => { list.innerHTML += `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 flex items-start animate-slide-down"><div class="flex-1 min-w-0"><h4 class="font-bold text-gray-800 text-sm uppercase">${item.judul}</h4><p class="text-[10px] text-gray-400 uppercase">${item.lokasi}</p></div><span class="text-[9px] font-black px-2 py-1 rounded ml-2 bg-amber-100 text-amber-700">${item.status||'MENUNGGU'}</span></div>`; });
+            
+            const username = getUserUsername().toLowerCase();
+            const myData = data.filter(d => (d.pelapor||'').toLowerCase() === username);
+            
+            if(!myData || myData.length === 0) return list.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-xs font-bold uppercase shadow-sm">Belum ada laporan.</div>`;
+            myData.forEach(item => { 
+                let st = (item.status||"").toLowerCase();
+                let bClass = "bg-amber-100 text-amber-700";
+                if(st.includes('selesai')) bClass = "bg-green-100 text-green-700";
+                if(st.includes('tolak')) bClass = "bg-red-100 text-red-700";
+                
+                list.innerHTML += `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 flex items-start animate-slide-down"><div class="flex-1 min-w-0"><h4 class="font-bold text-gray-800 text-sm uppercase">${item.judul}</h4><p class="text-[10px] text-gray-400 uppercase">${item.lokasi}</p></div><span class="text-[9px] font-black px-2 py-1 rounded ml-2 ${bClass}">${item.status||'MENUNGGU'}</span></div>`; 
+            });
         }
         async function kirimLaporanKeSpreadsheet(e) {
             if (e) e.preventDefault();
             const btn = document.getElementById('btn-submit-lapor'); btn.innerHTML = 'Mengirim...'; btn.disabled = true;
-            await fetchAPI("simpanLaporan", { judul: document.getElementById('input-judul').value, lokasi: document.getElementById('input-lokasi').value, deskripsi: document.getElementById('input-deskripsi').value, pelapor: getUserFullName() });
+            await fetchAPI("simpanLaporan", { judul: document.getElementById('input-judul').value, lokasi: document.getElementById('input-lokasi').value, deskripsi: document.getElementById('input-deskripsi').value, pelapor: getUserUsername() });
             tampilkanModal('Berhasil', 'Terkirim', 'sukses'); tarikDataLaporan(); btn.innerHTML = 'Kirim Laporan'; btn.disabled = false;
             document.getElementById('form-lapor').reset();
         }
 
         function hitungTotalIuran() { document.getElementById('input-nominal').value = document.querySelectorAll('#grid-bulan input[type="checkbox"]:checked').length * 20000; }
         
-        // --- LOGIKA UNTUK MENYEMBUNYIKAN/MENAMPILKAN UPLOAD BUKTI ---
         function toggleUploadBukti() {
             const metode = document.getElementById('input-metode').value;
             const containerBukti = document.getElementById('container-bukti');
@@ -566,7 +602,7 @@
             if (metode === 'Cash') {
                 containerBukti.classList.add('hidden');
                 inputBukti.removeAttribute('required');
-                inputBukti.value = ''; // Hapus file jika ada yang telanjur dipilih
+                inputBukti.value = ''; 
             } else {
                 containerBukti.classList.remove('hidden');
                 inputBukti.setAttribute('required', 'required');
@@ -625,7 +661,6 @@
             const metode = document.getElementById('input-metode').value;
             const fileInput = document.getElementById('input-bukti');
             
-            // Validasi file hanya jika bukan Cash
             if (metode !== 'Cash' && !fileInput.files[0]) { 
                 tampilkanModal('Perhatian', 'Harap upload bukti transfer!', 'gagal'); 
                 return false; 
@@ -654,7 +689,7 @@
                     cb.forEach(c => c.checked = false); 
                     document.getElementById('input-nominal').value = 0;
                     document.getElementById('input-bukti').value = ''; 
-                    toggleUploadBukti(); // Reset UI upload bukti
+                    toggleUploadBukti(); 
                 } else {
                     tampilkanModal('Gagal', 'Terjadi kesalahan saat upload', 'gagal');
                 }
@@ -663,10 +698,8 @@
             };
 
             if (metode === 'Cash') {
-                // Jika Cash, langsung kirim tanpa gambar
                 await kirimDataSelesai(dataPayload);
             } else {
-                // Jika transfer/QRIS, proses gambar dulu
                 const file = fileInput.files[0];
                 const reader = new FileReader();
                 reader.onload = async function() {
@@ -680,6 +713,8 @@
         }
 
         // --- FETCHING DATA ADMIN ---
+        
+        // 1. Iuran Admin
         async function tarikDataIuranAdmin() {
             const container = document.getElementById('admin-verifikasi-iuran-list');
             if(!container) return;
@@ -692,17 +727,14 @@
                 container.innerHTML = `<p class="text-center text-xs text-red-500 font-bold mt-4">Gagal memuat data.</p>`;
             }
         }
-        
         function tampilkanDataIuranAdminUI(data) {
             const container = document.getElementById('admin-verifikasi-iuran-list');
             container.innerHTML = '';
-            
             const pending = data.filter(item => item.status.toLowerCase().includes('menunggu'));
             if(pending.length === 0) {
                 container.innerHTML = `<p class="text-center text-xs text-gray-500 font-bold uppercase mt-4">Tidak ada iuran yang menunggu.</p>`;
                 return;
             }
-
             pending.forEach(item => {
                 let buktiBtn = (item.bukti && item.bukti !== "-" && item.bukti !== "") 
                     ? `<button onclick="bukaModalBukti('${item.bukti}')" class="bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center shadow-sm hover:bg-blue-100 transition"><i class="fas fa-image mr-1"></i> Bukti</button>` 
@@ -725,41 +757,149 @@
                             <button onclick="verifikasiIuran(this, '${item.waktu}', 'Lunas')" class="flex-1 bg-green-500 text-white text-xs font-bold py-2.5 rounded-xl uppercase tracking-wide transition">Terima</button>
                             <button onclick="verifikasiIuran(this, '${item.waktu}', 'Ditolak')" class="w-1/3 bg-gray-100 text-gray-600 text-xs font-bold py-2.5 rounded-xl uppercase tracking-wide transition">Tolak</button>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
         }
-
         async function verifikasiIuran(btn, waktu, status) {
             const card = btn.closest('.bg-white.rounded-2xl');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            btn.disabled = true;
-            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
             let res = await fetchAPI("updateIuran", { waktu: waktu, status: status });
             if (res && (res.data === "Sukses" || res.success !== false)) {
-                tampilkanModal('Sukses', 'Status berhasil diubah menjadi: ' + status, 'sukses');
-                
-                // Animasi Hilang dari Layar
-                card.style.opacity = '0';
-                card.style.transform = 'scale(0.9)';
-                setTimeout(() => {
-                    card.remove();
-                    // Cek jika sudah kosong semua
-                    const container = document.getElementById('admin-verifikasi-iuran-list');
-                    if(container.children.length === 0) {
-                        container.innerHTML = `<p class="text-center text-xs text-gray-500 font-bold uppercase mt-4">Tidak ada iuran yang menunggu.</p>`;
+                tampilkanModal('Sukses', 'Status Iuran diubah jadi: ' + status, 'sukses');
+                card.style.opacity = '0'; card.style.transform = 'scale(0.9)';
+                setTimeout(() => { 
+                    card.remove(); 
+                    if(document.getElementById('admin-verifikasi-iuran-list').children.length === 0) {
+                        document.getElementById('admin-verifikasi-iuran-list').innerHTML = `<p class="text-center text-xs text-gray-500 font-bold uppercase mt-4">Tidak ada iuran yang menunggu.</p>`;
                     }
-                    // Update juga angka di dasbor jika masih terbuka (optional)
-                    loadAdminDashboardStats();
+                    loadAdminDashboardStats(); 
                 }, 300);
-
             } else {
-                tampilkanModal('Gagal', 'Gagal update status di Database', 'gagal');
-                btn.innerHTML = originalText;
-                btn.disabled = false;
+                tampilkanModal('Gagal', 'Gagal update status', 'gagal');
+                btn.innerHTML = originalText; btn.disabled = false;
             }
         }
+
+        // 2. Surat Admin
+        async function tarikDataSuratAdmin() {
+            const container = document.getElementById('admin-verifikasi-surat-list');
+            if(!container) return;
+            container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20"></div>`;
+            
+            let res = await fetchAPI("getSurat");
+            if(res && res.data) {
+                tampilkanDataSuratAdminUI(res.data);
+            } else {
+                container.innerHTML = `<p class="text-center text-xs text-red-500 font-bold mt-4">Gagal memuat data.</p>`;
+            }
+        }
+        function tampilkanDataSuratAdminUI(data) {
+            const container = document.getElementById('admin-verifikasi-surat-list');
+            container.innerHTML = '';
+            
+            const pending = data.filter(item => item.status.toLowerCase().includes('menunggu') || item.status.toLowerCase().includes('diproses'));
+            if(pending.length === 0) {
+                container.innerHTML = `<p class="text-center text-xs text-gray-500 font-bold uppercase mt-4">Tidak ada surat yang menunggu.</p>`;
+                return;
+            }
+            pending.forEach(item => {
+                container.innerHTML += `
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-3 flex flex-col gap-3 relative transition-all duration-300">
+                        <div class="flex justify-between items-start border-b border-gray-50 pb-3">
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-sm uppercase">${item.pemohon || 'Warga'}</h4>
+                                <p class="text-[11px] text-gray-500 font-bold mt-0.5">${item.jenis}</p>
+                                <p class="text-[10px] text-gray-400 mt-1">Keperluan: ${item.keperluan}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="verifikasiSurat(this, '${item.waktu}', 'Selesai')" class="flex-1 bg-blue-600 text-white text-xs font-bold py-2.5 rounded-xl uppercase tracking-wide transition shadow-sm"><i class="fas fa-signature mr-1"></i> TTD & Setujui</button>
+                            <button onclick="verifikasiSurat(this, '${item.waktu}', 'Ditolak')" class="w-1/3 bg-gray-100 text-gray-600 text-xs font-bold py-2.5 rounded-xl uppercase tracking-wide transition shadow-sm">Tolak</button>
+                        </div>
+                    </div>`;
+            });
+        }
+        async function verifikasiSurat(btn, waktu, status) {
+            const card = btn.closest('.bg-white.rounded-2xl');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
+            let res = await fetchAPI("updateSurat", { waktu: waktu, status: status });
+            if (res && (res.data === "Sukses" || res.success !== false)) {
+                tampilkanModal('Sukses', 'Status Surat diubah jadi: ' + status, 'sukses');
+                card.style.opacity = '0'; card.style.transform = 'scale(0.9)';
+                setTimeout(() => { 
+                    card.remove(); 
+                    if(document.getElementById('admin-verifikasi-surat-list').children.length === 0) {
+                        document.getElementById('admin-verifikasi-surat-list').innerHTML = `<p class="text-center text-xs text-gray-500 font-bold uppercase mt-4">Tidak ada surat yang menunggu.</p>`;
+                    }
+                    loadAdminDashboardStats(); 
+                }, 300);
+            } else {
+                tampilkanModal('Gagal', 'Gagal update status', 'gagal');
+                btn.innerHTML = originalText; btn.disabled = false;
+            }
+        }
+
+        // 3. Laporan Admin
+        async function tarikDataLaporanAdmin() {
+            const container = document.getElementById('admin-verifikasi-laporan-list');
+            if(!container) return;
+            container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20"></div>`;
+            
+            let res = await fetchAPI("getLaporan");
+            if(res && res.data) {
+                tampilkanDataLaporanAdminUI(res.data);
+            } else {
+                container.innerHTML = `<p class="text-center text-xs text-red-500 font-bold mt-4">Gagal memuat data.</p>`;
+            }
+        }
+        function tampilkanDataLaporanAdminUI(data) {
+            const container = document.getElementById('admin-verifikasi-laporan-list');
+            container.innerHTML = '';
+            
+            const pending = data.filter(item => item.status.toLowerCase().includes('menunggu') || item.status.toLowerCase().includes('diproses'));
+            if(pending.length === 0) {
+                container.innerHTML = `<p class="text-center text-xs text-gray-500 font-bold uppercase mt-4">Tidak ada laporan yang menunggu.</p>`;
+                return;
+            }
+            pending.forEach(item => {
+                container.innerHTML += `
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-3 flex flex-col gap-3 relative transition-all duration-300">
+                        <div class="flex justify-between items-start border-b border-gray-50 pb-3">
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-sm uppercase">${item.judul}</h4>
+                                <p class="text-[11px] text-gray-500 font-bold mt-0.5"><i class="fas fa-map-marker-alt text-red-500 mr-1"></i> ${item.lokasi}</p>
+                                <p class="text-[10px] text-gray-400 mt-1">Pelapor: ${item.pelapor || 'Warga'} | Ket: ${item.deskripsi}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="verifikasiLaporan(this, '${item.waktu}', 'Selesai')" class="w-full bg-emerald-500 text-white text-xs font-bold py-2.5 rounded-xl uppercase tracking-wide transition shadow-sm"><i class="fas fa-check-circle mr-1"></i> Tandai Selesai Ditangani</button>
+                        </div>
+                    </div>`;
+            });
+        }
+        async function verifikasiLaporan(btn, waktu, status) {
+            const card = btn.closest('.bg-white.rounded-2xl');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
+            let res = await fetchAPI("updateLaporan", { waktu: waktu, status: status });
+            if (res && (res.data === "Sukses" || res.success !== false)) {
+                tampilkanModal('Sukses', 'Status Laporan berhasil diselesaikan', 'sukses');
+                card.style.opacity = '0'; card.style.transform = 'scale(0.9)';
+                setTimeout(() => { 
+                    card.remove(); 
+                    if(document.getElementById('admin-verifikasi-laporan-list').children.length === 0) {
+                        document.getElementById('admin-verifikasi-laporan-list').innerHTML = `<p class="text-center text-xs text-gray-500 font-bold uppercase mt-4">Tidak ada laporan yang menunggu.</p>`;
+                    }
+                    loadAdminDashboardStats(); 
+                }, 300);
+            } else {
+                tampilkanModal('Gagal', 'Gagal update status', 'gagal');
+                btn.innerHTML = originalText; btn.disabled = false;
+            }
+        }
+
 
         // --- UTILS ---
         function muatProfilData(userObj) {
@@ -784,8 +924,13 @@
             if(tabId === 'lapor') tarikDataLaporan(); 
             if(tabId === 'iuran') tarikDataIuran(); 
             if(tabId === 'surat') tarikDataSurat();
-            if(tabId === 'admin-verifikasi') tarikDataIuranAdmin(); 
-            if(tabId === 'admin-home') loadAdminDashboardStats(); // Panggil fungsi hitung dashboard
+            
+            if(tabId === 'admin-verifikasi') { 
+                tarikDataIuranAdmin(); 
+                tarikDataSuratAdmin(); 
+                tarikDataLaporanAdmin(); 
+            }
+            if(tabId === 'admin-home') loadAdminDashboardStats();
         }
         
         function salinTeks(teks) {
