@@ -176,21 +176,22 @@
                         
                         <div class="mb-4">
                             <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Metode Pembayaran</label>
-                            <select id="input-metode" class="w-full p-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 bg-gray-50 text-sm font-bold" required>
+                            <select id="input-metode" onchange="toggleUploadBukti()" class="w-full p-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 bg-gray-50 text-sm font-bold" required>
                                 <option value="BCA">Transfer BCA</option>
                                 <option value="BRI">Transfer BRI</option>
                                 <option value="QRIS">QRIS</option>
+                                <option value="Cash">Cash (Titip Pengurus)</option>
                             </select>
                         </div>
 
                         <!-- INPUT UPLOAD BUKTI TRANSFER -->
-                        <div class="mb-6">
+                        <div class="mb-6" id="container-bukti">
                             <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Upload Bukti Transfer</label>
                             <input type="file" id="input-bukti" accept="image/*" class="w-full p-2.5 border border-gray-200 rounded-xl bg-white text-sm focus:outline-none" required>
                             <p class="text-[10px] text-gray-500 mt-1">*Wajib dilampirkan agar bisa diverifikasi pengurus.</p>
                         </div>
 
-                        <button type="submit" id="btn-submit-iuran" class="w-full bg-green-500 text-white font-bold py-3.5 rounded-xl uppercase tracking-wide text-sm transition"><i class="fas fa-check-circle mr-2"></i> Konfirmasi Bayar</button>
+                        <button type="submit" id="btn-submit-iuran" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 rounded-xl uppercase tracking-wide text-sm transition"><i class="fas fa-check-circle mr-2"></i> Konfirmasi Bayar</button>
                     </form>
                 </div>
                 <div class="mb-4">
@@ -240,14 +241,8 @@
                     <h2 class="text-2xl font-black mb-1 uppercase" id="sapaan-admin">HALO, ADMIN!</h2>
                     <p class="text-xs text-indigo-200 font-medium mb-6">Pusat Kendali Pengurus RT</p>
                     <div class="grid grid-cols-2 gap-4 mt-4 relative z-10">
-                        <div class="bg-white/10 p-4 rounded-2xl border border-white/20">
-                            <h3 id="count-iuran-menunggu" class="text-3xl font-black text-green-400">-</h3>
-                            <p class="text-[10px] font-bold uppercase mt-1">Iuran Menunggu</p>
-                        </div>
-                        <div class="bg-white/10 p-4 rounded-2xl border border-white/20">
-                            <h3 id="count-surat-laporan" class="text-3xl font-black text-amber-400">-</h3>
-                            <p class="text-[10px] font-bold uppercase mt-1">Surat & Laporan</p>
-                        </div>
+                        <div class="bg-white/10 p-4 rounded-2xl border border-white/20"><h3 id="count-iuran-menunggu" class="text-3xl font-black text-green-400">-</h3><p class="text-[10px] font-bold uppercase mt-1">Iuran Menunggu</p></div>
+                        <div class="bg-white/10 p-4 rounded-2xl border border-white/20"><h3 id="count-surat-laporan" class="text-3xl font-black text-amber-400">-</h3><p class="text-[10px] font-bold uppercase mt-1">Surat & Laporan</p></div>
                     </div>
                 </div>
                 <div class="bg-white rounded-2xl shadow-sm border p-5 mb-5">
@@ -562,6 +557,22 @@
 
         function hitungTotalIuran() { document.getElementById('input-nominal').value = document.querySelectorAll('#grid-bulan input[type="checkbox"]:checked').length * 20000; }
         
+        // --- LOGIKA UNTUK MENYEMBUNYIKAN/MENAMPILKAN UPLOAD BUKTI ---
+        function toggleUploadBukti() {
+            const metode = document.getElementById('input-metode').value;
+            const containerBukti = document.getElementById('container-bukti');
+            const inputBukti = document.getElementById('input-bukti');
+            
+            if (metode === 'Cash') {
+                containerBukti.classList.add('hidden');
+                inputBukti.removeAttribute('required');
+                inputBukti.value = ''; // Hapus file jika ada yang telanjur dipilih
+            } else {
+                containerBukti.classList.remove('hidden');
+                inputBukti.setAttribute('required', 'required');
+            }
+        }
+        
         async function tarikDataIuran() {
             let res = await fetchAPI("getIuran");
             tampilkanDataIuranUI(res.data);
@@ -611,42 +622,61 @@
             const cb = document.querySelectorAll('#grid-bulan input[type="checkbox"]:checked');
             if (cb.length === 0) { tampilkanModal('Perhatian', 'Pilih minimal 1 bulan.', 'gagal'); return false; }
             
+            const metode = document.getElementById('input-metode').value;
             const fileInput = document.getElementById('input-bukti');
-            if (!fileInput.files[0]) { tampilkanModal('Perhatian', 'Harap upload bukti transfer!', 'gagal'); return false; }
+            
+            // Validasi file hanya jika bukan Cash
+            if (metode !== 'Cash' && !fileInput.files[0]) { 
+                tampilkanModal('Perhatian', 'Harap upload bukti transfer!', 'gagal'); 
+                return false; 
+            }
 
             const btn = document.getElementById('btn-submit-iuran'); 
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> MENGIRIM...'; 
             btn.disabled = true;
 
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-            reader.onload = async function() {
-                const base64Data = reader.result.split(',')[1];
-                const data = { 
-                    bulan: Array.from(cb).map(c=>c.value.toUpperCase()).join(', '), 
-                    nominal: document.getElementById('input-nominal').value, 
-                    catatan: document.getElementById('input-metode').value, 
-                    warga: getUserUsername(),
-                    fileBase64: base64Data,
-                    fileName: file.name,
-                    mimeType: file.type
-                };
+            const dataPayload = { 
+                bulan: Array.from(cb).map(c=>c.value.toUpperCase()).join(', '), 
+                nominal: document.getElementById('input-nominal').value, 
+                catatan: metode, 
+                warga: getUserUsername(),
+                fileBase64: "",
+                fileName: "",
+                mimeType: ""
+            };
 
+            const kirimDataSelesai = async (data) => {
                 let res = await fetchAPI("simpanIuran", data);
                 if(res && (res.data === "Sukses" || res.success !== false)) {
-                    tampilkanModal('Berhasil', 'Bukti diupload & Terkirim', 'sukses'); 
+                    tampilkanModal('Berhasil', 'Konfirmasi Iuran Terkirim', 'sukses'); 
                     tarikDataIuran(); 
                     document.getElementById('form-iuran').reset(); 
                     cb.forEach(c => c.checked = false); 
                     document.getElementById('input-nominal').value = 0;
-                    document.getElementById('input-bukti').value = ''; // Kosongkan file gambar
+                    document.getElementById('input-bukti').value = ''; 
+                    toggleUploadBukti(); // Reset UI upload bukti
                 } else {
                     tampilkanModal('Gagal', 'Terjadi kesalahan saat upload', 'gagal');
                 }
                 btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Konfirmasi Bayar'; 
                 btn.disabled = false;
             };
-            reader.readAsDataURL(file);
+
+            if (metode === 'Cash') {
+                // Jika Cash, langsung kirim tanpa gambar
+                await kirimDataSelesai(dataPayload);
+            } else {
+                // Jika transfer/QRIS, proses gambar dulu
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = async function() {
+                    dataPayload.fileBase64 = reader.result.split(',')[1];
+                    dataPayload.fileName = file.name;
+                    dataPayload.mimeType = file.type;
+                    await kirimDataSelesai(dataPayload);
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
         // --- FETCHING DATA ADMIN ---
