@@ -409,6 +409,9 @@
 
     <!-- SCRIPT KONEKSI KE GOOGLE SCRIPT (VERCEL) -->
     <script>
+        // =========================================================================
+        // PENTING: GANTI LINK DI BAWAH INI DENGAN URL WEB APP GOOGLE SCRIPT BAPAK!
+        // =========================================================================
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_koZ4yBOXDvk8hAsRaVWi-lnCJyXYkD5GBozgW45Ie6fxGYJr0gv-qftwntSuTzADaA/exec";
 
         // Global Variable untuk menyimpan data warga agar fitur cari lebih cepat
@@ -522,10 +525,15 @@
             const btn = document.getElementById('btn-submit-pengumuman');
             btn.innerHTML = 'Menyimpan...'; btn.disabled = true;
 
-            await fetchAPI("simpanPengumuman", isi);
-            tampilkanModal('Disiarkan!', 'Pengumuman diubah.', 'sukses');
-            btn.innerHTML = 'Siarkan Sekarang'; btn.disabled = false; 
-            document.getElementById('form-admin-pengumuman').reset();
+            let res = await fetchAPI("simpanPengumuman", isi);
+            if(res && res.data === "Sukses") {
+                tampilkanModal('Disiarkan!', 'Pengumuman diubah.', 'sukses');
+                document.getElementById('form-admin-pengumuman').reset();
+            } else {
+                tampilkanModal('Gagal', res.data || res.message || 'Gagal menyiarkan', 'gagal');
+            }
+            btn.innerHTML = 'Siarkan Sekarang'; 
+            btn.disabled = false; 
         }
 
         // --- DASHBOARD ADMIN STATS ---
@@ -595,9 +603,17 @@
         async function kirimSuratKeSpreadsheet(e) {
             if (e) e.preventDefault();
             const btn = document.getElementById('btn-submit-surat'); btn.innerHTML = 'Mengajukan...'; btn.disabled = true;
-            await fetchAPI("simpanSurat", { jenis: document.getElementById('input-jenis-surat').value, keperluan: document.getElementById('input-keperluan-surat').value, pemohon: getUserUsername() });
-            tampilkanModal('Berhasil', 'Terkirim', 'sukses'); tarikDataSurat(); btn.innerHTML = 'Ajukan Surat'; btn.disabled = false;
-            document.getElementById('form-surat').reset();
+            let res = await fetchAPI("simpanSurat", { jenis: document.getElementById('input-jenis-surat').value, keperluan: document.getElementById('input-keperluan-surat').value, pemohon: getUserUsername() });
+            
+            if(res && res.data === "Sukses") {
+                tampilkanModal('Berhasil', 'Terkirim', 'sukses'); 
+                tarikDataSurat(); 
+                document.getElementById('form-surat').reset();
+            } else {
+                tampilkanModal('Gagal', res.data || res.message || 'Gagal mengirim ke database', 'gagal');
+            }
+            btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Ajukan Surat'; 
+            btn.disabled = false;
         }
 
         async function tarikDataLaporan() {
@@ -623,9 +639,17 @@
         async function kirimLaporanKeSpreadsheet(e) {
             if (e) e.preventDefault();
             const btn = document.getElementById('btn-submit-lapor'); btn.innerHTML = 'Mengirim...'; btn.disabled = true;
-            await fetchAPI("simpanLaporan", { judul: document.getElementById('input-judul').value, lokasi: document.getElementById('input-lokasi').value, deskripsi: document.getElementById('input-deskripsi').value, pelapor: getUserUsername() });
-            tampilkanModal('Berhasil', 'Terkirim', 'sukses'); tarikDataLaporan(); btn.innerHTML = 'Kirim Laporan'; btn.disabled = false;
-            document.getElementById('form-lapor').reset();
+            let res = await fetchAPI("simpanLaporan", { judul: document.getElementById('input-judul').value, lokasi: document.getElementById('input-lokasi').value, deskripsi: document.getElementById('input-deskripsi').value, pelapor: getUserUsername() });
+            
+            if(res && res.data === "Sukses") {
+                tampilkanModal('Berhasil', 'Terkirim', 'sukses'); 
+                tarikDataLaporan(); 
+                document.getElementById('form-lapor').reset();
+            } else {
+                tampilkanModal('Gagal', res.data || res.message || 'Gagal mengirim laporan', 'gagal');
+            }
+            btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Kirim Laporan'; 
+            btn.disabled = false;
         }
 
         function hitungTotalIuran() { 
@@ -721,7 +745,7 @@
 
             const kirimDataSelesai = async (data) => {
                 let res = await fetchAPI("simpanIuran", data);
-                if(res && (res.data === "Sukses" || res.success !== false)) {
+                if(res && res.data === "Sukses") {
                     tampilkanModal('Berhasil', 'Konfirmasi Iuran Terkirim', 'sukses'); 
                     tarikDataIuran(); 
                     document.getElementById('form-iuran').reset(); 
@@ -730,7 +754,7 @@
                     document.getElementById('input-bukti').value = ''; 
                     toggleUploadBukti(); 
                 } else {
-                    tampilkanModal('Gagal', 'Terjadi kesalahan saat upload', 'gagal');
+                    tampilkanModal('Gagal', res.data || res.message || 'Terjadi kesalahan saat upload', 'gagal');
                 }
                 btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Konfirmasi Bayar'; 
                 btn.disabled = false;
