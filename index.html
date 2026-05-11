@@ -221,9 +221,11 @@
 
             <!-- ======================= ADMIN ======================= -->
             <div id="section-admin-home" class="p-5 section-admin hidden">
-                <div class="mb-5 bg-gradient-to-r from-gray-800 to-indigo-900 p-6 rounded-3xl shadow-lg text-white">
+                <div class="mb-5 bg-gradient-to-r from-gray-800 to-indigo-900 p-6 rounded-3xl shadow-lg text-white relative overflow-hidden">
+                    <i class="fas fa-shield-alt absolute right-[-20px] bottom-[-20px] text-8xl opacity-10"></i>
                     <h2 class="text-2xl font-black mb-1 uppercase" id="sapaan-admin">HALO, ADMIN!</h2>
-                    <div class="grid grid-cols-2 gap-4 mt-4">
+                    <p class="text-xs text-indigo-200 font-medium mb-6">Pusat Kendali Pengurus RT</p>
+                    <div class="grid grid-cols-2 gap-4 mt-4 relative z-10">
                         <div class="bg-white/10 p-4 rounded-2xl border border-white/20"><h3 class="text-3xl font-black text-green-400">12</h3><p class="text-[10px] font-bold uppercase mt-1">Iuran Menunggu</p></div>
                         <div class="bg-white/10 p-4 rounded-2xl border border-white/20"><h3 class="text-3xl font-black text-amber-400">5</h3><p class="text-[10px] font-bold uppercase mt-1">Surat & Laporan</p></div>
                     </div>
@@ -231,19 +233,73 @@
                 <div class="bg-white rounded-2xl shadow-sm border p-5 mb-5">
                     <h3 class="font-black text-gray-800 uppercase text-sm mb-4 border-b pb-2">Akses Cepat Pengurus</h3>
                     <div class="grid grid-cols-2 gap-3">
-                        <button onclick="switchTab('admin-verifikasi')" class="bg-indigo-50 text-indigo-700 p-4 rounded-2xl font-bold flex flex-col items-center"><i class="fas fa-check-double text-2xl mb-2"></i><span class="text-[11px] uppercase">Verifikasi</span></button>
-                        <button onclick="switchTab('admin-pengumuman')" class="bg-amber-50 text-amber-700 p-4 rounded-2xl font-bold flex flex-col items-center"><i class="fas fa-bullhorn text-2xl mb-2"></i><span class="text-[11px] uppercase">Buat Siaran</span></button>
+                        <button onclick="switchTab('admin-verifikasi')" class="bg-indigo-50 text-indigo-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-indigo-100 transition"><i class="fas fa-check-double text-2xl mb-2"></i><span class="text-[11px] uppercase">Verifikasi</span></button>
+                        <button onclick="switchTab('admin-pengumuman')" class="bg-amber-50 text-amber-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-amber-100 transition"><i class="fas fa-bullhorn text-2xl mb-2"></i><span class="text-[11px] uppercase">Buat Siaran</span></button>
                     </div>
                 </div>
             </div>
 
+            <!-- HALAMAN VERIFIKASI (ADMIN) -->
             <div id="section-admin-verifikasi" class="p-5 section-admin hidden">
                 <h2 class="text-xl font-black text-gray-800 mb-4 uppercase">Pusat Verifikasi</h2>
-                <div class="mb-6"><h3 class="font-bold text-sm text-gray-700 uppercase mb-3">Verifikasi Iuran</h3>
-                    <div class="bg-white rounded-2xl p-4 shadow-sm border flex justify-between items-center"><p class="font-bold text-sm uppercase">BUDI SANTOSO</p><button onclick="tampilkanModal('Sukses', 'Disetujui', 'sukses')" class="bg-green-500 text-white px-3 py-1 rounded">Terima</button></div>
+                
+                <div class="mb-6">
+                    <h3 class="font-bold text-sm text-gray-700 uppercase mb-3">Verifikasi Iuran</h3>
+                    
+                    <!-- Simulasi Data 1 -->
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border mb-3">
+                        <div class="flex justify-between items-start mb-3 border-b border-gray-50 pb-3">
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-sm uppercase">ABDUR ROUF</h4>
+                                <p class="text-[10px] font-bold text-gray-400 mt-0.5">2blok16</p>
+                                <p class="text-xs font-black text-indigo-600 mt-1">Rp 40.000 (Jan, Feb)</p>
+                            </div>
+                            <!-- Tombol Bukti Transfer -->
+                            <button onclick="bukaModalBukti('Transfer BCA')" class="bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center shadow-sm hover:bg-blue-100 transition">
+                                <i class="fas fa-image mr-1"></i> Bukti
+                            </button>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="tampilkanModal('Sukses', 'Iuran disetujui', 'sukses')" class="flex-1 bg-green-500 text-white text-xs font-bold py-2 rounded-xl uppercase tracking-wide shadow-sm">Terima</button>
+                            <button onclick="tampilkanModal('Ditolak', 'Iuran ditolak', 'gagal')" class="flex-1 bg-gray-100 text-gray-600 text-xs font-bold py-2 rounded-xl uppercase tracking-wide">Tolak</button>
+                        </div>
+                    </div>
+
+                    <!-- Simulasi Data 2 -->
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border">
+                        <div class="flex justify-between items-start mb-3 border-b border-gray-50 pb-3">
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-sm uppercase">WARGA1</h4>
+                                <p class="text-[10px] font-bold text-gray-400 mt-0.5">1blok9</p>
+                                <p class="text-xs font-black text-indigo-600 mt-1">Rp 20.000 (Mar)</p>
+                            </div>
+                            <!-- Tombol Bukti Transfer -->
+                            <button onclick="bukaModalBukti('QRIS')" class="bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center shadow-sm hover:bg-blue-100 transition">
+                                <i class="fas fa-image mr-1"></i> Bukti
+                            </button>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="tampilkanModal('Sukses', 'Iuran disetujui', 'sukses')" class="flex-1 bg-green-500 text-white text-xs font-bold py-2 rounded-xl uppercase tracking-wide shadow-sm">Terima</button>
+                            <button onclick="tampilkanModal('Ditolak', 'Iuran ditolak', 'gagal')" class="flex-1 bg-gray-100 text-gray-600 text-xs font-bold py-2 rounded-xl uppercase tracking-wide">Tolak</button>
+                        </div>
+                    </div>
                 </div>
-                <div><h3 class="font-bold text-sm text-gray-700 uppercase mb-3">Verifikasi Surat</h3>
-                    <div class="bg-white rounded-2xl p-4 shadow-sm border"><p class="font-bold text-sm uppercase mb-2">AGUS (B5)</p><button onclick="tampilkanModal('Sukses', 'Disetujui', 'sukses')" class="w-full bg-blue-600 text-white text-xs font-bold py-2 rounded uppercase">TTD & Setujui</button></div>
+
+                <div>
+                    <h3 class="font-bold text-sm text-gray-700 uppercase mb-3">Verifikasi Surat</h3>
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border mb-3">
+                        <div class="flex justify-between items-center mb-3">
+                            <div>
+                                <p class="font-bold text-sm uppercase text-gray-800">WARGA2</p>
+                                <p class="text-[10px] text-gray-400 font-bold mt-0.5">3blok9</p>
+                            </div>
+                            <span class="bg-amber-100 text-amber-700 text-[9px] font-black px-2 py-1 rounded">MENUNGGU</span>
+                        </div>
+                        <p class="text-[11px] text-gray-600 font-medium mb-3 bg-gray-50 p-2 rounded-lg border border-gray-100">Surat Pengantar KTP / KK</p>
+                        <button onclick="tampilkanModal('Sukses', 'Surat disetujui dan dicetak', 'sukses')" class="w-full bg-blue-600 text-white text-xs font-bold py-2.5 rounded-xl uppercase tracking-wide shadow-sm">
+                            <i class="fas fa-signature mr-1"></i> TTD & Setujui
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -264,33 +320,27 @@
 
                 <div class="flex flex-col gap-3">
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-                        <div class="flex justify-between items-center mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center font-bold text-gray-400">BS</div>
-                                <div>
-                                    <h4 class="font-bold text-gray-800 text-sm uppercase">BUDI SANTOSO</h4>
-                                    <p class="text-[10px] font-bold text-gray-400">Blok A2</p>
-                                </div>
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-bold text-gray-800 text-sm uppercase">ABDUR ROUF</h4>
                             </div>
                             <span class="bg-red-100 text-red-600 text-[10px] font-black px-2 py-1 rounded">NUNGGAK 3 BLN</span>
                         </div>
-                        <button onclick="kirimWAPeringatan('BUDI SANTOSO', '6281234567890', 'Rp 60.000 (3 Bulan)')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl shadow-sm text-xs uppercase tracking-wide flex justify-center items-center transition">
+                        <p class="text-[10px] font-bold text-gray-400 mb-3">2blok16</p>
+                        <button onclick="kirimWAPeringatan('Abdur Rouf', '6282230280004', 'Rp 60.000 (3 Bulan)')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl shadow-sm text-xs uppercase tracking-wide flex justify-center items-center transition">
                             <i class="fab fa-whatsapp text-lg mr-2"></i> Chat WhatsApp
                         </button>
                     </div>
 
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-                        <div class="flex justify-between items-center mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center font-bold text-gray-400">AG</div>
-                                <div>
-                                    <h4 class="font-bold text-gray-800 text-sm uppercase">AGUS SETIAWAN</h4>
-                                    <p class="text-[10px] font-bold text-gray-400">Blok B5</p>
-                                </div>
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-bold text-gray-800 text-sm uppercase">WARGA1</h4>
                             </div>
                             <span class="bg-red-100 text-red-600 text-[10px] font-black px-2 py-1 rounded">NUNGGAK 1 BLN</span>
                         </div>
-                        <button onclick="kirimWAPeringatan('AGUS SETIAWAN', '6280987654321', 'Rp 20.000 (1 Bulan)')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl shadow-sm text-xs uppercase tracking-wide flex justify-center items-center transition">
+                        <p class="text-[10px] font-bold text-gray-400 mb-3">1blok9</p>
+                        <button onclick="kirimWAPeringatan('Warga 1', '6282230280004', 'Rp 20.000 (1 Bulan)')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl shadow-sm text-xs uppercase tracking-wide flex justify-center items-center transition">
                             <i class="fab fa-whatsapp text-lg mr-2"></i> Chat WhatsApp
                         </button>
                     </div>
@@ -318,6 +368,7 @@
     </div>
 
     <!-- MODALS -->
+    <!-- Modal Utama -->
     <div id="custom-modal" class="fixed inset-0 bg-black bg-opacity-75 z-[200] hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm text-center">
             <div id="modal-icon-container" class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-green-100 mb-4 border-4 border-white"><i id="modal-icon" class="fas fa-check text-green-600 text-4xl"></i></div>
@@ -327,7 +378,38 @@
         </div>
     </div>
 
-    <!-- SCRIPT (VERCEL API CONNECTION) -->
+    <!-- Modal Gambar QRIS -->
+    <div id="qris-modal" class="fixed inset-0 bg-black bg-opacity-80 z-[150] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-sm text-center animate-slide-down relative">
+            <button onclick="tutupModalQRIS()" class="absolute top-4 right-4 text-gray-400 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center"><i class="fas fa-times"></i></button>
+            <h3 class="text-xl font-black text-gray-800 mb-4 mt-2 uppercase">Scan QRIS</h3>
+            <div class="p-3 border-2 border-gray-100 rounded-2xl mb-4 bg-white flex flex-col justify-center items-center">
+                <!-- Jika qris.jpg tidak ada, akan error tapi tidak kelihatan rusak, akan diarahkan ke i.ibb -->
+                <img src="qris.jpg" class="w-full max-w-[250px] rounded-xl" onerror="this.onerror=null; this.src='https://i.ibb.co/Y58h5dR/QRISARUNIKA.jpg'; document.getElementById('qris-fallback').classList.remove('hidden');">
+                <a href="https://i.ibb.co/Y58h5dR/QRISARUNIKA.jpg" target="_blank" id="qris-fallback" class="hidden text-xs text-blue-500 underline font-bold mt-4">Klik Buka QRIS Alternatif</a>
+            </div>
+            <p class="text-sm font-black text-gray-800 uppercase tracking-widest">A/N ARUNIKA CREATIVE</p>
+        </div>
+    </div>
+
+    <!-- MODAL BUKTI TRANSFER UNTUK ADMIN -->
+    <div id="bukti-modal" class="fixed inset-0 bg-black bg-opacity-80 z-[150] hidden items-center justify-center p-4 transition-opacity backdrop-blur-md">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl transform transition-all text-center animate-slide-down relative">
+            <button onclick="tutupModalBukti()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="text-xl font-black text-gray-800 mb-1 mt-2 uppercase tracking-wide">Bukti Transfer</h3>
+            <p id="bukti-metode" class="text-[11px] text-gray-500 mb-4 font-bold">Metode Pembayaran</p>
+            
+            <div class="p-2 border-2 border-gray-100 rounded-2xl mb-4 bg-gray-50 flex flex-col justify-center items-center shadow-inner min-h-[300px]">
+                <!-- Gambar Dummy Receipt -->
+                <img src="https://placehold.co/300x500/e0e7ff/4f46e5.png?text=Bukti+Transfer%0ABerhasil" alt="Bukti Transfer" class="w-full rounded-xl object-contain max-h-[350px]">
+            </div>
+            <button onclick="tutupModalBukti()" class="w-full bg-gray-900 hover:bg-black text-white font-bold py-3 rounded-xl uppercase text-sm tracking-widest transition">Tutup</button>
+        </div>
+    </div>
+
+    <!-- SCRIPT KONEKSI KE GOOGLE SCRIPT (VERCEL) -->
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_koZ4yBOXDvk8hAsRaVWi-lnCJyXYkD5GBozgW45Ie6fxGYJr0gv-qftwntSuTzADaA/exec";
 
@@ -495,7 +577,6 @@
                 if(st.includes('lunas')||st.includes('selesai')) bClass = "bg-green-100 text-green-700";
                 if(st.includes('tolak')||st.includes('gagal')) bClass = "bg-red-100 text-red-700";
 
-                // Format Waktu ke Hari dan Tanggal
                 let dateStr = "Tanggal tidak tersedia";
                 if (item.waktu) {
                     const d = new Date(item.waktu);
@@ -516,7 +597,7 @@
                         <div class="flex-1 min-w-0">
                             <h4 class="font-bold text-gray-800 text-sm uppercase">${namaWarga}</h4>
                             <p class="text-[10px] font-bold text-indigo-500 uppercase mt-0.5">IURAN: ${item.bulan}</p>
-                            <p class="text-[10px] text-gray-400 mt-0.5"><i class="far fa-calendar-alt mr-1"></i>${dateStr}</p>
+                            <p class="text-[10px] text-gray-400 mt-0.5"><i class="far fa-calendar-alt mr-1"></i> ${dateStr}</p>
                             <p class="text-xs font-black text-gray-700 mt-1">Rp ${parseInt(item.nominal).toLocaleString('id-ID')}</p>
                         </div>
                         <span class="${bClass} text-[9px] font-black px-2 py-1 rounded tracking-wider ml-2">${item.status||'MENUNGGU'}</span>
@@ -549,25 +630,37 @@
             const btn = document.querySelector(`button[data-target="${tabId}"]`); if(btn) { btn.classList.remove('text-gray-400'); btn.classList.add('text-indigo-600'); }
             if(tabId === 'beranda') tarikDataPengumuman(); if(tabId === 'lapor') tarikDataLaporan(); if(tabId === 'iuran') tarikDataIuran(); if(tabId === 'surat') tarikDataSurat();
         }
+        
+        function salinTeks(teks) {
+            navigator.clipboard.writeText(teks).then(() => {
+                tampilkanModal('Tersalin!', 'Nomor rekening ' + teks + ' berhasil disalin.', 'sukses');
+            }).catch(err => {
+                tampilkanModal('Gagal!', 'Nomor rekening gagal disalin.', 'gagal');
+            });
+        }
+
+        // Modals Functions
         function tampilkanModal(judul, pesan, tipe) {
             document.getElementById('modal-title').innerText = judul; document.getElementById('modal-message').innerText = pesan;
-            document.getElementById('custom-modal').style.display = 'flex'; document.getElementById('custom-modal').classList.remove('hidden');
+            document.getElementById('custom-modal').classList.remove('hidden'); document.getElementById('custom-modal').style.display = 'flex';
         }
-        function tutupModal() { document.getElementById('custom-modal').style.display = 'none'; }
+        function tutupModal() { document.getElementById('custom-modal').classList.add('hidden'); document.getElementById('custom-modal').style.display = 'none'; }
+        
+        function bukaModalQRIS() { document.getElementById('qris-modal').classList.remove('hidden'); document.getElementById('qris-modal').style.display = 'flex'; }
+        function tutupModalQRIS() { document.getElementById('qris-modal').classList.add('hidden'); document.getElementById('qris-modal').style.display = 'none'; }
+
+        // BUKTI TRANSFER MODAL ADMIN
+        function bukaModalBukti(metode) {
+            document.getElementById('bukti-metode').innerText = 'Metode: ' + metode;
+            const modal = document.getElementById('bukti-modal');
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+        }
+        function tutupModalBukti() {
+            const modal = document.getElementById('bukti-modal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
     </script>
 </body>
 </html>
-```
-
-### ⚠️ PERINGATAN UNTUK `Code.gs` BAPAK:
-Agar Nama Penyetor Warga benar-benar bisa tampil dari database saat Bapak menekan *Refresh* Riwayat Pembayaran, pastikan Bapak mengganti kode `getIuranBSR()` di file **Code.gs** Bapak (Google Apps Script) menjadi persis seperti ini:
-
-```javascript
-function getIuranBSR() {
-  try {
-    const data = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Iuran').getDataRange().getValues();
-    data.shift(); data.reverse();
-    // HARUS MENYELIPKAN warga: row[4] AGAR NAMANYA MUNCUL!
-    return data.slice(0, 10).map(row => ({ waktu: row[0], bulan: row[1] || "-", nominal: row[2] || "0", warga: row[4] || "Warga", status: row[5] || "Menunggu" }));
-  } catch(e) { return []; }
-}
