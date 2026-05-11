@@ -240,8 +240,14 @@
                     <h2 class="text-2xl font-black mb-1 uppercase" id="sapaan-admin">HALO, ADMIN!</h2>
                     <p class="text-xs text-indigo-200 font-medium mb-6">Pusat Kendali Pengurus RT</p>
                     <div class="grid grid-cols-2 gap-4 mt-4 relative z-10">
-                        <div class="bg-white/10 p-4 rounded-2xl border border-white/20"><h3 class="text-3xl font-black text-green-400">12</h3><p class="text-[10px] font-bold uppercase mt-1">Iuran Menunggu</p></div>
-                        <div class="bg-white/10 p-4 rounded-2xl border border-white/20"><h3 class="text-3xl font-black text-amber-400">5</h3><p class="text-[10px] font-bold uppercase mt-1">Surat & Laporan</p></div>
+                        <div class="bg-white/10 p-4 rounded-2xl border border-white/20">
+                            <h3 id="count-iuran-menunggu" class="text-3xl font-black text-green-400">-</h3>
+                            <p class="text-[10px] font-bold uppercase mt-1">Iuran Menunggu</p>
+                        </div>
+                        <div class="bg-white/10 p-4 rounded-2xl border border-white/20">
+                            <h3 id="count-surat-laporan" class="text-3xl font-black text-amber-400">-</h3>
+                            <p class="text-[10px] font-bold uppercase mt-1">Surat & Laporan</p>
+                        </div>
                     </div>
                 </div>
                 <div class="bg-white rounded-2xl shadow-sm border p-5 mb-5">
@@ -475,6 +481,45 @@
             document.getElementById('form-admin-pengumuman').reset();
         }
 
+        // --- DASHBOARD ADMIN STATS ---
+        async function loadAdminDashboardStats() {
+            const elIuran = document.getElementById('count-iuran-menunggu');
+            const elSuratLapor = document.getElementById('count-surat-laporan');
+            
+            if(elIuran) elIuran.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i>';
+            if(elSuratLapor) elSuratLapor.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i>';
+
+            try {
+                // Panggil API secara paralel agar lebih cepat
+                const [resIuran, resSurat, resLaporan] = await Promise.all([
+                    fetchAPI("getIuran"),
+                    fetchAPI("getSurat"),
+                    fetchAPI("getLaporan")
+                ]);
+
+                let pendingIuran = 0;
+                let pendingSuratLaporan = 0;
+
+                if(resIuran && resIuran.data) {
+                    pendingIuran = resIuran.data.filter(item => item.status.toLowerCase().includes('menunggu')).length;
+                }
+                if(resSurat && resSurat.data) {
+                    pendingSuratLaporan += resSurat.data.filter(item => item.status.toLowerCase().includes('menunggu')).length;
+                }
+                if(resLaporan && resLaporan.data) {
+                    pendingSuratLaporan += resLaporan.data.filter(item => item.status.toLowerCase().includes('menunggu')).length;
+                }
+
+                if(elIuran) elIuran.innerText = pendingIuran;
+                if(elSuratLapor) elSuratLapor.innerText = pendingSuratLaporan;
+
+            } catch (error) {
+                console.error("Gagal memuat statistik", error);
+                if(elIuran) elIuran.innerText = "-";
+                if(elSuratLapor) elSuratLapor.innerText = "-";
+            }
+        }
+
         // --- FETCHING DATA ---
         async function tarikDataPengumuman() {
             let res = await fetchAPI("getPengumuman");
@@ -675,6 +720,8 @@
                     if(container.children.length === 0) {
                         container.innerHTML = `<p class="text-center text-xs text-gray-500 font-bold uppercase mt-4">Tidak ada iuran yang menunggu.</p>`;
                     }
+                    // Update juga angka di dasbor jika masih terbuka (optional)
+                    loadAdminDashboardStats();
                 }, 300);
 
             } else {
@@ -682,19 +729,6 @@
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
-        }
-
-        // WA Peringatan dengan Pembersihan Nomor HP otomatis
-        function kirimWAPeringatan(namaLengkap, noWa, tagihan) {
-            let waClean = noWa.replace(/[^0-9]/g, '');
-            // Jika diawali dengan angka 0, ubah ke 62
-            if (waClean.startsWith('0')) {
-                waClean = '62' + waClean.substring(1);
-            }
-            const teks = `Halo Bpk/Ibu *${namaLengkap}*,\n\nKami dari Pengurus RT BLOK 9 BSR ingin menginformasikan bahwa tagihan iuran kas Anda sebesar *${tagihan}* belum terbayar/terkonfirmasi.\n\nMohon untuk segera melakukan pembayaran. Terima kasih 🙏`;
-            
-            const url = `https://wa.me/${waClean}?text=${encodeURIComponent(teks)}`;
-            window.open(url, '_blank');
         }
 
         // --- UTILS ---
@@ -721,6 +755,7 @@
             if(tabId === 'iuran') tarikDataIuran(); 
             if(tabId === 'surat') tarikDataSurat();
             if(tabId === 'admin-verifikasi') tarikDataIuranAdmin(); 
+            if(tabId === 'admin-home') loadAdminDashboardStats(); // Panggil fungsi hitung dashboard
         }
         
         function salinTeks(teks) {
