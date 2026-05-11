@@ -36,8 +36,8 @@
                 Pesan Error
             </div>
 
-            <!-- FORM LOGIN (Ditambahkan event untuk mencegah reload otomatis) -->
-            <form id="form-login" onsubmit="prosesLogin(event)" class="text-left mt-2 relative z-10">
+            <!-- FORM LOGIN -->
+            <form id="form-login" onsubmit="return prosesLogin(event)" class="text-left mt-2 relative z-10">
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-gray-700 mb-1">USERNAME</label>
                     <input type="text" id="login-username" placeholder="Cth: warga1 / admin" class="w-full p-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-gray-50 text-sm font-bold tracking-wider" required>
@@ -120,11 +120,33 @@
                     <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100 mb-5 relative overflow-hidden">
                         <i class="fas fa-university absolute right-[-10px] bottom-[-10px] text-6xl text-blue-100 opacity-50"></i>
                         <p class="text-xs text-blue-800 font-bold mb-3 uppercase tracking-wide">Transfer Ke Rekening Berikut:</p>
-                        <div class="bg-white p-3 rounded-xl border border-blue-50 mb-2 flex justify-between items-center relative z-10">
-                            <div><p class="text-[10px] text-gray-500 font-bold uppercase mb-0.5">Bank BCA</p><p class="text-lg font-black text-blue-900 tracking-widest">3301144677</p><p class="text-[10px] text-gray-600 font-bold uppercase">A/N ABDUR ROUF</p></div>
-                            <button type="button" onclick="salinTeks('3301144677')" class="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex justify-center items-center"><i class="fas fa-copy"></i></button>
+                        
+                        <!-- BCA -->
+                        <div class="bg-white p-3 rounded-xl border border-blue-50 mb-2 shadow-sm relative z-10 flex justify-between items-center">
+                            <div>
+                                <p class="text-[10px] text-gray-500 font-bold uppercase mb-0.5">Bank BCA</p>
+                                <p class="text-lg font-black text-blue-900 tracking-widest">3301144677</p>
+                                <p class="text-[10px] text-gray-600 font-bold uppercase">A/N ABDUR ROUF</p>
+                            </div>
+                            <button type="button" onclick="salinTeks('3301144677')" class="w-10 h-10 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full flex justify-center items-center transition"><i class="fas fa-copy"></i></button>
                         </div>
-                        <button type="button" onclick="bukaModalQRIS()" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-xl flex justify-center items-center text-sm uppercase tracking-wide relative z-10"><i class="fas fa-qrcode mr-2 text-lg"></i> Bayar via QRIS</button>
+                        
+                        <!-- BRI -->
+                        <div class="bg-white p-3 rounded-xl border border-blue-50 mb-4 shadow-sm relative z-10 flex justify-between items-center">
+                            <div>
+                                <p class="text-[10px] text-gray-500 font-bold uppercase mb-0.5">Bank BRI</p>
+                                <p class="text-lg font-black text-blue-900 tracking-widest">628801016232530</p>
+                                <p class="text-[10px] text-gray-600 font-bold uppercase">A/N ABDUR ROUF</p>
+                            </div>
+                            <button type="button" onclick="salinTeks('628801016232530')" class="w-10 h-10 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full flex justify-center items-center transition"><i class="fas fa-copy"></i></button>
+                        </div>
+
+                        <!-- Gambar QR Code Tampil Langsung -->
+                        <div class="bg-white p-4 rounded-xl border border-blue-50 shadow-sm relative z-10 flex flex-col items-center">
+                            <p class="text-[11px] text-gray-500 font-bold uppercase mb-2"><i class="fas fa-qrcode mr-1"></i> Scan QRIS Pembayaran</p>
+                            <img src="https://i.ibb.co/Y58h5dR/QRISARUNIKA.jpg" alt="QR Code QRIS" class="w-full max-w-[200px] rounded-lg border border-gray-100 mb-2">
+                            <p class="text-[10px] text-gray-600 font-black uppercase tracking-widest">A/N ARUNIKA CREATIVE</p>
+                        </div>
                     </div>
 
                     <form onsubmit="kirimIuranKeSpreadsheet(event)">
@@ -150,6 +172,7 @@
                             <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Metode Pembayaran</label>
                             <select id="input-metode" class="w-full p-3.5 border rounded-xl bg-gray-50 text-sm font-bold" required>
                                 <option value="BCA">Transfer BCA</option>
+                                <option value="BRI">Transfer BRI</option>
                                 <option value="QRIS">QRIS</option>
                             </select>
                         </div>
@@ -234,6 +257,46 @@
                 </div>
             </div>
 
+            <!-- SECTION ADMIN: DAFTAR WARGA & WA -->
+            <div id="section-admin-warga" class="p-5 section-admin hidden">
+                <h2 class="text-xl font-black text-gray-800 mb-1 uppercase">Daftar Warga (Peringatan)</h2>
+                <p class="text-xs text-gray-500 mb-5">Hubungi warga yang menunggak iuran via WhatsApp.</p>
+
+                <div class="flex flex-col gap-3">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center font-bold text-gray-400">BS</div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 text-sm uppercase">BUDI SANTOSO</h4>
+                                    <p class="text-[10px] font-bold text-gray-400">Blok A2</p>
+                                </div>
+                            </div>
+                            <span class="bg-red-100 text-red-600 text-[10px] font-black px-2 py-1 rounded">NUNGGAK 3 BLN</span>
+                        </div>
+                        <button onclick="kirimWAPeringatan('BUDI SANTOSO', '6281234567890', 'Rp 60.000 (3 Bulan)')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl shadow-sm text-xs uppercase tracking-wide flex justify-center items-center transition">
+                            <i class="fab fa-whatsapp text-lg mr-2"></i> Chat WhatsApp
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center font-bold text-gray-400">AG</div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 text-sm uppercase">AGUS SETIAWAN</h4>
+                                    <p class="text-[10px] font-bold text-gray-400">Blok B5</p>
+                                </div>
+                            </div>
+                            <span class="bg-red-100 text-red-600 text-[10px] font-black px-2 py-1 rounded">NUNGGAK 1 BLN</span>
+                        </div>
+                        <button onclick="kirimWAPeringatan('AGUS SETIAWAN', '6280987654321', 'Rp 20.000 (1 Bulan)')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl shadow-sm text-xs uppercase tracking-wide flex justify-center items-center transition">
+                            <i class="fab fa-whatsapp text-lg mr-2"></i> Chat WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- BOTTOM NAVIGATIONS -->
@@ -249,6 +312,7 @@
             <button onclick="switchTab('admin-home')" class="nav-btn-admin flex-1 flex flex-col items-center text-indigo-400" data-target="admin-home"><i class="fas fa-chart-pie text-xl"></i><span class="text-[9px] font-bold uppercase text-gray-300">Dasbor</span></button>
             <button onclick="switchTab('admin-verifikasi')" class="nav-btn-admin flex-1 flex flex-col items-center text-gray-500" data-target="admin-verifikasi"><i class="fas fa-check-double text-xl"></i><span class="text-[9px] font-bold uppercase text-gray-300">Validasi</span></button>
             <button onclick="switchTab('admin-pengumuman')" class="nav-btn-admin flex-1 flex flex-col items-center text-gray-500" data-target="admin-pengumuman"><i class="fas fa-bullhorn text-xl"></i><span class="text-[9px] font-bold uppercase text-gray-300">Siaran</span></button>
+            <button onclick="switchTab('admin-warga')" class="nav-btn-admin flex-1 flex flex-col items-center text-gray-500" data-target="admin-warga"><i class="fas fa-users text-xl"></i><span class="text-[9px] font-bold uppercase text-gray-300">Warga</span></button>
             <button onclick="switchTab('profil')" class="nav-btn-admin flex-1 flex flex-col items-center text-gray-500" data-target="profil"><i class="fas fa-user-shield text-xl"></i><span class="text-[9px] font-bold uppercase text-gray-300">Akun</span></button>
         </div>
     </div>
@@ -263,24 +327,10 @@
         </div>
     </div>
 
-    <div id="qris-modal" class="fixed inset-0 bg-black bg-opacity-80 z-[150] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-sm text-center animate-slide-down relative">
-            <button onclick="tutupModalQRIS()" class="absolute top-4 right-4 text-gray-400 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center"><i class="fas fa-times"></i></button>
-            <h3 class="text-xl font-black text-gray-800 mb-4 mt-2 uppercase">Scan QRIS</h3>
-            <div class="p-3 border-2 border-gray-100 rounded-2xl mb-4 bg-white flex flex-col justify-center items-center">
-                <img src="qris.jpg" class="w-full max-w-[250px] rounded-xl" onerror="document.getElementById('qris-fallback').classList.remove('hidden');">
-                <a href="https://i.ibb.co/Y58h5dR/QRISARUNIKA.jpg" target="_blank" id="qris-fallback" class="hidden text-xs text-blue-500 underline font-bold mt-4">Klik Buka QRIS</a>
-            </div>
-            <p class="text-sm font-black text-gray-800 uppercase tracking-widest">A/N ARUNIKA CREATIVE</p>
-        </div>
-    </div>
-
     <!-- SCRIPT (VERCEL API CONNECTION) -->
     <script>
-        // SCRIPT URL MILIK BAPAK DARI GAMBAR SUDAH OTOMATIS TERPASANG DI BAWAH INI
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_koZ4yBOXDvk8hAsRaVWi-lnCJyXYkD5GBozgW45Ie6fxGYJr0gv-qftwntSuTzADaA/exec";
 
-        // Fungsi fetch pengganti google.script.run
         async function fetchAPI(action, payloadData = {}) {
             try {
                 let response = await fetch(SCRIPT_URL, {
@@ -335,7 +385,7 @@
         }
 
         async function prosesLogin(e) {
-            if (e) e.preventDefault(); // KUNCI ANTI-MACET
+            if (e) e.preventDefault();
             
             const userRaw = document.getElementById('login-username').value.trim();
             const pass = document.getElementById('login-password').value;
@@ -368,7 +418,7 @@
         }
 
         async function prosesGantiPassword(e) {
-            if (e) e.preventDefault(); // KUNCI ANTI-MACET
+            if (e) e.preventDefault();
             const sessionData = JSON.parse(localStorage.getItem('wargaSessionAktif'));
             const passLama = document.getElementById('input-pass-lama').value;
             const passBaru = document.getElementById('input-pass-baru').value;
@@ -382,7 +432,7 @@
         }
 
         async function kirimPengumumanAdmin(e) {
-            if (e) e.preventDefault(); // KUNCI ANTI-MACET
+            if (e) e.preventDefault();
             const isi = document.getElementById('input-admin-pengumuman').value;
             const btn = document.getElementById('btn-submit-pengumuman');
             btn.innerHTML = 'Menyimpan...'; btn.disabled = true;
@@ -408,7 +458,7 @@
             data.forEach(item => { list.innerHTML += `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 flex items-start animate-slide-down"><div class="flex-1 min-w-0"><h4 class="font-bold text-gray-800 text-sm uppercase">${item.jenis}</h4><p class="text-[10px] text-gray-400 mt-0.5 uppercase">${item.keperluan}</p></div><span class="text-[9px] font-black px-2 py-1 rounded ml-2 bg-amber-100 text-amber-700">${item.status||'MENUNGGU'}</span></div>`; });
         }
         async function kirimSuratKeSpreadsheet(e) {
-            if (e) e.preventDefault(); // KUNCI ANTI-MACET
+            if (e) e.preventDefault();
             const btn = document.getElementById('btn-submit-surat'); btn.innerHTML = 'Mengajukan...'; btn.disabled = true;
             await fetchAPI("simpanSurat", { jenis: document.getElementById('input-jenis-surat').value, keperluan: document.getElementById('input-keperluan-surat').value, pemohon: getUserFullName() });
             tampilkanModal('Berhasil', 'Terkirim', 'sukses'); tarikDataSurat(); btn.innerHTML = 'Ajukan Surat'; btn.disabled = false;
@@ -424,7 +474,7 @@
             data.forEach(item => { list.innerHTML += `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 flex items-start animate-slide-down"><div class="flex-1 min-w-0"><h4 class="font-bold text-gray-800 text-sm uppercase">${item.judul}</h4><p class="text-[10px] text-gray-400 uppercase">${item.lokasi}</p></div><span class="text-[9px] font-black px-2 py-1 rounded ml-2 bg-amber-100 text-amber-700">${item.status||'MENUNGGU'}</span></div>`; });
         }
         async function kirimLaporanKeSpreadsheet(e) {
-            if (e) e.preventDefault(); // KUNCI ANTI-MACET
+            if (e) e.preventDefault();
             const btn = document.getElementById('btn-submit-lapor'); btn.innerHTML = 'Mengirim...'; btn.disabled = true;
             await fetchAPI("simpanLaporan", { judul: document.getElementById('input-judul').value, lokasi: document.getElementById('input-lokasi').value, deskripsi: document.getElementById('input-deskripsi').value, pelapor: getUserFullName() });
             tampilkanModal('Berhasil', 'Terkirim', 'sukses'); tarikDataLaporan(); btn.innerHTML = 'Kirim Laporan'; btn.disabled = false;
@@ -439,10 +489,42 @@
         function tampilkanDataIuranUI(data) {
             const list = document.getElementById('iuran-list'); list.innerHTML = '';
             if(!data || data.length === 0) return list.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-xs font-bold uppercase shadow-sm">Belum ada riwayat.</div>`;
-            data.forEach(item => { list.innerHTML += `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 flex items-start animate-slide-down"><div class="flex-1 min-w-0"><h4 class="font-bold text-gray-800 text-sm uppercase">${item.bulan}</h4><p class="text-xs font-black text-gray-700 mt-1">Rp ${item.nominal}</p></div><span class="text-[9px] font-black px-2 py-1 rounded ml-2 bg-amber-100 text-amber-700">${item.status||'MENUNGGU'}</span></div>`; });
+            data.forEach(item => { 
+                let bClass = "bg-amber-100 text-amber-700"; 
+                let st = (item.status||"").toLowerCase();
+                if(st.includes('lunas')||st.includes('selesai')) bClass = "bg-green-100 text-green-700";
+                if(st.includes('tolak')||st.includes('gagal')) bClass = "bg-red-100 text-red-700";
+
+                // Format Waktu ke Hari dan Tanggal
+                let dateStr = "Tanggal tidak tersedia";
+                if (item.waktu) {
+                    const d = new Date(item.waktu);
+                    if(!isNaN(d.getTime())) {
+                        const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+                        dateStr = `${days[d.getDay()]}, ${d.getDate().toString().padStart(2, '0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
+                    } else {
+                        dateStr = item.waktu;
+                    }
+                }
+                
+                const namaWarga = item.warga ? item.warga.toUpperCase() : 'WARGA BLOK 9';
+
+                list.innerHTML += `
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 flex items-start animate-slide-down">
+                        <div class="w-10 h-10 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mr-3 shrink-0"><i class="fas fa-receipt"></i></div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-gray-800 text-sm uppercase">${namaWarga}</h4>
+                            <p class="text-[10px] font-bold text-indigo-500 uppercase mt-0.5">IURAN: ${item.bulan}</p>
+                            <p class="text-[10px] text-gray-400 mt-0.5"><i class="far fa-calendar-alt mr-1"></i>${dateStr}</p>
+                            <p class="text-xs font-black text-gray-700 mt-1">Rp ${parseInt(item.nominal).toLocaleString('id-ID')}</p>
+                        </div>
+                        <span class="${bClass} text-[9px] font-black px-2 py-1 rounded tracking-wider ml-2">${item.status||'MENUNGGU'}</span>
+                    </div>`; 
+            });
         }
         async function kirimIuranKeSpreadsheet(e) {
-            if (e) e.preventDefault(); // KUNCI ANTI-MACET
+            if (e) e.preventDefault();
             const cb = document.querySelectorAll('#grid-bulan input[type="checkbox"]:checked');
             if (cb.length === 0) return false;
             const btn = document.getElementById('btn-submit-iuran'); btn.innerHTML = 'Mengirim...'; btn.disabled = true;
@@ -475,3 +557,17 @@
     </script>
 </body>
 </html>
+```
+
+### ⚠️ PERINGATAN UNTUK `Code.gs` BAPAK:
+Agar Nama Penyetor Warga benar-benar bisa tampil dari database saat Bapak menekan *Refresh* Riwayat Pembayaran, pastikan Bapak mengganti kode `getIuranBSR()` di file **Code.gs** Bapak (Google Apps Script) menjadi persis seperti ini:
+
+```javascript
+function getIuranBSR() {
+  try {
+    const data = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Iuran').getDataRange().getValues();
+    data.shift(); data.reverse();
+    // HARUS MENYELIPKAN warga: row[4] AGAR NAMANYA MUNCUL!
+    return data.slice(0, 10).map(row => ({ waktu: row[0], bulan: row[1] || "-", nominal: row[2] || "0", warga: row[4] || "Warga", status: row[5] || "Menunggu" }));
+  } catch(e) { return []; }
+}
