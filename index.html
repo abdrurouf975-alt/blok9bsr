@@ -115,10 +115,10 @@
                         </form>
                     </div>
 
-                    <!-- TRANSPARANSI KAS WARGA (DIPERBARUI) -->
+                    <!-- TRANSPARANSI KAS WARGA -->
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 w-full mt-2">
                         <div class="flex justify-between items-center mb-5 border-b pb-4">
-                            <h3 class="font-bold text-gray-800 text-base md:text-lg uppercase tracking-wide"><i class="fas fa-coins text-emerald-500 mr-2"></i> Pembukuan Kas RT</h3>
+                            <h3 class="font-bold text-gray-800 text-base md:text-lg uppercase tracking-wide"><i class="fas fa-coins text-emerald-500 mr-2"></i> Pembukuan Kas Paguyuban</h3>
                             <button onclick="tarikDataKeuangan()" class="text-xs md:text-sm text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-full transition"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
                         </div>
                         
@@ -155,7 +155,7 @@
                         <div class="md:col-span-5 mb-8 md:mb-0">
                             <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
                                 <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-2 uppercase">Layanan Surat</h2>
-                                <p class="text-sm text-gray-500 mb-6">Ajukan Surat Pengantar Blok 9 Bumi Safir Raya Lamongan Secara Mandiri.</p>
+                                <p class="text-sm text-gray-500 mb-6">Ajukan Surat Pengantar Paguyuban Blok 9 Bumi Safir Raya Lamongan Secara Mandiri.</p>
                                 <form id="form-surat" onsubmit="kirimSuratKeSpreadsheet(event)">
                                     <div class="mb-5">
                                         <label class="block text-xs font-bold text-gray-700 mb-2">JENIS SURAT</label>
@@ -215,7 +215,7 @@
                         <div class="md:col-span-6 mb-8 md:mb-0">
                             <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
                                 <h2 class="text-xl md:text-3xl font-black text-gray-800 mb-2 uppercase">Iuran Warga</h2>
-                                <p class="text-sm md:text-base text-gray-500 mb-6">Konfirmasi pembayaran kas RT/RW.</p>
+                                <p class="text-sm md:text-base text-gray-500 mb-6">Konfirmasi pembayaran kas Paguyuban.</p>
                                 
                                 <div class="bg-blue-50 p-5 md:p-6 rounded-2xl border border-blue-100 mb-6 relative overflow-hidden">
                                     <i class="fas fa-university absolute right-[-20px] bottom-[-20px] text-8xl text-blue-100 opacity-50 pointer-events-none"></i>
@@ -386,7 +386,7 @@
                             <div class="bg-gradient-to-br from-gray-800 to-indigo-900 p-8 rounded-3xl shadow-xl text-white relative overflow-hidden h-full flex flex-col justify-center">
                                 <i class="fas fa-shield-alt absolute right-[-20px] bottom-[-20px] text-[150px] opacity-10"></i>
                                 <h2 class="text-3xl md:text-4xl font-black mb-2 uppercase relative z-10" id="sapaan-admin">HALO, ADMIN!</h2>
-                                <p class="text-sm text-indigo-200 font-medium mb-8 relative z-10 border-b border-white/10 pb-4">Pusat Kendali Pengurus RT</p>
+                                <p class="text-sm text-indigo-200 font-medium mb-8 relative z-10 border-b border-white/10 pb-4">Pusat Kendali Pengurus Paguyuban</p>
                                 <div class="grid grid-cols-2 gap-4 relative z-10 mt-auto">
                                     <div class="bg-white/10 p-5 rounded-2xl border border-white/20 backdrop-blur-md">
                                         <h3 id="count-iuran-menunggu" class="text-4xl font-black text-green-400 mb-1">-</h3>
@@ -470,7 +470,7 @@
                 <div class="max-w-6xl mx-auto w-full">
                     <div class="flex justify-between items-center mb-6 border-b pb-4">
                         <div>
-                            <h2 class="text-2xl md:text-3xl font-black text-gray-800 uppercase tracking-wide">Buku Kas RT</h2>
+                            <h2 class="text-2xl md:text-3xl font-black text-gray-800 uppercase tracking-wide">Buku Kas Paguyuban</h2>
                             <p class="text-sm text-gray-500 mt-1">Kelola pemasukan dan pengeluaran warga.</p>
                         </div>
                         <button onclick="tarikDataKeuangan()" class="text-sm text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-5 py-2.5 rounded-full shadow-sm transition inline-flex items-center gap-2"><i class="fas fa-sync-alt"></i> Refresh</button>
@@ -631,8 +631,8 @@
         <div id="nav-admin" class="bottom-nav-container fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-800 flex justify-around md:justify-center md:gap-24 py-2 pb-4 md:py-4 z-40 hidden shadow-[0_-5px_20px_rgba(0,0,0,0.3)]">
             <button onclick="switchTab('admin-home')" class="nav-btn-admin flex flex-col items-center text-indigo-400 transition hover:text-indigo-300" data-target="admin-home"><i class="fas fa-chart-pie text-2xl md:text-3xl mb-1"></i><span class="text-[10px] md:text-xs font-bold uppercase text-gray-300">Dasbor</span></button>
             <button onclick="switchTab('admin-verifikasi')" class="nav-btn-admin flex flex-col items-center text-gray-500 transition hover:text-indigo-400" data-target="admin-verifikasi"><i class="fas fa-check-double text-2xl md:text-3xl mb-1"></i><span class="text-[10px] md:text-xs font-bold uppercase text-gray-300">Validasi</span></button>
+            <button onclick="switchTab('admin-pengumuman')" class="nav-btn-admin flex flex-col items-center text-gray-500 transition hover:text-indigo-400" data-target="admin-pengumuman"><i class="fas fa-bullhorn text-2xl md:text-3xl mb-1"></i><span class="text-[10px] md:text-xs font-bold uppercase text-gray-300">Siaran</span></button>
             <button onclick="switchTab('admin-warga')" class="nav-btn-admin flex flex-col items-center text-gray-500 transition hover:text-indigo-400" data-target="admin-warga"><i class="fas fa-users text-2xl md:text-3xl mb-1"></i><span class="text-[10px] md:text-xs font-bold uppercase text-gray-300">Warga</span></button>
-            <button onclick="switchTab('admin-saldo')" class="nav-btn-admin flex flex-col items-center text-gray-500 transition hover:text-indigo-400" data-target="admin-saldo"><i class="fas fa-book-open text-2xl md:text-3xl mb-1"></i><span class="text-[10px] md:text-xs font-bold uppercase text-gray-300">Buku Kas</span></button>
             <button onclick="switchTab('profil')" class="nav-btn-admin flex flex-col items-center text-gray-500 transition hover:text-indigo-400" data-target="profil"><i class="fas fa-user-shield text-2xl md:text-3xl mb-1"></i><span class="text-[10px] md:text-xs font-bold uppercase text-gray-300">Akun</span></button>
         </div>
     </div>
@@ -712,7 +712,7 @@
         // =========================================================================
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_koZ4yBOXDvk8hAsRaVWi-lnCJyXYkD5GBozgW45Ie6fxGYJr0gv-qftwntSuTzADaA/exec";
 
-        // Global Variable untuk menyimpan data
+        // Global Variable untuk menyimpan data warga agar fitur cari lebih cepat
         let globalWargaData = [];
         let globalKeuanganData = { riwayat: [], totalMasuk: 0, totalKeluar: 0, saldoAkhir: 0 };
 
@@ -1128,16 +1128,12 @@
             if(containerWarga) containerWarga.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 shimmer h-16 col-span-full"></div>`;
             if(containerAdmin) containerAdmin.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 shimmer h-16 w-full"></div>`;
             
-            // Panggil endpoint getKeuangan (Jika Backend belum siap, kita akan simulasi dengan getRekapIuran)
-            // Karena pengguna mungkin belum mengupdate backend dengan fungsi getKeuangan penuh, kita tangani dengan anggun
             let res;
             try {
-                res = await fetchAPI("getKeuangan"); // Asumsi backend sudah diupdate
+                res = await fetchAPI("getKeuangan"); 
                 if (!res || !res.data) {
-                    // Fallback ke getRekapIuran lama jika endpoint baru belum dibuat
                     res = await fetchAPI("getRekapIuran");
                     if(res && res.data) {
-                        // Ubah format data lama agar cocok dengan struktur baru
                         let riwayat = res.data.map(item => ({
                             jenis: 'masuk',
                             nominal: item.nominal,
@@ -1209,18 +1205,22 @@
                 let colorClass = isMasuk ? 'emerald' : 'red';
                 let iconClass = isMasuk ? 'fa-arrow-down' : 'fa-arrow-up';
                 let sign = isMasuk ? '+' : '-';
+                let badgeText = isMasuk ? 'PEMASUKAN' : 'PENGELUARAN';
+                
+                let keteranganText = item.keterangan || 'Transaksi';
+                if (keteranganText === 'Pengeluaran RT') keteranganText = 'Pengeluaran Paguyuban';
 
                 let htmlItem = `
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center animate-slide-down">
-                        <div class="flex items-center gap-4">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center animate-slide-down mb-2">
+                        <div class="flex items-center gap-3 w-full">
                             <div class="w-10 h-10 bg-${colorClass}-50 text-${colorClass}-500 rounded-full flex items-center justify-center shrink-0 text-sm"><i class="fas ${iconClass}"></i></div>
-                            <div>
-                                <h4 class="font-bold text-gray-800 text-xs md:text-sm uppercase">${item.keterangan}</h4>
-                                <p class="text-[9px] md:text-[10px] text-gray-400 mt-0.5">${dateStr}</p>
+                            <div class="flex-1 min-w-0 pr-2">
+                                <h4 class="font-bold text-gray-800 text-xs md:text-sm uppercase whitespace-normal leading-snug break-words">${keteranganText}</h4>
+                                <p class="text-[9px] md:text-[10px] text-gray-400 mt-1"><span class="font-bold text-${colorClass}-500 mr-1">${badgeText}</span> • ${dateStr}</p>
                             </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xs md:text-sm font-black text-${colorClass}-600">${sign} ${formatRupiah(parseInt(item.nominal))}</p>
+                            <div class="text-right shrink-0">
+                                <p class="text-xs md:text-sm font-black text-${colorClass}-600">${sign} ${formatRupiah(parseInt(item.nominal))}</p>
+                            </div>
                         </div>
                     </div>`;
 
@@ -1461,7 +1461,7 @@
             }
             pending.forEach(item => {
                 let buktiBtn = (item.bukti && item.bukti !== "-" && item.bukti !== "") 
-                    ? `<button onclick="bukaModalBukti('${item.bukti}')" class="bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-bold px-4 py-2 rounded-lg flex items-center shadow-sm hover:bg-blue-100 transition"><i class="fas fa-image mr-1"></i> Lihat Bukti</button>` 
+                    ? `<button onclick="bukaModalBukti('${item.bukti}')" class="bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center shadow-sm hover:bg-blue-100 transition"><i class="fas fa-image mr-1"></i> Lihat Bukti</button>` 
                     : `<span class="text-[10px] text-gray-400 font-bold">Tanpa Bukti</span>`;
                 
                 // Menyiapkan Nama + No Rumah
@@ -1970,7 +1970,7 @@
         function tagihSemuaWarga() {
             tutupModalTagihanMasal();
 
-            let teks = `PENGUMUMAN IURAN KAS BLOK 9 BSR\n\nYth. Bapak/Ibu Warga Blok 9 BSR,\n\nBerdasarkan catatan kas Blok 9 BSR, masih terdapat beberapa warga yang belum melakukan pembayaran iuran kas dan telah melewati batas waktu yang ditentukan.\n\nUntuk itu, kami mohon kerja samanya agar Bapak/Ibu segera melakukan pembayaran iuran kas tersebut. Pembayaran dapat dilakukan melalui transfer atau secara tunai/cash kepada petugas yang berwenang.\n\nTerima kasih atas perhatian dan kerja sama Bapak/Ibu dalam mendukung kelancaran kegiatan serta kebersamaan lingkungan Blok 9 BSR.`;
+            let teks = `PENGUMUMAN IURAN KAS BLOK 9 BSR\n\nYth. Bapak/Ibu Warga Blok 9 BSR,\n\nBerdasarkan catatan kas Paguyuban Blok 9 BSR, masih terdapat beberapa warga yang belum melakukan pembayaran iuran kas dan telah melewati batas waktu yang ditentukan.\n\nUntuk itu, kami mohon kerja samanya agar Bapak/Ibu segera melakukan pembayaran iuran kas tersebut. Pembayaran dapat dilakukan melalui transfer atau secara tunai/cash kepada pengurus yang berwenang.\n\nTerima kasih atas perhatian dan kerja sama Bapak/Ibu dalam mendukung kelancaran kegiatan serta kebersamaan lingkungan Blok 9 BSR.`;
             
             // Mengambil dan membersihkan nomor WA untuk disalin (HANYA YANG NUNGGAK)
             let daftarNomor = [];
@@ -2087,7 +2087,7 @@
                 waClean = '62' + waClean.substring(1);
             }
             
-            const teks = `Halo Bpk/Ibu *${nama}*,\n\nKami dari Pengurus BLOK 9 BSR ingin menginformasikan bahwa tagihan iuran kas Anda untuk bulan *${bulan}* dengan total *${nominal}* belum terbayar/terkonfirmasi.\n\nMohon untuk segera melakukan konfirmasi pembayaran di Aplikasi. Terima kasih 🙏`;
+            const teks = `Halo Bpk/Ibu *${nama}*,\n\nKami dari Pengurus Paguyuban BLOK 9 BSR ingin menginformasikan bahwa tagihan iuran kas Anda untuk bulan *${bulan}* dengan total *${nominal}* belum terbayar/terkonfirmasi.\n\nMohon untuk segera melakukan konfirmasi pembayaran di Aplikasi. Terima kasih 🙏`;
             
             const url = `https://wa.me/${waClean}?text=${encodeURIComponent(teks)}`;
             window.open(url, '_blank');
