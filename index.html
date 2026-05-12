@@ -1878,17 +1878,13 @@
 
             if(daftarNomor.length > 0) {
                 navigator.clipboard.writeText(daftarNomor.join(', ')).then(() => {
-                    let pesanModal = `${daftarNomor.length} nomor WA warga yang menunggak telah disalin ke clipboard. Silakan Paste di aplikasi WA Blast/Broadcast Anda. Membuka WhatsApp...`;
-                    if (wargaTanpaWa > 0) {
-                        pesanModal += `\n\n*(Catatan: Ada ${wargaTanpaWa} warga nunggak yang dilewati karena nomor WA-nya kosong di database Excel)*`;
-                    }
-                    tampilkanModal('Daftar Nomor Tersalin!', pesanModal, 'sukses');
+                    // Berhasil disalin, langsung buka WA setelah sedikit jeda
                 }).catch(err => console.error('Gagal salin nomor', err));
                 
                 setTimeout(() => {
                     const url = `https://wa.me/?text=${encodeURIComponent(teks)}`;
                     window.open(url, '_blank');
-                }, 4000);
+                }, 500);
             } else {
                 tampilkanModal('Informasi', 'Saat ini tidak ada warga menunggak yang memiliki nomor WA di database.', 'sukses');
             }
