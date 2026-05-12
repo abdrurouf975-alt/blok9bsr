@@ -224,21 +224,44 @@
                                 </div>
 
                                 <form id="form-iuran" onsubmit="kirimIuranKeSpreadsheet(event)">
+                                    <!-- PILIH NOMINAL PEMBAYARAN PER BULAN -->
+                                    <div class="mb-5">
+                                        <label class="block text-xs md:text-sm font-bold text-gray-700 mb-3 uppercase">Pilih Nominal Iuran Per Bulan</label>
+                                        <div class="grid grid-cols-3 gap-2 md:gap-3 mb-3">
+                                            <label class="cursor-pointer">
+                                                <input type="radio" name="nominal_opsi" value="10000" class="peer hidden" onchange="gantiNominal()">
+                                                <div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm hover:shadow-md">Rp 10.000</div>
+                                            </label>
+                                            <label class="cursor-pointer">
+                                                <!-- DEFAULT 20.000 terpilih -->
+                                                <input type="radio" name="nominal_opsi" value="20000" class="peer hidden" onchange="gantiNominal()" checked>
+                                                <div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm hover:shadow-md">Rp 20.000</div>
+                                            </label>
+                                            <label class="cursor-pointer">
+                                                <input type="radio" name="nominal_opsi" value="manual" class="peer hidden" onchange="gantiNominal()">
+                                                <div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm hover:shadow-md">Lainnya</div>
+                                            </label>
+                                        </div>
+                                        <div id="container-nominal-manual" class="hidden animate-slide-down">
+                                            <input type="number" id="input-nominal-manual" placeholder="Ketik nominal per bulan... (Cth: 15000)" class="w-full p-4 border border-gray-200 rounded-xl bg-white text-sm md:text-base focus:ring-2 focus:ring-indigo-200 outline-none transition shadow-sm" oninput="hitungTotalIuran()">
+                                        </div>
+                                    </div>
+
                                     <div class="mb-5">
                                         <label class="block text-xs md:text-sm font-bold text-gray-700 mb-3 uppercase">Pilih Bulan Pembayaran</label>
                                         <div class="grid grid-cols-4 md:grid-cols-4 gap-2 md:gap-3" id="grid-bulan">
-                                            <label class="cursor-pointer"><input type="checkbox" value="Januari" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition">JAN</div></label>
-                                            <label class="cursor-pointer"><input type="checkbox" value="Februari" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition">FEB</div></label>
-                                            <label class="cursor-pointer"><input type="checkbox" value="Maret" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition">MAR</div></label>
-                                            <label class="cursor-pointer"><input type="checkbox" value="April" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition">APR</div></label>
-                                            <label class="cursor-pointer"><input type="checkbox" value="Mei" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition">MEI</div></label>
-                                            <label class="cursor-pointer"><input type="checkbox" value="Juni" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition">JUN</div></label>
-                                            <label class="cursor-pointer"><input type="checkbox" value="Juli" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition">JUL</div></label>
-                                            <label class="cursor-pointer"><input type="checkbox" value="Agustus" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition">AGS</div></label>
-                                            <label class="cursor-pointer"><input type="checkbox" value="September" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition">SEP</div></label>
-                                            <label class="cursor-pointer"><input type="checkbox" value="Oktober" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition">OKT</div></label>
-                                            <label class="cursor-pointer"><input type="checkbox" value="November" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition">NOV</div></label>
-                                            <label class="cursor-pointer"><input type="checkbox" value="Desember" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition">DES</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="Januari" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">JAN</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="Februari" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">FEB</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="Maret" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">MAR</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="April" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">APR</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="Mei" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">MEI</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="Juni" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">JUN</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="Juli" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">JUL</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="Agustus" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">AGS</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="September" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition hover:shadow-md">SEP</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="Oktober" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">OKT</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="November" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">NOV</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="Desember" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">DES</div></label>
                                         </div>
                                     </div>
                                     <div class="mb-5">
@@ -874,8 +897,32 @@
             btn.disabled = false;
         }
 
+        // FUNGSI UNTUK MENGGANTI NOMINAL IURAN (BARU)
+        function gantiNominal() {
+            const opsi = document.querySelector('input[name="nominal_opsi"]:checked').value;
+            const containerManual = document.getElementById('container-nominal-manual');
+            
+            if (opsi === 'manual') {
+                containerManual.classList.remove('hidden');
+            } else {
+                containerManual.classList.add('hidden');
+            }
+            
+            hitungTotalIuran();
+        }
+
         function hitungTotalIuran() { 
-            document.getElementById('input-nominal').value = document.querySelectorAll('#grid-bulan input[type="checkbox"]:checked').length * 20000; 
+            const cbCount = document.querySelectorAll('#grid-bulan input[type="checkbox"]:checked').length;
+            const opsi = document.querySelector('input[name="nominal_opsi"]:checked').value;
+            let nominalPerBulan = 0;
+
+            if (opsi === 'manual') {
+                nominalPerBulan = parseInt(document.getElementById('input-nominal-manual').value) || 0;
+            } else {
+                nominalPerBulan = parseInt(opsi) || 0;
+            }
+
+            document.getElementById('input-nominal').value = cbCount * nominalPerBulan; 
         }
         
         function toggleUploadBukti() {
@@ -1028,7 +1075,12 @@
             
             const metode = document.getElementById('input-metode').value;
             const fileInput = document.getElementById('input-bukti');
+            const nominalAkhir = document.getElementById('input-nominal').value; // Menggunakan nominal yang sudah dikalkulasi
             
+            if (nominalAkhir === "0" || nominalAkhir === "") {
+                tampilkanModal('Perhatian', 'Nominal iuran tidak boleh Rp 0.', 'gagal'); return false;
+            }
+
             if (metode !== 'Cash' && !fileInput.files[0]) { 
                 tampilkanModal('Perhatian', 'Harap upload bukti transfer!', 'gagal'); 
                 return false; 
@@ -1040,7 +1092,7 @@
 
             const dataPayload = { 
                 bulan: Array.from(cb).map(c=>c.value.toUpperCase()).join(', '), 
-                nominal: document.getElementById('input-nominal').value, 
+                nominal: nominalAkhir, 
                 catatan: metode, 
                 warga: getUserUsername(),
                 fileBase64: "",
@@ -1055,6 +1107,12 @@
                     tarikDataIuran(); 
                     tarikDataRekapIuran(); // Refresh data transparansi juga
                     document.getElementById('form-iuran').reset(); 
+                    
+                    // Reset pilihan dan perhitungan nominal kembali default
+                    document.querySelector('input[name="nominal_opsi"][value="20000"]').checked = true;
+                    document.getElementById('input-nominal-manual').value = '';
+                    gantiNominal();
+                    
                     cb.forEach(c => c.checked = false); 
                     document.getElementById('input-nominal').value = 0;
                     document.getElementById('input-bukti').value = ''; 
