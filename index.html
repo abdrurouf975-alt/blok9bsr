@@ -1715,15 +1715,31 @@
         }
 
         function cariWargaAdmin() {
-            const keyword = document.getElementById('input-cari-warga').value.toLowerCase();
+            const keyword = document.getElementById('input-cari-warga').value.toLowerCase().trim();
             const filterStatus = document.getElementById('filter-status-warga').value;
             
             if(!globalWargaData || globalWargaData.length === 0) return;
 
             const filteredData = globalWargaData.filter(item => {
-                const matchKeyword = (item.nama && item.nama.toLowerCase().includes(keyword)) || 
-                                     (item.no_rumah && item.no_rumah.toLowerCase().includes(keyword)) ||
-                                     (item.username && item.username.toLowerCase().includes(keyword));
+                let matchKeyword = false;
+                if (keyword === "") {
+                    matchKeyword = true;
+                } else {
+                    // Pencarian nama asli tetap bebas (boleh ketik sebagian)
+                    const matchNama = item.nama && item.nama.toLowerCase().includes(keyword);
+                    
+                    // Pencarian pintar Username & No Rumah: 
+                    // Jika ada ANGKA yang diketik, sistem akan mencari SAMA PERSIS.
+                    const mengandungAngka = /\d/.test(keyword);
+                    
+                    const exactUsername = item.username && item.username.toLowerCase() === keyword;
+                    const partialUsername = item.username && item.username.toLowerCase().includes(keyword) && !mengandungAngka;
+                    
+                    const exactNoRumah = item.no_rumah && item.no_rumah.toLowerCase() === keyword;
+                    const partialNoRumah = item.no_rumah && item.no_rumah.toLowerCase().includes(keyword) && !mengandungAngka;
+                    
+                    matchKeyword = matchNama || exactUsername || partialUsername || exactNoRumah || partialNoRumah;
+                }
                 
                 let matchStatus = true;
                 if(filterStatus === 'Nunggak') matchStatus = item.status_bulan_ini === 'Nunggak';
