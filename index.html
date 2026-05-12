@@ -474,6 +474,12 @@
                         <button onclick="tarikDataWargaAdmin()" class="text-sm text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-5 py-2.5 rounded-full shadow-sm transition inline-flex items-center gap-2 self-start md:self-auto"><i class="fas fa-sync-alt"></i> Refresh Data</button>
                     </div>
                     
+                    <!-- Peringatan untuk Admin -->
+                    <div class="bg-blue-50 text-blue-800 text-xs md:text-sm p-4 rounded-xl mb-6 border border-blue-100 flex items-start gap-3">
+                        <i class="fas fa-info-circle mt-0.5 text-lg"></i>
+                        <p class="leading-relaxed"><strong>Penting:</strong> Daftar di bawah ini dan fitur "Broadcast WA" hanya akan membaca warga yang nama dan nomor HP-nya <strong>sudah terdaftar di tab "AkunWarga" Excel</strong>. Jika tidak terdaftar, mereka akan dilewati.</p>
+                    </div>
+                    
                     <!-- SUMMARY STATS -->
                     <div class="grid grid-cols-2 gap-4 mb-6 max-w-4xl mx-auto">
                         <div class="bg-red-50 border border-red-100 p-4 md:p-5 rounded-2xl flex items-center justify-between shadow-sm">
@@ -665,8 +671,9 @@
 
             let paidMonths = [];
             iuranData.forEach(item => {
+                let w = extractUsername(item.warga);
                 // Jika username cocok dan statusnya lunas/selesai
-                if (extractUsername(item.warga) === username.toLowerCase() &&
+                if ((w === username.toLowerCase() || item.warga.toLowerCase().includes(username.toLowerCase())) &&
                     (item.status.toLowerCase().includes('lunas') || item.status.toLowerCase().includes('selesai'))) {
                     // Masukkan ke daftar bulan yang sudah dibayar
                     let mArr = item.bulan.split(',').map(m => m.trim().toLowerCase());
@@ -1830,6 +1837,8 @@
             
             // Mengambil dan membersihkan nomor WA untuk disalin (HANYA YANG NUNGGAK)
             let daftarNomor = [];
+            let wargaTanpaWa = 0;
+
             if(globalWargaData && globalWargaData.length > 0) {
                 // Filter hanya warga yang menunggak
                 const wargaNunggak = globalWargaData.filter(w => w.status_bulan_ini === 'Nunggak');
@@ -1843,21 +1852,27 @@
                         if(!daftarNomor.includes(waClean)) {
                             daftarNomor.push(waClean);
                         }
+                    } else {
+                        wargaTanpaWa++;
                     }
                 });
             }
 
             if(daftarNomor.length > 0) {
                 navigator.clipboard.writeText(daftarNomor.join(', ')).then(() => {
-                    tampilkanModal('Daftar Nomor Tersalin!', `${daftarNomor.length} nomor WA warga yang menunggak telah disalin ke clipboard. Silakan Paste di aplikasi WA Blast/Broadcast Anda. Membuka WhatsApp...`, 'sukses');
+                    let pesanModal = `${daftarNomor.length} nomor WA warga yang menunggak telah disalin ke clipboard. Silakan Paste di aplikasi WA Blast/Broadcast Anda. Membuka WhatsApp...`;
+                    if (wargaTanpaWa > 0) {
+                        pesanModal += `\n\n*(Catatan: Ada ${wargaTanpaWa} warga nunggak yang dilewati karena nomor WA-nya kosong di database Excel)*`;
+                    }
+                    tampilkanModal('Daftar Nomor Tersalin!', pesanModal, 'sukses');
                 }).catch(err => console.error('Gagal salin nomor', err));
                 
                 setTimeout(() => {
                     const url = `https://wa.me/?text=${encodeURIComponent(teks)}`;
                     window.open(url, '_blank');
-                }, 3000);
+                }, 4000);
             } else {
-                tampilkanModal('Informasi', 'Hebat! Saat ini tidak ada warga yang menunggak.', 'sukses');
+                tampilkanModal('Informasi', 'Saat ini tidak ada warga menunggak yang memiliki nomor WA di database.', 'sukses');
             }
         }
 
