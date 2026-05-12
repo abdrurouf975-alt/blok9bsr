@@ -233,7 +233,6 @@
                                                 <div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm hover:shadow-md">Rp 10.000</div>
                                             </label>
                                             <label class="cursor-pointer">
-                                                <!-- DEFAULT 20.000 terpilih -->
                                                 <input type="radio" name="nominal_opsi" value="20000" class="peer hidden" onchange="gantiNominal()" checked>
                                                 <div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm hover:shadow-md">Rp 20.000</div>
                                             </label>
@@ -569,6 +568,13 @@
         // Global Variable untuk menyimpan data warga agar fitur cari lebih cepat
         let globalWargaData = [];
 
+        // FUNGSI CERDAS: EKSTRAK USERNAME (NAMA ASLI -> Username)
+        function extractUsername(str) {
+            if (!str) return "";
+            let match = str.match(/\((.*?)\)$/);
+            return match ? match[1].trim().toLowerCase() : str.trim().toLowerCase();
+        }
+
         async function fetchAPI(action, payloadData = {}) {
             try {
                 let response = await fetch(SCRIPT_URL, {
@@ -781,7 +787,7 @@
             const list = document.getElementById('surat-list'); list.innerHTML = '';
             
             const username = getUserUsername().toLowerCase();
-            const myData = data.filter(d => (d.pemohon||'').toLowerCase() === username);
+            const myData = data.filter(d => extractUsername(d.pemohon) === username);
             
             if(!myData || myData.length === 0) return list.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-xs font-bold uppercase shadow-sm col-span-full">Belum ada riwayat.</div>`;
             myData.forEach(item => { 
@@ -843,7 +849,7 @@
             const list = document.getElementById('laporan-list'); list.innerHTML = '';
             
             const username = getUserUsername().toLowerCase();
-            const myData = data.filter(d => (d.pelapor||'').toLowerCase() === username);
+            const myData = data.filter(d => extractUsername(d.pelapor) === username);
             
             if(!myData || myData.length === 0) return list.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-xs font-bold uppercase shadow-sm col-span-full">Belum ada laporan.</div>`;
             myData.forEach(item => { 
@@ -897,7 +903,6 @@
             btn.disabled = false;
         }
 
-        // FUNGSI UNTUK MENGGANTI NOMINAL IURAN (BARU)
         function gantiNominal() {
             const opsi = document.querySelector('input[name="nominal_opsi"]:checked').value;
             const containerManual = document.getElementById('container-nominal-manual');
@@ -977,8 +982,8 @@
 
             // MENGURUTKAN DATA BERDASARKAN USERNAME (warga1, warga2, dst)
             data.sort((a, b) => {
-                let wargaA = a.warga ? a.warga.toLowerCase() : "";
-                let wargaB = b.warga ? b.warga.toLowerCase() : "";
+                let wargaA = extractUsername(a.warga);
+                let wargaB = extractUsername(b.warga);
                 return wargaA.localeCompare(wargaB, undefined, { numeric: true, sensitivity: 'base' });
             });
 
@@ -996,12 +1001,12 @@
                 }
 
                 // Gabungkan Nama Asli dan Username
-                let uname = item.warga ? item.warga.toLowerCase() : "";
+                let uname = extractUsername(item.warga);
                 let namaAsli = dictWarga[uname];
                 let displayTeks = item.warga;
                 
-                if(namaAsli && namaAsli.toLowerCase() !== uname) {
-                    displayTeks = `${namaAsli} - ${item.warga}`;
+                if(namaAsli && extractUsername(namaAsli) !== uname) {
+                    displayTeks = `${namaAsli} - ${uname.toUpperCase()}`;
                 }
 
                 container.innerHTML += `
@@ -1031,7 +1036,7 @@
             const list = document.getElementById('iuran-list'); list.innerHTML = '';
             
             const username = getUserUsername().toLowerCase();
-            const myData = data.filter(d => d.warga.toLowerCase() === username);
+            const myData = data.filter(d => extractUsername(d.warga) === username);
 
             if(!myData || myData.length === 0) return list.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-xs font-bold uppercase shadow-sm">Belum ada riwayat.</div>`;
             
@@ -1075,7 +1080,7 @@
             
             const metode = document.getElementById('input-metode').value;
             const fileInput = document.getElementById('input-bukti');
-            const nominalAkhir = document.getElementById('input-nominal').value; // Menggunakan nominal yang sudah dikalkulasi
+            const nominalAkhir = document.getElementById('input-nominal').value; 
             
             if (nominalAkhir === "0" || nominalAkhir === "") {
                 tampilkanModal('Perhatian', 'Nominal iuran tidak boleh Rp 0.', 'gagal'); return false;
@@ -1211,10 +1216,10 @@
                     : `<span class="text-[10px] text-gray-400 font-bold">Tanpa Bukti</span>`;
                 
                 // Menyiapkan Nama + No Rumah
-                let uname = item.warga ? item.warga.toLowerCase() : "";
+                let uname = extractUsername(item.warga);
                 let wData = dictWarga[uname];
                 let displayNama = item.warga ? item.warga.toUpperCase() : "WARGA";
-                if(wData && wData.nama.toLowerCase() !== uname) {
+                if(wData && extractUsername(wData.nama) !== uname) {
                     let noRumah = (wData.no_rumah && wData.no_rumah !== "-") ? wData.no_rumah : "";
                     displayNama = noRumah ? `${wData.nama} (${noRumah})` : wData.nama;
                 }
@@ -1296,10 +1301,10 @@
                 let safeWaktu = item.waktu.replace(/\W/g, ''); // Hapus spasi/karakter untuk id
 
                 // Menyiapkan Nama + No Rumah
-                let uname = item.pemohon ? item.pemohon.toLowerCase() : "";
+                let uname = extractUsername(item.pemohon);
                 let wData = dictWarga[uname];
                 let displayNama = item.pemohon ? item.pemohon.toUpperCase() : "WARGA";
-                if(wData && wData.nama.toLowerCase() !== uname) {
+                if(wData && extractUsername(wData.nama) !== uname) {
                     let noRumah = (wData.no_rumah && wData.no_rumah !== "-") ? wData.no_rumah : "";
                     displayNama = noRumah ? `${wData.nama} (${noRumah})` : wData.nama;
                 }
@@ -1431,10 +1436,10 @@
                 let safeWaktu = item.waktu.replace(/\W/g, ''); // Hapus spasi/karakter aneh untuk id
                 
                 // Menyiapkan Nama + No Rumah
-                let uname = item.pelapor ? item.pelapor.toLowerCase() : "";
+                let uname = extractUsername(item.pelapor);
                 let wData = dictWarga[uname];
                 let displayNama = item.pelapor ? item.pelapor.toUpperCase() : "WARGA";
-                if(wData && wData.nama.toLowerCase() !== uname) {
+                if(wData && extractUsername(wData.nama) !== uname) {
                     let noRumah = (wData.no_rumah && wData.no_rumah !== "-") ? wData.no_rumah : "";
                     displayNama = noRumah ? `${wData.nama} (${noRumah})` : wData.nama;
                 }
