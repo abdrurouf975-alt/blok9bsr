@@ -186,13 +186,13 @@
                     <div id="status-iuran-banner" class="mb-6 rounded-2xl p-5 shadow-sm border border-red-200 bg-red-50 relative overflow-hidden hidden animate-slide-down">
                         <i class="fas fa-exclamation-triangle absolute right-[-10px] bottom-[-10px] text-6xl text-red-100 opacity-50"></i>
                         <h3 class="text-red-800 font-black text-lg md:text-xl uppercase mb-1">Status: Nunggak</h3>
-                        <p class="text-xs md:text-sm text-red-600 font-bold">Peringatan: Anda belum melunasi iuran kas untuk bulan <span id="bulan-nunggak" class="uppercase text-red-700 font-black underline decoration-red-300"></span>.</p>
+                        <p class="text-xs md:text-sm text-red-600 font-bold leading-relaxed">Peringatan: Anda belum melunasi iuran kas untuk bulan <span id="bulan-nunggak" class="uppercase text-red-700 font-black underline decoration-red-300"></span>.</p>
                     </div>
                     
                     <div id="status-iuran-banner-lunas" class="mb-6 rounded-2xl p-5 shadow-sm border border-green-200 bg-green-50 relative overflow-hidden hidden animate-slide-down">
                         <i class="fas fa-check-circle absolute right-[-10px] bottom-[-10px] text-6xl text-green-100 opacity-50"></i>
                         <h3 class="text-green-800 font-black text-lg md:text-xl uppercase mb-1">Status: Lunas</h3>
-                        <p class="text-xs md:text-sm text-green-600 font-bold">Terima kasih, iuran kas Anda untuk bulan <span id="bulan-lunas" class="uppercase"></span> sudah terbayar.</p>
+                        <p class="text-xs md:text-sm text-green-600 font-bold leading-relaxed">Terima kasih, iuran kas Anda untuk bulan <span id="bulan-lunas" class="uppercase"></span> sudah terbayar.</p>
                     </div>
 
                     <div class="md:grid md:grid-cols-12 md:gap-10">
@@ -387,7 +387,9 @@
                         <div class="md:col-span-7 flex flex-col justify-center">
                             <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
                                 <h3 class="font-black text-gray-800 uppercase text-base md:text-lg mb-6 border-b border-gray-100 pb-3">Akses Cepat Pengurus</h3>
-                                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
+                                
+                                <!-- TOMBOL AKSES CEPAT (DIPERBARUI) -->
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
                                     <button onclick="switchTab('admin-verifikasi')" class="bg-indigo-50 text-indigo-700 p-5 md:p-6 rounded-2xl font-bold flex flex-col items-center hover:bg-indigo-100 transition transform hover:-translate-y-1 shadow-sm">
                                         <i class="fas fa-check-double text-3xl md:text-4xl mb-3"></i>
                                         <span class="text-xs md:text-sm uppercase tracking-wide text-center">Verifikasi</span>
@@ -396,11 +398,16 @@
                                         <i class="fas fa-bullhorn text-3xl md:text-4xl mb-3"></i>
                                         <span class="text-xs md:text-sm uppercase tracking-wide text-center">Buat Siaran</span>
                                     </button>
-                                    <button onclick="switchTab('admin-warga')" class="col-span-2 md:col-span-1 bg-emerald-50 text-emerald-700 p-5 md:p-6 rounded-2xl font-bold flex flex-col items-center hover:bg-emerald-100 transition transform hover:-translate-y-1 shadow-sm">
-                                        <i class="fab fa-whatsapp text-3xl md:text-4xl mb-3"></i>
+                                    <button onclick="switchTab('admin-warga')" class="bg-emerald-50 text-emerald-700 p-5 md:p-6 rounded-2xl font-bold flex flex-col items-center hover:bg-emerald-100 transition transform hover:-translate-y-1 shadow-sm">
+                                        <i class="fas fa-users text-3xl md:text-4xl mb-3"></i>
                                         <span class="text-xs md:text-sm uppercase tracking-wide text-center">Daftar Warga</span>
                                     </button>
+                                    <button onclick="bukaModalTagihanMasal()" class="bg-red-50 text-red-700 p-5 md:p-6 rounded-2xl font-bold flex flex-col items-center hover:bg-red-100 transition transform hover:-translate-y-1 shadow-sm">
+                                        <i class="fab fa-whatsapp text-3xl md:text-4xl mb-3"></i>
+                                        <span class="text-xs md:text-sm uppercase tracking-wide text-center">Tagih Iuran</span>
+                                    </button>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -467,12 +474,27 @@
                         <button onclick="tarikDataWargaAdmin()" class="text-sm text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-5 py-2.5 rounded-full shadow-sm transition inline-flex items-center gap-2 self-start md:self-auto"><i class="fas fa-sync-alt"></i> Refresh Data</button>
                     </div>
 
-                    <!-- KOLOM PENCARIAN -->
-                    <div class="mb-8 relative max-w-2xl mx-auto">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <i class="fas fa-search text-gray-400 text-lg"></i>
+                    <!-- KOLOM PENCARIAN & FILTER -->
+                    <div class="mb-8 flex flex-col md:flex-row gap-4 max-w-4xl mx-auto">
+                        <div class="relative flex-1">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400 text-lg"></i>
+                            </div>
+                            <input type="text" id="input-cari-warga" onkeyup="cariWargaAdmin()" placeholder="Cari nama warga, username, atau no rumah..." class="w-full pl-12 p-4 border-2 border-gray-200 rounded-2xl bg-white text-sm md:text-base focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 shadow-sm transition">
                         </div>
-                        <input type="text" id="input-cari-warga" onkeyup="cariWargaAdmin()" placeholder="Cari nama warga, username, atau nomor rumah..." class="w-full pl-12 p-4 border-2 border-gray-200 rounded-2xl bg-white text-base focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 shadow-sm transition">
+                        <div class="relative w-full md:w-64">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-filter text-gray-400 text-lg"></i>
+                            </div>
+                            <select id="filter-status-warga" onchange="cariWargaAdmin()" class="w-full pl-12 p-4 border-2 border-gray-200 rounded-2xl bg-white text-sm md:text-base focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 shadow-sm transition font-bold text-gray-700 cursor-pointer appearance-none">
+                                <option value="Semua">Semua Warga</option>
+                                <option value="Nunggak">Hanya Penunggak</option>
+                                <option value="Lunas">Sudah Lunas</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                <i class="fas fa-chevron-down text-gray-400 text-sm"></i>
+                            </div>
+                        </div>
                     </div>
 
                     <div id="admin-warga-list" class="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -568,6 +590,32 @@
             <button onclick="prosesKirimWA()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl uppercase text-base md:text-lg tracking-widest transition shadow-md flex justify-center items-center">
                 <i class="fab fa-whatsapp text-2xl mr-3"></i> Buka WhatsApp Web/App
             </button>
+        </div>
+    </div>
+
+    <!-- MODAL TAGIHAN MASAL ADMIN -->
+    <div id="tagihan-masal-modal" class="fixed inset-0 bg-black bg-opacity-80 z-[150] hidden items-center justify-center p-4 transition-opacity backdrop-blur-md">
+        <div class="bg-white rounded-3xl p-6 md:p-8 w-full max-w-sm md:max-w-lg shadow-2xl transform transition-all text-center animate-slide-down relative">
+            <button onclick="tutupModalTagihanMasal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-900 bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center transition text-xl">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="w-20 h-20 bg-red-100 text-red-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-sm">
+                <i class="fab fa-whatsapp"></i>
+            </div>
+            <h3 class="text-2xl font-black text-gray-800 mb-1 uppercase tracking-wide mt-2">Tagih Tunggakan</h3>
+            <p class="text-xs md:text-sm text-gray-500 mb-6 font-bold pb-4 border-b">Pilih metode pengingat iuran via WhatsApp</p>
+            
+            <div class="flex flex-col gap-3">
+                <button onclick="tagihSemuaWarga()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl text-sm md:text-base uppercase tracking-wide transition shadow-md flex justify-center items-center">
+                    <i class="fas fa-bullhorn mr-2 text-xl"></i> Broadcast ke Banyak WA
+                </button>
+                <p class="text-[10px] text-gray-400 mb-2 leading-tight">Membuka aplikasi WhatsApp Anda dengan pesan otomatis. Anda dapat memilih beberapa kontak sekaligus untuk meneruskan pesan.</p>
+
+                <button onclick="filterWargaNunggak()" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 rounded-xl text-sm md:text-base uppercase tracking-wide transition shadow-md flex justify-center items-center">
+                    <i class="fas fa-user-check mr-2 text-xl"></i> Chat Warga Satu Per Satu
+                </button>
+                <p class="text-[10px] text-gray-400 leading-tight">Menampilkan daftar warga yang belum bayar iuran, sehingga Anda dapat mengeklik tombol WA di masing-masing nama.</p>
+            </div>
         </div>
     </div>
 
@@ -1501,7 +1549,7 @@
                 }
 
                 container.innerHTML += `
-                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-4 flex flex-col gap-3 relative transition-all duration-300">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-4 flex flex-col gap-3 relative transition-all duration-300">
                         <div class="flex justify-between items-start">
                             <div>
                                 <h4 class="font-bold text-gray-800 text-sm md:text-base uppercase">${item.judul}</h4>
@@ -1601,7 +1649,7 @@
                     ? `<span class="bg-green-100 text-green-700 text-[10px] md:text-xs font-black px-3 py-1 rounded-lg tracking-widest border border-green-200 mt-2 inline-block"><i class="fas fa-check-circle mr-1"></i> LUNAS HINGGA SAAT INI</span>`
                     : `<span class="bg-red-100 text-red-600 text-[10px] md:text-xs font-black px-3 py-1 rounded-lg tracking-widest border border-red-200 mt-2 inline-block max-w-full truncate"><i class="fas fa-exclamation-circle mr-1"></i> NUNGGAK: ${displayBulanNunggak}</span>`;
                 
-                // Set default bulan nunggak (semuanya) jika mengirim WA
+                // Set default bulan nunggak jika mengirim WA
                 let defaultBulan = item.status_bulan_ini === 'Nunggak' ? item.nama_bulan_ini : '';
 
                 container.innerHTML += `
@@ -1624,14 +1672,21 @@
 
         function cariWargaAdmin() {
             const keyword = document.getElementById('input-cari-warga').value.toLowerCase();
+            const filterStatus = document.getElementById('filter-status-warga').value;
             
             if(!globalWargaData || globalWargaData.length === 0) return;
 
-            const filteredData = globalWargaData.filter(item => 
-                (item.nama && item.nama.toLowerCase().includes(keyword)) || 
-                (item.no_rumah && item.no_rumah.toLowerCase().includes(keyword)) ||
-                (item.username && item.username.toLowerCase().includes(keyword))
-            );
+            const filteredData = globalWargaData.filter(item => {
+                const matchKeyword = (item.nama && item.nama.toLowerCase().includes(keyword)) || 
+                                     (item.no_rumah && item.no_rumah.toLowerCase().includes(keyword)) ||
+                                     (item.username && item.username.toLowerCase().includes(keyword));
+                
+                let matchStatus = true;
+                if(filterStatus === 'Nunggak') matchStatus = item.status_bulan_ini === 'Nunggak';
+                if(filterStatus === 'Lunas') matchStatus = item.status_bulan_ini === 'Lunas';
+                
+                return matchKeyword && matchStatus;
+            });
 
             tampilkanDataWargaAdminUI(filteredData);
         }
@@ -1718,6 +1773,38 @@
             const modal = document.getElementById('bukti-modal');
             modal.classList.add('hidden');
             modal.style.display = 'none';
+        }
+
+        // FUNGSI SHORTCUT TAGIHAN MASAL ADMIN
+        function bukaModalTagihanMasal() {
+            const modal = document.getElementById('tagihan-masal-modal');
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+        }
+
+        function tutupModalTagihanMasal() {
+            const modal = document.getElementById('tagihan-masal-modal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
+
+        function tagihSemuaWarga() {
+            let teks = `PENGUMUMAN IURAN KAS BLOK 9 BSR\n\nYth. Bapak/Ibu Warga Blok 9 BSR,\n\nBerdasarkan catatan kas RT, terdapat tagihan iuran yang belum terkonfirmasi/belum lunas untuk bulan ini atau bulan sebelumnya.\n\nMohon kerjasamanya untuk segera melakukan pengecekan dan pembayaran melalui Aplikasi Portal Blok 9 BSR.\n\nTerima kasih atas partisipasi Anda dalam membangun lingkungan kita 🙏.`;
+            const url = `https://wa.me/?text=${encodeURIComponent(teks)}`;
+            window.open(url, '_blank');
+            tutupModalTagihanMasal();
+        }
+
+        function filterWargaNunggak() {
+            tutupModalTagihanMasal();
+            switchTab('admin-warga');
+            setTimeout(() => {
+                const selectFilter = document.getElementById('filter-status-warga');
+                if(selectFilter) {
+                    selectFilter.value = 'Nunggak';
+                    cariWargaAdmin();
+                }
+            }, 100);
         }
 
         function hitungTotalWa() {
