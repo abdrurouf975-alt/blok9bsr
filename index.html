@@ -466,12 +466,30 @@
             <!-- SECTION ADMIN: DAFTAR WARGA -->
             <div id="section-admin-warga" class="p-5 md:p-8 section-admin hidden">
                 <div class="max-w-6xl mx-auto w-full">
-                    <div class="flex flex-col md:flex-row md:justify-between md:items-end mb-6 md:mb-8 border-b pb-4">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-end mb-6 border-b pb-4">
                         <div class="mb-4 md:mb-0">
                             <h2 class="text-2xl md:text-3xl font-black text-gray-800 uppercase tracking-wide">Daftar Warga</h2>
                             <p class="text-sm text-gray-500 mt-1">Cari dan hubungi warga terkait tunggakan iuran.</p>
                         </div>
                         <button onclick="tarikDataWargaAdmin()" class="text-sm text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-5 py-2.5 rounded-full shadow-sm transition inline-flex items-center gap-2 self-start md:self-auto"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+                    </div>
+                    
+                    <!-- SUMMARY STATS -->
+                    <div class="grid grid-cols-2 gap-4 mb-6 max-w-4xl mx-auto">
+                        <div class="bg-red-50 border border-red-100 p-4 md:p-5 rounded-2xl flex items-center justify-between shadow-sm">
+                            <div>
+                                <p class="text-xs md:text-sm font-bold text-red-600 uppercase mb-1">Menunggak</p>
+                                <h3 class="text-2xl md:text-4xl font-black text-red-700" id="stat-nunggak">0</h3>
+                            </div>
+                            <div class="w-10 h-10 md:w-14 md:h-14 bg-red-200 text-red-600 rounded-full flex items-center justify-center text-lg md:text-2xl"><i class="fas fa-exclamation-circle"></i></div>
+                        </div>
+                        <div class="bg-green-50 border border-green-100 p-4 md:p-5 rounded-2xl flex items-center justify-between shadow-sm">
+                            <div>
+                                <p class="text-xs md:text-sm font-bold text-green-600 uppercase mb-1">Sudah Lunas</p>
+                                <h3 class="text-2xl md:text-4xl font-black text-green-700" id="stat-lunas">0</h3>
+                            </div>
+                            <div class="w-10 h-10 md:w-14 md:h-14 bg-green-200 text-green-600 rounded-full flex items-center justify-center text-lg md:text-2xl"><i class="fas fa-check-circle"></i></div>
+                        </div>
                     </div>
 
                     <!-- KOLOM PENCARIAN & FILTER -->
@@ -609,7 +627,7 @@
                 <button onclick="tagihSemuaWarga()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl text-sm md:text-base uppercase tracking-wide transition shadow-md flex justify-center items-center">
                     <i class="fas fa-bullhorn mr-2 text-xl"></i> Broadcast ke Banyak WA
                 </button>
-                <p class="text-[10px] text-gray-400 mb-2 leading-tight">Membuka aplikasi WhatsApp Anda dengan pesan otomatis. Nomor WA akan tersalin otomatis ke clipboard.</p>
+                <p class="text-[10px] text-gray-400 mb-2 leading-tight">Membuka aplikasi WhatsApp Anda dengan pesan otomatis. Nomor WA warga yang nunggak akan tersalin ke clipboard.</p>
 
                 <button onclick="filterWargaNunggak()" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 rounded-xl text-sm md:text-base uppercase tracking-wide transition shadow-md flex justify-center items-center">
                     <i class="fas fa-user-check mr-2 text-xl"></i> Chat Warga Satu Per Satu
@@ -1620,6 +1638,11 @@
                     w.nama_bulan_ini = unpaid.join(', '); // string dipisahkan koma
                     return w;
                 });
+                
+                // Set default filter to 'Semua' initially
+                const selectFilter = document.getElementById('filter-status-warga');
+                if(selectFilter) selectFilter.value = 'Semua';
+                
                 tampilkanDataWargaAdminUI(globalWargaData);
             } else {
                 container.innerHTML = `<p class="text-center text-xs text-red-500 font-bold mt-4 col-span-full">Gagal memuat data warga.</p>`;
@@ -1627,6 +1650,18 @@
         }
         
         function tampilkanDataWargaAdminUI(data) {
+            // Update Summary Stats based on globalWargaData (overall statistics)
+            if (globalWargaData && globalWargaData.length > 0) {
+                const countNunggak = globalWargaData.filter(w => w.status_bulan_ini === 'Nunggak').length;
+                const countLunas = globalWargaData.filter(w => w.status_bulan_ini === 'Lunas').length;
+                
+                const elNunggak = document.getElementById('stat-nunggak');
+                const elLunas = document.getElementById('stat-lunas');
+                
+                if (elNunggak) elNunggak.innerText = countNunggak;
+                if (elLunas) elLunas.innerText = countLunas;
+            }
+
             const container = document.getElementById('admin-warga-list');
             container.innerHTML = '';
             
@@ -1793,10 +1828,13 @@
 
             let teks = `PENGUMUMAN IURAN KAS BLOK 9 BSR\n\nYth. Bapak/Ibu Warga Blok 9 BSR,\n\nBerdasarkan catatan kas Blok 9 BSR, masih terdapat beberapa warga yang belum melakukan pembayaran iuran kas dan telah melewati batas waktu yang ditentukan.\n\nUntuk itu, kami mohon kerja samanya agar Bapak/Ibu segera melakukan pembayaran iuran kas tersebut. Pembayaran dapat dilakukan melalui transfer atau secara tunai/cash kepada petugas yang berwenang.\n\nTerima kasih atas perhatian dan kerja sama Bapak/Ibu dalam mendukung kelancaran kegiatan serta kebersamaan lingkungan Blok 9 BSR.`;
             
-            // Mengambil dan membersihkan nomor WA untuk disalin
+            // Mengambil dan membersihkan nomor WA untuk disalin (HANYA YANG NUNGGAK)
             let daftarNomor = [];
             if(globalWargaData && globalWargaData.length > 0) {
-                globalWargaData.forEach(w => {
+                // Filter hanya warga yang menunggak
+                const wargaNunggak = globalWargaData.filter(w => w.status_bulan_ini === 'Nunggak');
+
+                wargaNunggak.forEach(w => {
                     if(w.no_wa && w.no_wa !== "-" && w.no_wa.trim() !== "") {
                         let waClean = w.no_wa.replace(/[^0-9]/g, '');
                         if (waClean.startsWith('0')) {
@@ -1811,7 +1849,7 @@
 
             if(daftarNomor.length > 0) {
                 navigator.clipboard.writeText(daftarNomor.join(', ')).then(() => {
-                    tampilkanModal('Daftar Nomor Tersalin!', `${daftarNomor.length} nomor WA seluruh warga telah disalin ke clipboard. Silakan Paste di aplikasi WA Blast/Broadcast Anda. Membuka WhatsApp...`, 'sukses');
+                    tampilkanModal('Daftar Nomor Tersalin!', `${daftarNomor.length} nomor WA warga yang menunggak telah disalin ke clipboard. Silakan Paste di aplikasi WA Blast/Broadcast Anda. Membuka WhatsApp...`, 'sukses');
                 }).catch(err => console.error('Gagal salin nomor', err));
                 
                 setTimeout(() => {
@@ -1819,8 +1857,7 @@
                     window.open(url, '_blank');
                 }, 3000);
             } else {
-                const url = `https://wa.me/?text=${encodeURIComponent(teks)}`;
-                window.open(url, '_blank');
+                tampilkanModal('Informasi', 'Hebat! Saat ini tidak ada warga yang menunggak.', 'sukses');
             }
         }
 
