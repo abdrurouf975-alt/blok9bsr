@@ -723,6 +723,14 @@
                 return;
             }
 
+            // MENGURUTKAN DATA BERDASARKAN USERNAME (warga1, warga2, dst)
+            data.sort((a, b) => {
+                let wargaA = a.warga ? a.warga.toLowerCase() : "";
+                let wargaB = b.warga ? b.warga.toLowerCase() : "";
+                // localeCompare dengan opsi 'numeric: true' mengurutkan angka secara logis (warga2 sebelum warga10)
+                return wargaA.localeCompare(wargaB, undefined, { numeric: true, sensitivity: 'base' });
+            });
+
             let totalKasGlobal = 0;
 
             data.forEach(item => {
