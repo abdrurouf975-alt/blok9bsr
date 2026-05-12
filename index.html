@@ -694,15 +694,26 @@
             if(!container) return;
             container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 shimmer h-16"></div>`;
             
-            let res = await fetchAPI("getRekapIuran");
-            if(res && res.data) {
-                tampilkanDataRekapIuranUI(res.data);
+            // Ambil rekap iuran dan data warga bersamaan untuk mencocokkan nama
+            let [resIuran, resWarga] = await Promise.all([
+                fetchAPI("getRekapIuran"),
+                fetchAPI("getWarga")
+            ]);
+
+            if(resIuran && resIuran.data) {
+                let dictWarga = {};
+                if(resWarga && resWarga.data) {
+                    resWarga.data.forEach(w => {
+                        dictWarga[w.username.toLowerCase()] = w.nama;
+                    });
+                }
+                tampilkanDataRekapIuranUI(resIuran.data, dictWarga);
             } else {
                 container.innerHTML = `<p class="text-center text-xs text-red-500 font-bold">Gagal memuat rekap kas.</p>`;
             }
         }
 
-        function tampilkanDataRekapIuranUI(data) {
+        function tampilkanDataRekapIuranUI(data, dictWarga = {}) {
             const container = document.getElementById('rekap-iuran-list');
             container.innerHTML = '';
             
@@ -725,12 +736,21 @@
                     }
                 }
 
+                // Gabungkan Nama Asli dan Username
+                let uname = item.warga ? item.warga.toLowerCase() : "";
+                let namaAsli = dictWarga[uname];
+                let displayTeks = item.warga;
+                
+                if(namaAsli && namaAsli.toLowerCase() !== uname) {
+                    displayTeks = `${namaAsli} - ${item.warga}`;
+                }
+
                 container.innerHTML += `
                     <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center animate-slide-down">
                         <div class="flex items-center gap-3">
                             <div class="w-8 h-8 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center shrink-0 text-xs"><i class="fas fa-check"></i></div>
                             <div>
-                                <h4 class="font-bold text-gray-800 text-[11px] uppercase">${item.warga}</h4>
+                                <h4 class="font-bold text-gray-800 text-[11px] uppercase">${displayTeks}</h4>
                                 <p class="text-[9px] text-gray-400 mt-0.5">${item.bulan}</p>
                             </div>
                         </div>
