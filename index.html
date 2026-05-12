@@ -147,7 +147,7 @@
                         <!-- Gambar QR Code Tampil Langsung -->
                         <div class="bg-white p-4 rounded-xl border border-blue-50 shadow-sm relative z-10 flex flex-col items-center">
                             <p class="text-[11px] text-gray-500 font-bold uppercase mb-2"><i class="fas fa-qrcode mr-1"></i> Scan QRIS Pembayaran</p>
-                            <img src="https://cdn.phototourl.com/free/2026-05-11-8900fd55-13c7-42f8-880c-f064db4aac0e.jpg" alt="QR Code QRIS" class="w-full max-w-[200px] rounded-lg border border-gray-100 mb-2">
+                            <img src="https://cdn.phototourl.com/free/2026-05-11-8900fd55-13c7-42f8-880c-f064db4aac0e.jpg" alt="QR Code QRIS" class="w-full max-w-[200px] rounded-lg border border-gray-100 mb-2" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=Gambar+QRIS+Belum+Tersedia';">
                             <p class="text-[10px] text-gray-600 font-black uppercase tracking-widest">A/N ARUNIKA CREATIVE</p>
                         </div>
                     </div>
@@ -192,10 +192,27 @@
                         <button type="submit" id="btn-submit-iuran" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 rounded-xl uppercase tracking-wide text-sm transition"><i class="fas fa-check-circle mr-2"></i> Konfirmasi Bayar</button>
                     </form>
                 </div>
-                <div class="mb-4">
+                
+                <!-- BAGIAN RIWAYAT PRIBADI -->
+                <div class="mb-6">
                     <div class="flex justify-between items-center mb-3 px-1"><h3 class="font-bold text-gray-800 uppercase tracking-wide text-sm">Riwayat Pembayaran</h3><button onclick="tarikDataIuran()" class="text-xs text-indigo-600 font-bold bg-indigo-50 px-3 py-1 rounded-full">Refresh</button></div>
                     <div id="iuran-list"></div>
                 </div>
+
+                <!-- BAGIAN TRANSPARANSI KAS WARGA (BARU) -->
+                <div class="mb-4 mt-8">
+                    <div class="flex justify-between items-center mb-3 px-1">
+                        <h3 class="font-bold text-gray-800 uppercase tracking-wide text-sm">Transparansi Kas Warga</h3>
+                        <button onclick="tarikDataRekapIuran()" class="text-xs text-indigo-600 font-bold bg-indigo-50 px-3 py-1 rounded-full">Refresh</button>
+                    </div>
+                    <div class="bg-indigo-600 rounded-2xl p-5 shadow-md text-white mb-4 relative overflow-hidden">
+                        <i class="fas fa-coins absolute right-[-10px] bottom-[-10px] text-6xl opacity-20"></i>
+                        <p class="text-[10px] font-bold uppercase opacity-80 mb-1 relative z-10">Total Kas Terkumpul</p>
+                        <h3 class="text-3xl font-black relative z-10" id="total-kas-warga">Rp 0</h3>
+                    </div>
+                    <div id="rekap-iuran-list" class="flex flex-col gap-2"></div>
+                </div>
+
             </div>
 
             <!-- LAPOR WARGA -->
@@ -671,6 +688,62 @@
             }
         }
         
+        // --- FITUR TRANSPARANSI (REKAP IURAN LUNAS GLOBAL) ---
+        async function tarikDataRekapIuran() {
+            const container = document.getElementById('rekap-iuran-list');
+            if(!container) return;
+            container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 shimmer h-16"></div>`;
+            
+            let res = await fetchAPI("getRekapIuran");
+            if(res && res.data) {
+                tampilkanDataRekapIuranUI(res.data);
+            } else {
+                container.innerHTML = `<p class="text-center text-xs text-red-500 font-bold">Gagal memuat rekap kas.</p>`;
+            }
+        }
+
+        function tampilkanDataRekapIuranUI(data) {
+            const container = document.getElementById('rekap-iuran-list');
+            container.innerHTML = '';
+            
+            if(!data || data.length === 0) {
+                container.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-xs font-bold uppercase shadow-sm">Belum ada kas masuk.</div>`;
+                document.getElementById('total-kas-warga').innerText = "Rp 0";
+                return;
+            }
+
+            let totalKasGlobal = 0;
+
+            data.forEach(item => {
+                totalKasGlobal += parseInt(item.nominal) || 0;
+                let dateStr = "-";
+                if (item.waktu) {
+                    const d = new Date(item.waktu);
+                    if(!isNaN(d.getTime())) {
+                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+                        dateStr = `${d.getDate().toString().padStart(2, '0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
+                    }
+                }
+
+                container.innerHTML += `
+                    <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center animate-slide-down">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center shrink-0 text-xs"><i class="fas fa-check"></i></div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-[11px] uppercase">${item.warga}</h4>
+                                <p class="text-[9px] text-gray-400 mt-0.5">${item.bulan}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[11px] font-black text-emerald-600">+ Rp ${parseInt(item.nominal).toLocaleString('id-ID')}</p>
+                            <p class="text-[8px] text-gray-400 mt-0.5">${dateStr}</p>
+                        </div>
+                    </div>`;
+            });
+            
+            document.getElementById('total-kas-warga').innerText = "Rp " + totalKasGlobal.toLocaleString('id-ID');
+        }
+
         async function tarikDataIuran() {
             let res = await fetchAPI("getIuran");
             tampilkanDataIuranUI(res.data);
@@ -748,6 +821,7 @@
                 if(res && res.data === "Sukses") {
                     tampilkanModal('Berhasil', 'Konfirmasi Iuran Terkirim', 'sukses'); 
                     tarikDataIuran(); 
+                    tarikDataRekapIuran(); // Refresh data transparansi juga
                     document.getElementById('form-iuran').reset(); 
                     cb.forEach(c => c.checked = false); 
                     document.getElementById('input-nominal').value = 0;
@@ -1076,7 +1150,10 @@
             
             if(tabId === 'beranda') tarikDataPengumuman(); 
             if(tabId === 'lapor') tarikDataLaporan(); 
-            if(tabId === 'iuran') tarikDataIuran(); 
+            if(tabId === 'iuran') { 
+                tarikDataIuran(); 
+                tarikDataRekapIuran(); // Ambil data transparansi kas saat buka tab iuran
+            }
             if(tabId === 'surat') tarikDataSurat();
             
             if(tabId === 'admin-verifikasi') { 
