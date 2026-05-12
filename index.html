@@ -200,7 +200,7 @@
                         <div class="md:col-span-6 mb-8 md:mb-0">
                             <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
                                 <h2 class="text-xl md:text-3xl font-black text-gray-800 mb-2 uppercase">Iuran Warga</h2>
-                                <p class="text-sm md:text-base text-gray-500 mb-6">Konfirmasi pembayaran kas Blok 9 Bumi Safir Raya Lamongan.</p>
+                                <p class="text-sm md:text-base text-gray-500 mb-6">Konfirmasi pembayaran kas RT/RW.</p>
                                 
                                 <div class="bg-blue-50 p-5 md:p-6 rounded-2xl border border-blue-100 mb-6 relative overflow-hidden">
                                     <i class="fas fa-university absolute right-[-20px] bottom-[-20px] text-8xl text-blue-100 opacity-50 pointer-events-none"></i>
@@ -402,7 +402,7 @@
                                         <i class="fas fa-users text-3xl md:text-4xl mb-3"></i>
                                         <span class="text-xs md:text-sm uppercase tracking-wide text-center">Daftar Warga</span>
                                     </button>
-                                    <button onclick="bukaModalTagihanMasal()" class="bg-red-50 text-red-700 p-5 md:p-6 rounded-2xl font-bold flex flex-col items-center hover:bg-red-100 transition transform hover:-translate-y-1 shadow-sm">
+                                    <button onclick="switchTab('admin-warga'); setTimeout(() => document.getElementById('filter-status-warga').value = 'Nunggak', 100); setTimeout(cariWargaAdmin, 200);" class="bg-red-50 text-red-700 p-5 md:p-6 rounded-2xl font-bold flex flex-col items-center hover:bg-red-100 transition transform hover:-translate-y-1 shadow-sm">
                                         <i class="fab fa-whatsapp text-3xl md:text-4xl mb-3"></i>
                                         <span class="text-xs md:text-sm uppercase tracking-wide text-center">Tagih Iuran</span>
                                     </button>
@@ -496,6 +496,13 @@
                             </div>
                             <div class="w-10 h-10 md:w-14 md:h-14 bg-green-200 text-green-600 rounded-full flex items-center justify-center text-lg md:text-2xl"><i class="fas fa-check-circle"></i></div>
                         </div>
+                    </div>
+
+                    <!-- TOMBOL BROADCAST MASAL BARU -->
+                    <div class="max-w-4xl mx-auto mb-6">
+                        <button onclick="tagihSemuaWarga()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-2xl shadow-md text-sm md:text-base uppercase tracking-wide flex justify-center items-center transition">
+                            <i class="fas fa-bullhorn text-xl mr-3"></i> Broadcast Pesan ke Semua Penunggak
+                        </button>
                     </div>
 
                     <!-- KOLOM PENCARIAN & FILTER -->
@@ -614,32 +621,6 @@
             <button onclick="prosesKirimWA()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl uppercase text-base md:text-lg tracking-widest transition shadow-md flex justify-center items-center">
                 <i class="fab fa-whatsapp text-2xl mr-3"></i> Buka WhatsApp Web/App
             </button>
-        </div>
-    </div>
-
-    <!-- MODAL TAGIHAN MASAL ADMIN -->
-    <div id="tagihan-masal-modal" class="fixed inset-0 bg-black bg-opacity-80 z-[150] hidden items-center justify-center p-4 transition-opacity backdrop-blur-md">
-        <div class="bg-white rounded-3xl p-6 md:p-8 w-full max-w-sm md:max-w-lg shadow-2xl transform transition-all text-center animate-slide-down relative">
-            <button onclick="tutupModalTagihanMasal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-900 bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center transition text-xl">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="w-20 h-20 bg-red-100 text-red-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-sm">
-                <i class="fab fa-whatsapp"></i>
-            </div>
-            <h3 class="text-2xl font-black text-gray-800 mb-1 uppercase tracking-wide mt-2">Tagih Tunggakan</h3>
-            <p class="text-xs md:text-sm text-gray-500 mb-6 font-bold pb-4 border-b">Pilih metode pengingat iuran via WhatsApp</p>
-            
-            <div class="flex flex-col gap-3">
-                <button onclick="tagihSemuaWarga()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl text-sm md:text-base uppercase tracking-wide transition shadow-md flex justify-center items-center">
-                    <i class="fas fa-bullhorn mr-2 text-xl"></i> Broadcast ke Banyak WA
-                </button>
-                <p class="text-[10px] text-gray-400 mb-2 leading-tight">Membuka aplikasi WhatsApp Anda dengan pesan otomatis. Nomor WA warga yang nunggak akan tersalin ke clipboard.</p>
-
-                <button onclick="filterWargaNunggak()" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 rounded-xl text-sm md:text-base uppercase tracking-wide transition shadow-md flex justify-center items-center">
-                    <i class="fas fa-user-check mr-2 text-xl"></i> Chat Warga Satu Per Satu
-                </button>
-                <p class="text-[10px] text-gray-400 leading-tight">Menampilkan daftar warga yang belum bayar iuran, sehingga Anda dapat mengeklik tombol WA di masing-masing nama.</p>
-            </div>
         </div>
     </div>
 
@@ -1835,22 +1816,7 @@
             modal.style.display = 'none';
         }
 
-        // FUNGSI SHORTCUT TAGIHAN MASAL ADMIN
-        function bukaModalTagihanMasal() {
-            const modal = document.getElementById('tagihan-masal-modal');
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-        }
-
-        function tutupModalTagihanMasal() {
-            const modal = document.getElementById('tagihan-masal-modal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
-        }
-
         function tagihSemuaWarga() {
-            tutupModalTagihanMasal();
-
             let teks = `PENGUMUMAN IURAN KAS BLOK 9 BSR\n\nYth. Bapak/Ibu Warga Blok 9 BSR,\n\nBerdasarkan catatan kas Blok 9 BSR, masih terdapat beberapa warga yang belum melakukan pembayaran iuran kas dan telah melewati batas waktu yang ditentukan.\n\nUntuk itu, kami mohon kerja samanya agar Bapak/Ibu segera melakukan pembayaran iuran kas tersebut. Pembayaran dapat dilakukan melalui transfer atau secara tunai/cash kepada petugas yang berwenang.\n\nTerima kasih atas perhatian dan kerja sama Bapak/Ibu dalam mendukung kelancaran kegiatan serta kebersamaan lingkungan Blok 9 BSR.`;
             
             // Mengambil dan membersihkan nomor WA untuk disalin (HANYA YANG NUNGGAK)
@@ -1888,18 +1854,6 @@
             } else {
                 tampilkanModal('Informasi', 'Saat ini tidak ada warga menunggak yang memiliki nomor WA di database.', 'sukses');
             }
-        }
-
-        function filterWargaNunggak() {
-            tutupModalTagihanMasal();
-            switchTab('admin-warga');
-            setTimeout(() => {
-                const selectFilter = document.getElementById('filter-status-warga');
-                if(selectFilter) {
-                    selectFilter.value = 'Nunggak';
-                    cariWargaAdmin();
-                }
-            }, 100);
         }
 
         function hitungTotalWa() {
