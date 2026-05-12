@@ -182,6 +182,19 @@
             <!-- IURAN WARGA -->
             <div id="section-iuran" class="p-4 md:p-8 hidden section-warga">
                 <div class="max-w-6xl mx-auto w-full">
+                    <!-- INDIKATOR STATUS NUNGGAK / LUNAS WARGA -->
+                    <div id="status-iuran-banner" class="mb-6 rounded-2xl p-5 shadow-sm border border-red-200 bg-red-50 relative overflow-hidden hidden animate-slide-down">
+                        <i class="fas fa-exclamation-triangle absolute right-[-10px] bottom-[-10px] text-6xl text-red-100 opacity-50"></i>
+                        <h3 class="text-red-800 font-black text-lg md:text-xl uppercase mb-1">Status: Nunggak</h3>
+                        <p class="text-xs md:text-sm text-red-600 font-bold">Peringatan: Anda belum melunasi iuran kas untuk bulan <span id="bulan-nunggak" class="uppercase"></span>.</p>
+                    </div>
+                    
+                    <div id="status-iuran-banner-lunas" class="mb-6 rounded-2xl p-5 shadow-sm border border-green-200 bg-green-50 relative overflow-hidden hidden animate-slide-down">
+                        <i class="fas fa-check-circle absolute right-[-10px] bottom-[-10px] text-6xl text-green-100 opacity-50"></i>
+                        <h3 class="text-green-800 font-black text-lg md:text-xl uppercase mb-1">Status: Lunas</h3>
+                        <p class="text-xs md:text-sm text-green-600 font-bold">Terima kasih, iuran kas Anda untuk bulan <span id="bulan-lunas" class="uppercase"></span> sudah terbayar.</p>
+                    </div>
+
                     <div class="md:grid md:grid-cols-12 md:gap-10">
                         <!-- BAGIAN FORM & REKENING (Desktop di Kiri) -->
                         <div class="md:col-span-6 mb-8 md:mb-0">
@@ -1029,9 +1042,28 @@
         }
 
         async function tarikDataIuran() {
+            // CEK STATUS NUNGGAK/LUNAS BULAN INI UNTUK WARGA TERSEBUT
+            let resStatus = await fetchAPI("cekStatusBulanIni", { username: getUserUsername() });
+            
+            const bannerNunggak = document.getElementById('status-iuran-banner');
+            const bannerLunas = document.getElementById('status-iuran-banner-lunas');
+            
+            if(resStatus && resStatus.data) {
+                if(resStatus.data.status === "Nunggak") {
+                    bannerNunggak.classList.remove('hidden');
+                    bannerLunas.classList.add('hidden');
+                    document.getElementById('bulan-nunggak').innerText = resStatus.data.bulan;
+                } else {
+                    bannerNunggak.classList.add('hidden');
+                    bannerLunas.classList.remove('hidden');
+                    document.getElementById('bulan-lunas').innerText = resStatus.data.bulan;
+                }
+            }
+
             let res = await fetchAPI("getIuran");
             tampilkanDataIuranUI(res.data);
         }
+
         function tampilkanDataIuranUI(data) {
             const list = document.getElementById('iuran-list'); list.innerHTML = '';
             
@@ -1706,7 +1738,7 @@
                 waClean = '62' + waClean.substring(1);
             }
             
-            const teks = `Halo Bpk/Ibu *${nama}*,\n\nKami dari Pengurus BLOK 9 BSR ingin menginformasikan bahwa tagihan iuran kas Anda untuk bulan *${bulan}* dengan total *${nominal}* belum terbayar/terkonfirmasi.\n\nMohon untuk segera melakukan konfirmasi pembayaran di Aplikasi. Terima kasih 🙏`;
+            const teks = `Halo Bpk/Ibu *${nama}*,\n\nKami dari Pengurus BLOK 9 BSR ingin menginformasikan bahwa tagihan iuran kas Anda untuk bulan *${bulan}* dengan total *${nominal}* belum terbayar/terkonfirmasi.\n\nMohon untuk segera melakukan konfirmasi pembayaran di Aplikasi atau Pengurus. Terima kasih 🙏`;
             
             const url = `https://wa.me/${waClean}?text=${encodeURIComponent(teks)}`;
             window.open(url, '_blank');
