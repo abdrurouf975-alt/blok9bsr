@@ -609,7 +609,7 @@
                 <button onclick="tagihSemuaWarga()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl text-sm md:text-base uppercase tracking-wide transition shadow-md flex justify-center items-center">
                     <i class="fas fa-bullhorn mr-2 text-xl"></i> Broadcast ke Banyak WA
                 </button>
-                <p class="text-[10px] text-gray-400 mb-2 leading-tight">Membuka aplikasi WhatsApp Anda dengan pesan otomatis. Anda dapat memilih beberapa kontak sekaligus untuk meneruskan pesan.</p>
+                <p class="text-[10px] text-gray-400 mb-2 leading-tight">Membuka aplikasi WhatsApp Anda dengan pesan otomatis. Nomor WA akan tersalin otomatis ke clipboard.</p>
 
                 <button onclick="filterWargaNunggak()" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 rounded-xl text-sm md:text-base uppercase tracking-wide transition shadow-md flex justify-center items-center">
                     <i class="fas fa-user-check mr-2 text-xl"></i> Chat Warga Satu Per Satu
@@ -948,7 +948,7 @@
                     let tanggapan = parts[1];
                     tanggapanHtml = `
                     <div class="mt-4 p-5 bg-emerald-50 border border-emerald-100 rounded-xl text-sm md:text-base text-gray-800 relative shadow-inner">
-                        <i class="fas fa-reply text-emerald-500 absolute top-4 right-4 opacity-10 text-4xl pointer-events-none"></i>
+                        <i class="fas fa-reply text-emerald-50 absolute top-4 right-4 opacity-10 text-4xl pointer-events-none"></i>
                         <span class="font-black text-emerald-700 block mb-2 uppercase tracking-wider text-xs">Tanggapan Pengurus:</span>
                         <p class="leading-relaxed relative z-10">${tanggapan}</p>
                     </div>`;
@@ -1789,10 +1789,39 @@
         }
 
         function tagihSemuaWarga() {
-            let teks = `PENGUMUMAN IURAN KAS BLOK 9 BSR\n\nYth. Bapak/Ibu Warga Blok 9 BSR,\n\nBerdasarkan catatan kas RT, terdapat tagihan iuran yang belum terkonfirmasi/belum lunas untuk bulan ini atau bulan sebelumnya.\n\nMohon kerjasamanya untuk segera melakukan pengecekan dan pembayaran melalui Aplikasi Portal Blok 9 BSR.\n\nTerima kasih atas partisipasi Anda dalam membangun lingkungan kita 🙏.`;
-            const url = `https://wa.me/?text=${encodeURIComponent(teks)}`;
-            window.open(url, '_blank');
             tutupModalTagihanMasal();
+
+            let teks = `PENGUMUMAN IURAN KAS BLOK 9 BSR\n\nYth. Bapak/Ibu Warga Blok 9 BSR,\n\nBerdasarkan catatan kas Blok 9 BSR, masih terdapat beberapa warga yang belum melakukan pembayaran iuran kas dan telah melewati batas waktu yang ditentukan.\n\nUntuk itu, kami mohon kerja samanya agar Bapak/Ibu segera melakukan pembayaran iuran kas tersebut. Pembayaran dapat dilakukan melalui transfer atau secara tunai/cash kepada petugas yang berwenang.\n\nTerima kasih atas perhatian dan kerja sama Bapak/Ibu dalam mendukung kelancaran kegiatan serta kebersamaan lingkungan Blok 9 BSR.`;
+            
+            // Mengambil dan membersihkan nomor WA untuk disalin
+            let daftarNomor = [];
+            if(globalWargaData && globalWargaData.length > 0) {
+                globalWargaData.forEach(w => {
+                    if(w.no_wa && w.no_wa !== "-" && w.no_wa.trim() !== "") {
+                        let waClean = w.no_wa.replace(/[^0-9]/g, '');
+                        if (waClean.startsWith('0')) {
+                            waClean = '62' + waClean.substring(1);
+                        }
+                        if(!daftarNomor.includes(waClean)) {
+                            daftarNomor.push(waClean);
+                        }
+                    }
+                });
+            }
+
+            if(daftarNomor.length > 0) {
+                navigator.clipboard.writeText(daftarNomor.join(', ')).then(() => {
+                    tampilkanModal('Daftar Nomor Tersalin!', `${daftarNomor.length} nomor WA seluruh warga telah disalin ke clipboard. Silakan Paste di aplikasi WA Blast/Broadcast Anda. Membuka WhatsApp...`, 'sukses');
+                }).catch(err => console.error('Gagal salin nomor', err));
+                
+                setTimeout(() => {
+                    const url = `https://wa.me/?text=${encodeURIComponent(teks)}`;
+                    window.open(url, '_blank');
+                }, 3000);
+            } else {
+                const url = `https://wa.me/?text=${encodeURIComponent(teks)}`;
+                window.open(url, '_blank');
+            }
         }
 
         function filterWargaNunggak() {
