@@ -115,18 +115,33 @@
                         </form>
                     </div>
 
-                    <!-- TRANSPARANSI KAS WARGA -->
+                    <!-- TRANSPARANSI KAS WARGA (DIPERBARUI) -->
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 w-full mt-2">
                         <div class="flex justify-between items-center mb-5 border-b pb-4">
-                            <h3 class="font-bold text-gray-800 text-base md:text-lg uppercase tracking-wide"><i class="fas fa-coins text-emerald-500 mr-2"></i> Transparansi Kas Warga</h3>
-                            <button onclick="tarikDataRekapIuran()" class="text-xs md:text-sm text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-full transition"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
+                            <h3 class="font-bold text-gray-800 text-base md:text-lg uppercase tracking-wide"><i class="fas fa-coins text-emerald-500 mr-2"></i> Pembukuan Kas RT</h3>
+                            <button onclick="tarikDataKeuangan()" class="text-xs md:text-sm text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-full transition"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
                         </div>
-                        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-6 md:p-8 shadow-md text-white mb-5 relative overflow-hidden">
+                        
+                        <!-- Rangkuman Saldo -->
+                        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-6 md:p-8 shadow-md text-white mb-4 relative overflow-hidden">
                             <i class="fas fa-wallet absolute right-[-10px] bottom-[-20px] text-8xl md:text-9xl opacity-20 pointer-events-none"></i>
-                            <p class="text-xs md:text-sm font-bold uppercase opacity-80 mb-2 relative z-10">Total Kas Terkumpul</p>
-                            <h3 class="text-3xl md:text-5xl font-black relative z-10" id="total-kas-warga">Rp 0</h3>
+                            <p class="text-xs md:text-sm font-bold uppercase opacity-80 mb-1 relative z-10">Saldo Kas Tersedia</p>
+                            <h3 class="text-3xl md:text-5xl font-black relative z-10" id="display-saldo-akhir">Rp 0</h3>
                         </div>
-                        <div id="rekap-iuran-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[600px] overflow-y-auto pr-2"></div>
+                        
+                        <div class="grid grid-cols-2 gap-3 mb-6">
+                            <div class="bg-emerald-50 border border-emerald-100 p-3 md:p-4 rounded-xl shadow-sm text-center">
+                                <p class="text-[10px] md:text-xs font-bold text-emerald-600 uppercase mb-1"><i class="fas fa-arrow-down mr-1"></i> Total Masuk</p>
+                                <h4 class="text-sm md:text-lg font-black text-emerald-700" id="display-saldo-masuk">Rp 0</h4>
+                            </div>
+                            <div class="bg-red-50 border border-red-100 p-3 md:p-4 rounded-xl shadow-sm text-center">
+                                <p class="text-[10px] md:text-xs font-bold text-red-600 uppercase mb-1"><i class="fas fa-arrow-up mr-1"></i> Total Keluar</p>
+                                <h4 class="text-sm md:text-lg font-black text-red-700" id="display-saldo-keluar">Rp 0</h4>
+                            </div>
+                        </div>
+
+                        <h4 class="font-bold text-gray-800 text-sm mb-3 border-b pb-2">Riwayat Transaksi Terbaru</h4>
+                        <div id="riwayat-keuangan-list" class="flex flex-col gap-3 max-h-[500px] overflow-y-auto pr-2"></div>
                     </div>
 
                 </div>
@@ -402,9 +417,9 @@
                                         <i class="fas fa-users text-3xl md:text-4xl mb-3"></i>
                                         <span class="text-xs md:text-sm uppercase tracking-wide text-center">Daftar Warga</span>
                                     </button>
-                                    <button onclick="switchTab('admin-warga'); setTimeout(() => document.getElementById('filter-status-warga').value = 'Nunggak', 100); setTimeout(cariWargaAdmin, 200);" class="bg-red-50 text-red-700 p-5 md:p-6 rounded-2xl font-bold flex flex-col items-center hover:bg-red-100 transition transform hover:-translate-y-1 shadow-sm">
-                                        <i class="fab fa-whatsapp text-3xl md:text-4xl mb-3"></i>
-                                        <span class="text-xs md:text-sm uppercase tracking-wide text-center">Tagih Iuran</span>
+                                    <button onclick="switchTab('admin-saldo')" class="bg-blue-50 text-blue-700 p-5 md:p-6 rounded-2xl font-bold flex flex-col items-center hover:bg-blue-100 transition transform hover:-translate-y-1 shadow-sm">
+                                        <i class="fas fa-book-open text-3xl md:text-4xl mb-3"></i>
+                                        <span class="text-xs md:text-sm uppercase tracking-wide text-center">Pembukuan</span>
                                     </button>
                                 </div>
 
@@ -445,6 +460,72 @@
                                 <button onclick="tarikDataLaporanAdmin()" class="text-xs text-indigo-600 bg-white shadow-sm px-3 py-1.5 rounded-full hover:bg-indigo-50"><i class="fas fa-sync-alt"></i></button>
                             </h3>
                             <div id="admin-verifikasi-laporan-list" class="flex flex-col gap-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HALAMAN PEMBUKUAN KAS / SALDO (ADMIN) - BARU -->
+            <div id="section-admin-saldo" class="p-5 md:p-8 section-admin hidden">
+                <div class="max-w-6xl mx-auto w-full">
+                    <div class="flex justify-between items-center mb-6 border-b pb-4">
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-black text-gray-800 uppercase tracking-wide">Buku Kas RT</h2>
+                            <p class="text-sm text-gray-500 mt-1">Kelola pemasukan dan pengeluaran warga.</p>
+                        </div>
+                        <button onclick="tarikDataKeuangan()" class="text-sm text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-5 py-2.5 rounded-full shadow-sm transition inline-flex items-center gap-2"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    </div>
+
+                    <!-- SUMMARY CARDS -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                        <div class="bg-indigo-600 p-6 rounded-2xl shadow-md text-white relative overflow-hidden">
+                            <i class="fas fa-wallet absolute right-[-10px] bottom-[-20px] text-7xl opacity-20"></i>
+                            <p class="text-xs font-bold uppercase mb-1 opacity-80 relative z-10">Saldo Kas Saat Ini</p>
+                            <h3 class="text-3xl md:text-4xl font-black relative z-10" id="admin-saldo-akhir">Rp 0</h3>
+                        </div>
+                        <div class="bg-white border border-emerald-100 p-6 rounded-2xl shadow-sm relative overflow-hidden">
+                            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex justify-center items-center absolute right-4 top-4 text-xl"><i class="fas fa-arrow-down"></i></div>
+                            <p class="text-xs font-bold text-emerald-600 uppercase mb-1">Total Pemasukan</p>
+                            <h3 class="text-2xl md:text-3xl font-black text-gray-800 mt-2" id="admin-saldo-masuk">Rp 0</h3>
+                            <p class="text-[10px] text-gray-400 mt-1">Dari iuran lunas warga</p>
+                        </div>
+                        <div class="bg-white border border-red-100 p-6 rounded-2xl shadow-sm relative overflow-hidden">
+                            <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex justify-center items-center absolute right-4 top-4 text-xl"><i class="fas fa-arrow-up"></i></div>
+                            <p class="text-xs font-bold text-red-600 uppercase mb-1">Total Pengeluaran</p>
+                            <h3 class="text-2xl md:text-3xl font-black text-gray-800 mt-2" id="admin-saldo-keluar">Rp 0</h3>
+                            <p class="text-[10px] text-gray-400 mt-1">Dari catatan pengeluaran</p>
+                        </div>
+                    </div>
+
+                    <div class="md:grid md:grid-cols-12 md:gap-8">
+                        <!-- FORM PENGELUARAN -->
+                        <div class="md:col-span-5 mb-8 md:mb-0">
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
+                                <h3 class="font-black text-gray-800 uppercase text-lg mb-4 border-b pb-2"><i class="fas fa-minus-circle text-red-500 mr-2"></i> Catat Pengeluaran</h3>
+                                <form id="form-pengeluaran" onsubmit="kirimPengeluaranAdmin(event)">
+                                    <div class="mb-4">
+                                        <label class="block text-xs font-bold text-gray-700 mb-2 uppercase">Nominal Keluar (Rp)</label>
+                                        <input type="number" id="input-pengeluaran-nominal" placeholder="Cth: 50000" class="w-full p-4 border border-gray-200 rounded-xl text-lg font-black text-red-600 focus:outline-none focus:ring-2 focus:ring-red-200 bg-gray-50" required>
+                                    </div>
+                                    <div class="mb-6">
+                                        <label class="block text-xs font-bold text-gray-700 mb-2 uppercase">Keterangan / Tujuan</label>
+                                        <textarea id="input-pengeluaran-ket" rows="3" placeholder="Cth: Membeli sapu dan tempat sampah fasum..." class="w-full p-4 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-200 bg-gray-50" required></textarea>
+                                    </div>
+                                    <button type="submit" id="btn-submit-pengeluaran" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl uppercase tracking-widest text-sm transition shadow-md">
+                                        <i class="fas fa-save mr-2"></i> Simpan Pengeluaran
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- DAFTAR RIWAYAT SEMUA -->
+                        <div class="md:col-span-7">
+                            <h3 class="font-black text-gray-800 uppercase text-lg mb-4">Riwayat Mutasi Keseluruhan</h3>
+                            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-2 overflow-hidden">
+                                <div id="admin-riwayat-keuangan-list" class="flex flex-col gap-1 max-h-[600px] overflow-y-auto pr-1 p-2">
+                                    <!-- List Keuangan Admin -->
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -550,8 +631,8 @@
         <div id="nav-admin" class="bottom-nav-container fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-800 flex justify-around md:justify-center md:gap-24 py-2 pb-4 md:py-4 z-40 hidden shadow-[0_-5px_20px_rgba(0,0,0,0.3)]">
             <button onclick="switchTab('admin-home')" class="nav-btn-admin flex flex-col items-center text-indigo-400 transition hover:text-indigo-300" data-target="admin-home"><i class="fas fa-chart-pie text-2xl md:text-3xl mb-1"></i><span class="text-[10px] md:text-xs font-bold uppercase text-gray-300">Dasbor</span></button>
             <button onclick="switchTab('admin-verifikasi')" class="nav-btn-admin flex flex-col items-center text-gray-500 transition hover:text-indigo-400" data-target="admin-verifikasi"><i class="fas fa-check-double text-2xl md:text-3xl mb-1"></i><span class="text-[10px] md:text-xs font-bold uppercase text-gray-300">Validasi</span></button>
-            <button onclick="switchTab('admin-pengumuman')" class="nav-btn-admin flex flex-col items-center text-gray-500 transition hover:text-indigo-400" data-target="admin-pengumuman"><i class="fas fa-bullhorn text-2xl md:text-3xl mb-1"></i><span class="text-[10px] md:text-xs font-bold uppercase text-gray-300">Siaran</span></button>
             <button onclick="switchTab('admin-warga')" class="nav-btn-admin flex flex-col items-center text-gray-500 transition hover:text-indigo-400" data-target="admin-warga"><i class="fas fa-users text-2xl md:text-3xl mb-1"></i><span class="text-[10px] md:text-xs font-bold uppercase text-gray-300">Warga</span></button>
+            <button onclick="switchTab('admin-saldo')" class="nav-btn-admin flex flex-col items-center text-gray-500 transition hover:text-indigo-400" data-target="admin-saldo"><i class="fas fa-book-open text-2xl md:text-3xl mb-1"></i><span class="text-[10px] md:text-xs font-bold uppercase text-gray-300">Buku Kas</span></button>
             <button onclick="switchTab('profil')" class="nav-btn-admin flex flex-col items-center text-gray-500 transition hover:text-indigo-400" data-target="profil"><i class="fas fa-user-shield text-2xl md:text-3xl mb-1"></i><span class="text-[10px] md:text-xs font-bold uppercase text-gray-300">Akun</span></button>
         </div>
     </div>
@@ -631,8 +712,9 @@
         // =========================================================================
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_koZ4yBOXDvk8hAsRaVWi-lnCJyXYkD5GBozgW45Ie6fxGYJr0gv-qftwntSuTzADaA/exec";
 
-        // Global Variable untuk menyimpan data warga agar fitur cari lebih cepat
+        // Global Variable untuk menyimpan data
         let globalWargaData = [];
+        let globalKeuanganData = { riwayat: [], totalMasuk: 0, totalKeluar: 0, saldoAkhir: 0 };
 
         // FUNGSI CERDAS: EKSTRAK USERNAME (NAMA ASLI -> Username)
         function extractUsername(str) {
@@ -655,7 +737,7 @@
 
             iuranData.forEach(item => {
                 let w = extractUsername(item.warga);
-                // PERBAIKAN: Gunakan exact match (===) agar warga1 tidak bentrok dengan warga10, warga11, dst.
+                // EXACT MATCH
                 if (w === targetUser &&
                     (item.status.toLowerCase().includes('lunas') || item.status.toLowerCase().includes('selesai'))) {
                     // Masukkan ke daftar bulan yang sudah dibayar
@@ -1038,52 +1120,82 @@
             }
         }
         
-        // --- FITUR TRANSPARANSI (REKAP IURAN LUNAS GLOBAL) ---
-        async function tarikDataRekapIuran() {
-            const container = document.getElementById('rekap-iuran-list');
-            if(!container) return;
-            container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 shimmer h-16 col-span-full"></div>`;
+        // --- FITUR KEUANGAN TERPADU (MASUK & KELUAR) ---
+        async function tarikDataKeuangan() {
+            const containerWarga = document.getElementById('rekap-iuran-list');
+            const containerAdmin = document.getElementById('admin-riwayat-keuangan-list');
             
-            // Ambil rekap iuran dan data warga bersamaan untuk mencocokkan nama
-            let [resIuran, resWarga] = await Promise.all([
-                fetchAPI("getRekapIuran"),
-                fetchAPI("getWarga")
-            ]);
-
-            if(resIuran && resIuran.data) {
-                let dictWarga = {};
-                if(resWarga && resWarga.data) {
-                    resWarga.data.forEach(w => {
-                        dictWarga[w.username.toLowerCase()] = w.nama;
-                    });
+            if(containerWarga) containerWarga.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 shimmer h-16 col-span-full"></div>`;
+            if(containerAdmin) containerAdmin.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 shimmer h-16 w-full"></div>`;
+            
+            // Panggil endpoint getKeuangan (Jika Backend belum siap, kita akan simulasi dengan getRekapIuran)
+            // Karena pengguna mungkin belum mengupdate backend dengan fungsi getKeuangan penuh, kita tangani dengan anggun
+            let res;
+            try {
+                res = await fetchAPI("getKeuangan"); // Asumsi backend sudah diupdate
+                if (!res || !res.data) {
+                    // Fallback ke getRekapIuran lama jika endpoint baru belum dibuat
+                    res = await fetchAPI("getRekapIuran");
+                    if(res && res.data) {
+                        // Ubah format data lama agar cocok dengan struktur baru
+                        let riwayat = res.data.map(item => ({
+                            jenis: 'masuk',
+                            nominal: item.nominal,
+                            keterangan: `Iuran ${item.warga || 'Warga'} (${item.bulan})`,
+                            waktu: item.waktu
+                        }));
+                        let totalMasuk = riwayat.reduce((sum, item) => sum + parseInt(item.nominal || 0), 0);
+                        res.data = { totalMasuk: totalMasuk, totalKeluar: 0, saldoAkhir: totalMasuk, riwayat: riwayat };
+                    }
                 }
-                tampilkanDataRekapIuranUI(resIuran.data, dictWarga);
+            } catch(e) {
+                console.error("Gagal load keuangan", e);
+            }
+
+            if(res && res.data) {
+                globalKeuanganData = res.data;
+                tampilkanKeuanganUI(globalKeuanganData);
             } else {
-                container.innerHTML = `<p class="text-center text-xs text-red-500 font-bold col-span-full">Gagal memuat rekap kas.</p>`;
+                if(containerWarga) containerWarga.innerHTML = `<p class="text-center text-xs text-red-500 font-bold col-span-full">Gagal memuat rekap kas.</p>`;
+                if(containerAdmin) containerAdmin.innerHTML = `<p class="text-center text-xs text-red-500 font-bold col-span-full">Gagal memuat rekap kas.</p>`;
             }
         }
 
-        function tampilkanDataRekapIuranUI(data, dictWarga = {}) {
-            const container = document.getElementById('rekap-iuran-list');
-            container.innerHTML = '';
+        function tampilkanKeuanganUI(data) {
+            // Update Card Summary (Beranda Warga)
+            const elTotalWarga = document.getElementById('total-kas-warga');
+            const elMasukWarga = document.getElementById('display-saldo-masuk');
+            const elKeluarWarga = document.getElementById('display-saldo-keluar');
             
-            if(!data || data.length === 0) {
-                container.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-xs font-bold uppercase shadow-sm col-span-full">Belum ada kas masuk.</div>`;
-                document.getElementById('total-kas-warga').innerText = "Rp 0";
+            if(elTotalWarga) elTotalWarga.innerText = formatRupiah(data.saldoAkhir || 0);
+            if(elMasukWarga) elMasukWarga.innerText = formatRupiah(data.totalMasuk || 0);
+            if(elKeluarWarga) elKeluarWarga.innerText = formatRupiah(data.totalKeluar || 0);
+
+            // Update Card Summary (Dasbor Admin Saldo)
+            const elTotalAdmin = document.getElementById('admin-saldo-akhir');
+            const elMasukAdmin = document.getElementById('admin-saldo-masuk');
+            const elKeluarAdmin = document.getElementById('admin-saldo-keluar');
+
+            if(elTotalAdmin) elTotalAdmin.innerText = formatRupiah(data.saldoAkhir || 0);
+            if(elMasukAdmin) elMasukAdmin.innerText = formatRupiah(data.totalMasuk || 0);
+            if(elKeluarAdmin) elKeluarAdmin.innerText = formatRupiah(data.totalKeluar || 0);
+
+            // Render List Riwayat Warga & Admin
+            const containerWarga = document.getElementById('rekap-iuran-list');
+            const containerAdmin = document.getElementById('admin-riwayat-keuangan-list');
+            
+            if(containerWarga) containerWarga.innerHTML = '';
+            if(containerAdmin) containerAdmin.innerHTML = '';
+            
+            if(!data.riwayat || data.riwayat.length === 0) {
+                let emptyHTML = `<div class="bg-white p-4 rounded-xl text-center text-xs font-bold uppercase shadow-sm col-span-full">Belum ada mutasi kas.</div>`;
+                if(containerWarga) containerWarga.innerHTML = emptyHTML;
+                if(containerAdmin) containerAdmin.innerHTML = emptyHTML;
                 return;
             }
 
-            // MENGURUTKAN DATA BERDASARKAN USERNAME (warga1, warga2, dst)
-            data.sort((a, b) => {
-                let wargaA = extractUsername(a.warga);
-                let wargaB = extractUsername(b.warga);
-                return wargaA.localeCompare(wargaB, undefined, { numeric: true, sensitivity: 'base' });
-            });
-
-            let totalKasGlobal = 0;
-
-            data.forEach(item => {
-                totalKasGlobal += parseInt(item.nominal) || 0;
+            // Render list
+            data.riwayat.forEach(item => {
                 let dateStr = "-";
                 if (item.waktu) {
                     const d = new Date(item.waktu);
@@ -1093,32 +1205,57 @@
                     }
                 }
 
-                // Gabungkan Nama Asli dan Username
-                let uname = extractUsername(item.warga);
-                let namaAsli = dictWarga[uname];
-                let displayTeks = item.warga;
-                
-                if(namaAsli && extractUsername(namaAsli) !== uname) {
-                    displayTeks = `${namaAsli} - ${uname.toUpperCase()}`;
-                }
+                let isMasuk = item.jenis === 'masuk';
+                let colorClass = isMasuk ? 'emerald' : 'red';
+                let iconClass = isMasuk ? 'fa-arrow-down' : 'fa-arrow-up';
+                let sign = isMasuk ? '+' : '-';
 
-                container.innerHTML += `
+                let htmlItem = `
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center animate-slide-down">
                         <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center shrink-0 text-sm"><i class="fas fa-check"></i></div>
+                            <div class="w-10 h-10 bg-${colorClass}-50 text-${colorClass}-500 rounded-full flex items-center justify-center shrink-0 text-sm"><i class="fas ${iconClass}"></i></div>
                             <div>
-                                <h4 class="font-bold text-gray-800 text-xs md:text-sm uppercase">${displayTeks}</h4>
-                                <p class="text-[10px] md:text-xs text-gray-400 mt-0.5">${item.bulan}</p>
+                                <h4 class="font-bold text-gray-800 text-xs md:text-sm uppercase">${item.keterangan}</h4>
+                                <p class="text-[9px] md:text-[10px] text-gray-400 mt-0.5">${dateStr}</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-xs md:text-sm font-black text-emerald-600">+ Rp ${parseInt(item.nominal).toLocaleString('id-ID')}</p>
-                            <p class="text-[9px] md:text-[10px] text-gray-400 mt-0.5">${dateStr}</p>
+                            <p class="text-xs md:text-sm font-black text-${colorClass}-600">${sign} ${formatRupiah(parseInt(item.nominal))}</p>
                         </div>
                     </div>`;
+
+                if(containerWarga) containerWarga.innerHTML += htmlItem;
+                if(containerAdmin) containerAdmin.innerHTML += htmlItem;
             });
-            
-            document.getElementById('total-kas-warga').innerText = "Rp " + totalKasGlobal.toLocaleString('id-ID');
+        }
+
+        // FUNGSI ADMIN: SIMPAN PENGELUARAN BARU
+        async function kirimPengeluaranAdmin(e) {
+            if(e) e.preventDefault();
+            const btn = document.getElementById('btn-submit-pengeluaran');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> MENGIRIM...'; 
+            btn.disabled = true;
+
+            const payload = {
+                nominal: document.getElementById('input-pengeluaran-nominal').value,
+                keterangan: document.getElementById('input-pengeluaran-ket').value
+            };
+
+            let res = await fetchAPI("simpanPengeluaran", payload);
+            if(res && res.data === "Sukses") {
+                tampilkanModal('Berhasil', 'Pengeluaran kas berhasil dicatat!', 'sukses');
+                document.getElementById('form-pengeluaran').reset();
+                tarikDataKeuangan(); // Update data saldo live
+            } else {
+                tampilkanModal('Gagal', res.message || 'Gagal menyimpan pengeluaran. Pastikan backend sudah diupdate.', 'gagal');
+            }
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+
+        const formatRupiah = (angka) => {
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(angka);
         }
 
         async function tarikDataIuran() {
@@ -1222,7 +1359,7 @@
                 if(res && res.data === "Sukses") {
                     tampilkanModal('Berhasil', 'Konfirmasi Iuran Terkirim', 'sukses'); 
                     tarikDataIuran(); 
-                    tarikDataRekapIuran(); // Refresh data transparansi juga
+                    tarikDataKeuangan(); // Refresh data transparansi juga
                     document.getElementById('form-iuran').reset(); 
                     
                     // Reset pilihan dan perhitungan nominal kembali default
@@ -1756,7 +1893,7 @@
         function getUserUsername() { try { return JSON.parse(localStorage.getItem('wargaSessionAktif')).username.toUpperCase(); } catch(e) { return 'WARGA'; } }
         
         function switchTab(tabId) {
-            ['section-beranda','section-surat','section-iuran','section-lapor','section-profil','section-admin-home','section-admin-verifikasi','section-admin-pengumuman','section-admin-warga'].forEach(s => { const el = document.getElementById(s); if(el) el.classList.add('hidden'); });
+            ['section-beranda','section-surat','section-iuran','section-lapor','section-profil','section-admin-home','section-admin-verifikasi','section-admin-pengumuman','section-admin-warga','section-admin-saldo'].forEach(s => { const el = document.getElementById(s); if(el) el.classList.add('hidden'); });
             
             const targetSection = document.getElementById('section-' + tabId);
             if(targetSection) {
@@ -1770,7 +1907,7 @@
             
             if(tabId === 'beranda') {
                 tarikDataPengumuman(); 
-                tarikDataRekapIuran(); 
+                tarikDataKeuangan(); 
             }
             if(tabId === 'lapor') tarikDataLaporan(); 
             if(tabId === 'iuran') tarikDataIuran();
@@ -1783,6 +1920,7 @@
             }
             if(tabId === 'admin-home') loadAdminDashboardStats();
             if(tabId === 'admin-warga') tarikDataWargaAdmin(); 
+            if(tabId === 'admin-saldo') tarikDataKeuangan();
         }
         
         function salinTeks(teks) {
@@ -1816,7 +1954,22 @@
             modal.style.display = 'none';
         }
 
+        // FUNGSI SHORTCUT TAGIHAN MASAL ADMIN
+        function bukaModalTagihanMasal() {
+            const modal = document.getElementById('tagihan-masal-modal');
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+        }
+
+        function tutupModalTagihanMasal() {
+            const modal = document.getElementById('tagihan-masal-modal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
+
         function tagihSemuaWarga() {
+            tutupModalTagihanMasal();
+
             let teks = `PENGUMUMAN IURAN KAS BLOK 9 BSR\n\nYth. Bapak/Ibu Warga Blok 9 BSR,\n\nBerdasarkan catatan kas Blok 9 BSR, masih terdapat beberapa warga yang belum melakukan pembayaran iuran kas dan telah melewati batas waktu yang ditentukan.\n\nUntuk itu, kami mohon kerja samanya agar Bapak/Ibu segera melakukan pembayaran iuran kas tersebut. Pembayaran dapat dilakukan melalui transfer atau secara tunai/cash kepada petugas yang berwenang.\n\nTerima kasih atas perhatian dan kerja sama Bapak/Ibu dalam mendukung kelancaran kegiatan serta kebersamaan lingkungan Blok 9 BSR.`;
             
             // Mengambil dan membersihkan nomor WA untuk disalin (HANYA YANG NUNGGAK)
@@ -1844,16 +1997,32 @@
 
             if(daftarNomor.length > 0) {
                 navigator.clipboard.writeText(daftarNomor.join(', ')).then(() => {
-                    // Berhasil disalin, langsung buka WA setelah sedikit jeda
+                    let pesanModal = `${daftarNomor.length} nomor WA warga yang menunggak telah disalin ke clipboard. Silakan Paste di aplikasi WA Blast/Broadcast Anda. Membuka WhatsApp...`;
+                    if (wargaTanpaWa > 0) {
+                        pesanModal += `\n\n*(Catatan: Ada ${wargaTanpaWa} warga nunggak yang dilewati karena nomor WA-nya kosong di database Excel)*`;
+                    }
+                    tampilkanModal('Daftar Nomor Tersalin!', pesanModal, 'sukses');
                 }).catch(err => console.error('Gagal salin nomor', err));
                 
                 setTimeout(() => {
                     const url = `https://wa.me/?text=${encodeURIComponent(teks)}`;
                     window.open(url, '_blank');
-                }, 500);
+                }, 4000);
             } else {
                 tampilkanModal('Informasi', 'Saat ini tidak ada warga menunggak yang memiliki nomor WA di database.', 'sukses');
             }
+        }
+
+        function filterWargaNunggak() {
+            tutupModalTagihanMasal();
+            switchTab('admin-warga');
+            setTimeout(() => {
+                const selectFilter = document.getElementById('filter-status-warga');
+                if(selectFilter) {
+                    selectFilter.value = 'Nunggak';
+                    cariWargaAdmin();
+                }
+            }, 100);
         }
 
         function hitungTotalWa() {
