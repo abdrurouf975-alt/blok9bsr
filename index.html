@@ -1495,19 +1495,19 @@
             }
         }
 
-        // 4. Daftar Warga & Fitur Pencarian (Otomatis dari Database)
+        // 4. Daftar Warga (DENGAN INDIKATOR NUNGGAK BULAN INI)
         async function tarikDataWargaAdmin() {
             const container = document.getElementById('admin-warga-list');
             if(!container) return;
-            container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20"></div>`;
-            document.getElementById('input-cari-warga').value = ''; // Reset form cari
+            container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20 col-span-full"></div>`;
+            document.getElementById('input-cari-warga').value = ''; 
             
             let res = await fetchAPI("getWarga");
             if(res && res.data) {
-                globalWargaData = res.data; // Simpan ke global untuk fitur cari
+                globalWargaData = res.data; 
                 tampilkanDataWargaAdminUI(globalWargaData);
             } else {
-                container.innerHTML = `<p class="text-center text-xs text-red-500 font-bold mt-4">Gagal memuat data warga.</p>`;
+                container.innerHTML = `<p class="text-center text-xs text-red-500 font-bold mt-4 col-span-full">Gagal memuat data warga.</p>`;
             }
         }
         
@@ -1525,24 +1525,32 @@
                     ? `<span class="bg-emerald-100 text-emerald-700 text-[10px] md:text-xs font-black px-3 py-1 rounded-lg tracking-widest border border-emerald-200">TERSEDIA</span>` 
                     : `<span class="bg-red-100 text-red-500 text-[10px] md:text-xs font-black px-3 py-1 rounded-lg tracking-widest border border-red-200">KOSONG</span>`;
                 
+                // Menampilkan badge status Iuran Bulan Ini
+                let statusIuranBadge = item.status_bulan_ini === 'Lunas'
+                    ? `<span class="bg-green-100 text-green-700 text-[10px] md:text-xs font-black px-3 py-1 rounded-lg tracking-widest border border-green-200 mt-2 inline-block"><i class="fas fa-check-circle mr-1"></i> LUNAS ${item.nama_bulan_ini}</span>`
+                    : `<span class="bg-red-100 text-red-600 text-[10px] md:text-xs font-black px-3 py-1 rounded-lg tracking-widest border border-red-200 mt-2 inline-block"><i class="fas fa-exclamation-circle mr-1"></i> NUNGGAK ${item.nama_bulan_ini}</span>`;
+                
+                // Set default bulan nunggak jika mengirim WA
+                let defaultBulan = item.status_bulan_ini === 'Nunggak' ? item.nama_bulan_ini : '';
+
                 container.innerHTML += `
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 relative transition-transform transform hover:-translate-y-1 hover:shadow-md animate-slide-down">
-                        <div class="flex justify-between items-start mb-3">
+                        <div class="flex justify-between items-start mb-1">
                             <div>
                                 <h4 class="font-bold text-gray-800 text-sm md:text-base uppercase">${item.nama}</h4>
                                 <p class="text-xs font-medium text-indigo-600 mt-1">Blok/No: ${item.no_rumah}</p>
                             </div>
                             ${badgeWa}
                         </div>
-                        <p class="text-[11px] text-gray-400 mb-5 pb-3 border-b border-gray-50">Username Akun: ${item.username}</p>
-                        <button onclick="bukaModalWA('${item.nama}', '${item.no_wa}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-sm text-xs md:text-sm uppercase tracking-wide flex justify-center items-center transition">
-                            <i class="fab fa-whatsapp text-lg mr-2"></i> Kirim Peringatan Iuran
+                        ${statusIuranBadge}
+                        <p class="text-[11px] text-gray-400 mt-3 mb-5 pb-3 border-b border-gray-50">Username: ${item.username}</p>
+                        <button onclick="bukaModalWA('${item.nama}', '${item.no_wa}', '${defaultBulan}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-sm text-xs md:text-sm uppercase tracking-wide flex justify-center items-center transition">
+                            <i class="fab fa-whatsapp text-lg mr-2"></i> Peringatan Iuran
                         </button>
                     </div>`;
             });
         }
 
-        // FUNGSI CARI WARGA
         function cariWargaAdmin() {
             const keyword = document.getElementById('input-cari-warga').value.toLowerCase();
             
@@ -1568,7 +1576,6 @@
             document.getElementById('display-role-profil').innerText = userObj.role.toUpperCase();
             document.getElementById('header-avatar').innerText = nama.charAt(0);
             
-            // Update teks sapaan warga dengan nomor rumah
             const elTeksBeranda = document.getElementById('teks-selamat-datang');
             if (elTeksBeranda && userObj.role !== 'admin') {
                 if (noRumah && noRumah !== "-" && noRumah !== "") {
@@ -1596,7 +1603,7 @@
             
             if(tabId === 'beranda') {
                 tarikDataPengumuman(); 
-                tarikDataRekapIuran(); // Ambil data transparansi kas di beranda
+                tarikDataRekapIuran(); 
             }
             if(tabId === 'lapor') tarikDataLaporan(); 
             if(tabId === 'iuran') tarikDataIuran();
@@ -1619,7 +1626,6 @@
             });
         }
 
-        // Modals Functions
         function tampilkanModal(judul, pesan, tipe) {
             document.getElementById('modal-title').innerText = judul; document.getElementById('modal-message').innerText = pesan;
             document.getElementById('custom-modal').classList.remove('hidden'); document.getElementById('custom-modal').style.display = 'flex';
@@ -1630,7 +1636,6 @@
         }
         function tutupModal() { document.getElementById('custom-modal').classList.add('hidden'); document.getElementById('custom-modal').style.display = 'none'; }
         
-        // ADMIN BUKTI MODAL
         function bukaModalBukti(urlGambar) {
             document.getElementById('img-bukti-transfer').src = urlGambar;
             document.getElementById('link-bukti-transfer').href = urlGambar;
@@ -1644,12 +1649,12 @@
             modal.style.display = 'none';
         }
 
-        // CHAT WA ADMIN MODAL
         function hitungTotalWa() {
             document.getElementById('wa-nominal').value = document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]:checked').length * 20000;
         }
 
-        function bukaModalWA(nama, noWa) {
+        // FUNGSI WA OTOMATIS CENTANG BULAN NUNGGAK
+        function bukaModalWA(nama, noWa, defaultBulan = '') {
             if(!noWa || noWa === "-" || noWa.trim() === "") {
                 tampilkanModal('Peringatan', 'Warga ini tidak memiliki data nomor WhatsApp di Database Excel.', 'gagal');
                 return;
@@ -1658,9 +1663,18 @@
             document.getElementById('wa-no-hp').value = noWa;
             document.getElementById('wa-nama').value = nama;
             
-            // Bersihkan centang bulan dan nominal setiap kali pop-up dibuka
+            // Bersihkan centang bulan sebelumnya
             document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]').forEach(c => c.checked = false);
-            document.getElementById('wa-nominal').value = '0';
+            
+            // Centang bulan otomatis jika ada
+            if(defaultBulan) {
+                // Konversi format bulan "JANUARI" jadi "Januari"
+                let bulanFormat = defaultBulan.charAt(0).toUpperCase() + defaultBulan.slice(1).toLowerCase();
+                let cb = document.querySelector(`#grid-wa-bulan input[value="${bulanFormat}"]`);
+                if(cb) cb.checked = true;
+            }
+            
+            hitungTotalWa(); // Perbarui nominal
             
             const modal = document.getElementById('wa-modal');
             modal.classList.remove('hidden');
