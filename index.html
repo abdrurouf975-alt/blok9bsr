@@ -71,7 +71,7 @@
                 <div class="max-w-6xl mx-auto w-full flex flex-col gap-6">
                     <div>
                         <h2 class="text-2xl md:text-4xl font-black text-gray-800 uppercase tracking-tight mb-1 md:mb-2" id="sapaan-beranda">HALO, WARGA!</h2>
-                        <p class="text-gray-500 font-medium text-sm md:text-base">Selamat datang di portal BLOK 9 BSR.</p>
+                        <p class="text-gray-500 font-medium text-sm md:text-base" id="teks-selamat-datang">Selamat datang di portal BLOK 9 BSR.</p>
                     </div>
                     
                     <!-- Menu Pintasan Cepat -->
@@ -1436,11 +1436,23 @@
         // --- UTILS ---
         function muatProfilData(userObj) {
             const nama = userObj.nama ? userObj.nama.toUpperCase() : 'WARGA';
+            const noRumah = userObj.no_rumah ? userObj.no_rumah.toUpperCase() : '';
+            
             document.getElementById(userObj.role === 'admin' ? 'sapaan-admin' : 'sapaan-beranda').innerText = 'HALO, ' + nama + '!';
             document.getElementById('header-role').innerText = userObj.role === 'admin' ? 'Mode Administrator' : 'Portal Layanan Warga';
             document.getElementById('display-nama-profil').innerText = nama;
             document.getElementById('display-role-profil').innerText = userObj.role.toUpperCase();
             document.getElementById('header-avatar').innerText = nama.charAt(0);
+            
+            // Update teks sapaan warga dengan nomor rumah
+            const elTeksBeranda = document.getElementById('teks-selamat-datang');
+            if (elTeksBeranda && userObj.role !== 'admin') {
+                if (noRumah && noRumah !== "-" && noRumah !== "") {
+                    elTeksBeranda.innerHTML = `Selamat datang <strong>${nama} (${noRumah})</strong> di portal BLOK 9 BSR.`;
+                } else {
+                    elTeksBeranda.innerHTML = `Selamat datang <strong>${nama}</strong> di portal BLOK 9 BSR.`;
+                }
+            }
         }
         function getUserFullName() { try { return JSON.parse(localStorage.getItem('wargaSessionAktif')).nama.toUpperCase(); } catch(e) { return 'WARGA'; } }
         function getUserUsername() { try { return JSON.parse(localStorage.getItem('wargaSessionAktif')).username.toUpperCase(); } catch(e) { return 'WARGA'; } }
