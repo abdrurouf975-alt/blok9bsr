@@ -1707,7 +1707,7 @@
             }
             pending.forEach(item => {
                 let buktiBtn = (item.bukti && item.bukti !== "-" && item.bukti !== "") 
-                    ? `<button onclick="bukaModalBukti('${item.bukti}')" class="bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-bold px-4 py-2 rounded-lg flex items-center shadow-sm hover:bg-blue-100 transition"><i class="fas fa-image mr-1"></i> Lihat Bukti</button>` 
+                    ? `<button onclick="bukaModalBukti('${item.bukti}')" class="bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center shadow-sm hover:bg-blue-100 transition"><i class="fas fa-image mr-1"></i> Lihat Bukti</button>` 
                     : `<span class="text-[10px] text-gray-400 font-bold">Tanpa Bukti</span>`;
                 
                 // Menyiapkan Nama + No Rumah
@@ -2236,161 +2236,143 @@
             ctx.closePath();
             ctx.fill();
 
-            // --- 4. Load Logo & Render Keseluruhan ---
-            const imgLogo = new Image();
-            // Menggunakan crossOrigin agar tidak kena error CORS saat toDataURL
-            imgLogo.crossOrigin = "Anonymous"; 
-            imgLogo.src = 'https://i.ibb.co/FbJnTN1n/Chat-GPT-Image-May-12-2026-09-34-13-AM.png';
+            // --- 4. Render Teks Keseluruhan ---
+            // --- Judul Kuitansi ---
+            ctx.fillStyle = '#111827';
+            ctx.font = 'bold 50px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('BUKTI PEMBAYARAN KAS', 150, 210);
 
-            imgLogo.onload = function() {
-                // Gambar Logo di pojok kanan atas kertas kuitansi
-                ctx.drawImage(imgLogo, 880, 140, 200, 200);
-                lanjutkanRender();
-            };
+            ctx.fillStyle = '#6B7280';
+            ctx.font = 'bold 30px Arial';
+            ctx.fillText('PAGUYUBAN BLOK 9 BSR', 150, 260);
 
-            imgLogo.onerror = function() {
-                // Jika logo gagal dimuat (misal karena jaringan), tetap render kuitansi tanpa logo
-                lanjutkanRender();
-            };
+            // Garis Pembatas
+            ctx.strokeStyle = '#E5E7EB';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(150, 360);
+            ctx.lineTo(1050, 360);
+            ctx.stroke();
 
-            function lanjutkanRender() {
-                // --- Judul Kuitansi ---
-                ctx.fillStyle = '#111827';
-                ctx.font = 'bold 50px Arial';
-                ctx.textAlign = 'left'; // Ubah rata kiri agar tidak menabrak logo
-                ctx.fillText('BUKTI PEMBAYARAN KAS', 150, 210);
+            // --- 5. Teks Rincian Data ---
+            ctx.textAlign = 'left';
+            const startX = 150;
+            const valueX = 480; // Titik awal tulisan value
+            let startY = 460;
+            const lineH = 90;
 
-                ctx.fillStyle = '#6B7280';
-                ctx.font = 'bold 30px Arial';
-                ctx.fillText('PAGUYUBAN BLOK 9 BSR', 150, 260);
+            // Diterima Dari
+            ctx.fillStyle = '#6B7280';
+            ctx.font = '35px Arial';
+            ctx.fillText('Diterima Dari', startX, startY);
+            ctx.fillStyle = '#111827';
+            ctx.font = 'bold 35px Arial';
+            ctx.fillText(':   ' + namaWarga.toUpperCase(), valueX, startY);
 
-                // Garis Pembatas
-                ctx.strokeStyle = '#E5E7EB';
-                ctx.lineWidth = 4;
-                ctx.beginPath();
-                ctx.moveTo(150, 360);
-                ctx.lineTo(1050, 360);
-                ctx.stroke();
+            // Tanggal Bayar
+            startY += lineH;
+            ctx.fillStyle = '#6B7280';
+            ctx.font = '35px Arial';
+            ctx.fillText('Tanggal Bayar', startX, startY);
+            ctx.fillStyle = '#111827';
+            ctx.font = 'bold 35px Arial';
+            ctx.fillText(':   ' + tanggalLunas, valueX, startY);
 
-                // --- 5. Teks Rincian Data ---
-                ctx.textAlign = 'left';
-                const startX = 150;
-                const valueX = 480; // Titik awal tulisan value
-                let startY = 460;
-                const lineH = 90;
-
-                // Diterima Dari
-                ctx.fillStyle = '#6B7280';
-                ctx.font = '35px Arial';
-                ctx.fillText('Diterima Dari', startX, startY);
-                ctx.fillStyle = '#111827';
-                ctx.font = 'bold 35px Arial';
-                ctx.fillText(':   ' + namaWarga.toUpperCase(), valueX, startY);
-
-                // Tanggal Bayar
-                startY += lineH;
-                ctx.fillStyle = '#6B7280';
-                ctx.font = '35px Arial';
-                ctx.fillText('Tanggal Bayar', startX, startY);
-                ctx.fillStyle = '#111827';
-                ctx.font = 'bold 35px Arial';
-                ctx.fillText(':   ' + tanggalLunas, valueX, startY);
-
-                // Untuk Iuran Bulan
-                startY += lineH;
-                ctx.fillStyle = '#6B7280';
-                ctx.font = '35px Arial';
-                ctx.fillText('Pembayaran Bulan', startX, startY);
-                ctx.fillStyle = '#111827';
-                ctx.font = 'bold 35px Arial';
-                
-                // Logika Word-Wrap otomatis jika nama bulan sangat panjang
-                let textBulan = ':   ' + bulanDibayar.toUpperCase();
-                let words = textBulan.split(', ');
-                let lineStr = '';
-                for(let n = 0; n < words.length; n++) {
-                    let testLine = lineStr + words[n] + (n < words.length - 1 ? ', ' : '');
-                    let metrics = ctx.measureText(testLine);
-                    if (metrics.width > 550 && n > 0) {
-                        ctx.fillText(lineStr, valueX, startY);
-                        // Tambahkan spasi inden untuk baris berikutnya agar sejajar dengan titik dua
-                        lineStr = '    ' + words[n] + (n < words.length - 1 ? ', ' : '');
-                        startY += 50; // Jarak antar baris text bulan
-                    } else {
-                        lineStr = testLine;
-                    }
+            // Untuk Iuran Bulan
+            startY += lineH;
+            ctx.fillStyle = '#6B7280';
+            ctx.font = '35px Arial';
+            ctx.fillText('Pembayaran Bulan', startX, startY);
+            ctx.fillStyle = '#111827';
+            ctx.font = 'bold 35px Arial';
+            
+            // Logika Word-Wrap otomatis jika nama bulan sangat panjang
+            let textBulan = ':   ' + bulanDibayar.toUpperCase();
+            let words = textBulan.split(', ');
+            let lineStr = '';
+            for(let n = 0; n < words.length; n++) {
+                let testLine = lineStr + words[n] + (n < words.length - 1 ? ', ' : '');
+                let metrics = ctx.measureText(testLine);
+                if (metrics.width > 550 && n > 0) {
+                    ctx.fillText(lineStr, valueX, startY);
+                    // Tambahkan spasi inden untuk baris berikutnya agar sejajar dengan titik dua
+                    lineStr = '    ' + words[n] + (n < words.length - 1 ? ', ' : '');
+                    startY += 50; // Jarak antar baris text bulan
+                } else {
+                    lineStr = testLine;
                 }
-                ctx.fillText(lineStr, valueX, startY);
-
-                // --- 6. Kotak Nominal Angka ---
-                startY += 150;
-                const boxY = startY;
-                
-                // Kotak background nominal
-                ctx.fillStyle = '#EEF2FF'; // Indigo-50
-                ctx.strokeStyle = '#C7D2FE'; // Indigo-200
-                ctx.lineWidth = 3;
-                
-                ctx.beginPath();
-                ctx.moveTo(150 + 20, boxY);
-                ctx.lineTo(600 - 20, boxY);
-                ctx.quadraticCurveTo(600, boxY, 600, boxY + 20);
-                ctx.lineTo(600, boxY + 120 - 20);
-                ctx.quadraticCurveTo(600, boxY + 120, 600 - 20, boxY + 120);
-                ctx.lineTo(150 + 20, boxY + 120);
-                ctx.quadraticCurveTo(150, boxY + 120, 150, boxY + 120 - 20);
-                ctx.lineTo(150, boxY + 20);
-                ctx.quadraticCurveTo(150, boxY, 150 + 20, boxY);
-                ctx.closePath();
-                ctx.fill();
-                ctx.stroke();
-
-                // Teks Angka Nominal
-                ctx.fillStyle = '#4F46E5'; // Indigo-600
-                ctx.font = 'bold 55px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('Rp ' + parseInt(nominal).toLocaleString('id-ID'), 375, boxY + 80);
-
-                // --- 7. STEMPEL LUNAS (Miring Merah/Hijau) ---
-                ctx.save();
-                ctx.translate(850, boxY + 50); // Titik pusat stempel di kanan kotak angka
-                ctx.rotate(-0.35); // Putar miring sedikit ke atas
-                
-                // Kotak border Stempel
-                ctx.strokeStyle = '#10B981'; // Hijau Emerald
-                ctx.lineWidth = 10;
-                ctx.beginPath();
-                ctx.roundRect ? ctx.roundRect(-220, -70, 440, 140, 20) : ctx.strokeRect(-220, -70, 440, 140);
-                ctx.stroke();
-                
-                // Teks Stempel
-                ctx.fillStyle = '#10B981';
-                ctx.font = 'italic black 80px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('L U N A S', 0, 30);
-                ctx.restore();
-
-                // --- 8. Waktu Cetak & Footer ---
-                const waktuSekarang = new Date();
-                const opsiWaktu = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-                const stringWaktuCetak = waktuSekarang.toLocaleDateString('id-ID', opsiWaktu) + ' WIB';
-
-                ctx.textAlign = 'left';
-                ctx.fillStyle = '#9CA3AF';
-                ctx.font = '22px Arial';
-                ctx.fillText('Waktu Cetak Dokumen: ' + stringWaktuCetak, 150, 1480);
-
-                ctx.textAlign = 'center';
-                ctx.fillStyle = '#9CA3AF';
-                ctx.font = 'italic 25px Arial';
-                ctx.fillText('Dokumen ini sah sebagai tanda terima pembayaran tercatat di database Aplikasi.', canvas.width / 2, 1530);
-
-                // --- 9. Convert ke Base64 Image (JPG) 100% Kualitas ---
-                const dataUrl = canvas.toDataURL('image/jpeg', 1.0);
-                
-                // Buka Modal & Pass Data
-                bukaModalPreviewStruk(dataUrl, namaWarga, bulanDibayar);
             }
+            ctx.fillText(lineStr, valueX, startY);
+
+            // --- 6. Kotak Nominal Angka ---
+            startY += 150;
+            const boxY = startY;
+            
+            // Kotak background nominal
+            ctx.fillStyle = '#EEF2FF'; // Indigo-50
+            ctx.strokeStyle = '#C7D2FE'; // Indigo-200
+            ctx.lineWidth = 3;
+            
+            ctx.beginPath();
+            ctx.moveTo(150 + 20, boxY);
+            ctx.lineTo(600 - 20, boxY);
+            ctx.quadraticCurveTo(600, boxY, 600, boxY + 20);
+            ctx.lineTo(600, boxY + 120 - 20);
+            ctx.quadraticCurveTo(600, boxY + 120, 600 - 20, boxY + 120);
+            ctx.lineTo(150 + 20, boxY + 120);
+            ctx.quadraticCurveTo(150, boxY + 120, 150, boxY + 120 - 20);
+            ctx.lineTo(150, boxY + 20);
+            ctx.quadraticCurveTo(150, boxY, 150 + 20, boxY);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Teks Angka Nominal
+            ctx.fillStyle = '#4F46E5'; // Indigo-600
+            ctx.font = 'bold 55px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Rp ' + parseInt(nominal).toLocaleString('id-ID'), 375, boxY + 80);
+
+            // --- 7. STEMPEL LUNAS (Miring Merah/Hijau) ---
+            ctx.save();
+            ctx.translate(850, boxY + 50); // Titik pusat stempel di kanan kotak angka
+            ctx.rotate(-0.35); // Putar miring sedikit ke atas
+            
+            // Kotak border Stempel
+            ctx.strokeStyle = '#10B981'; // Hijau Emerald
+            ctx.lineWidth = 10;
+            ctx.beginPath();
+            ctx.roundRect ? ctx.roundRect(-220, -70, 440, 140, 20) : ctx.strokeRect(-220, -70, 440, 140);
+            ctx.stroke();
+            
+            // Teks Stempel
+            ctx.fillStyle = '#10B981';
+            ctx.font = 'italic black 80px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('L U N A S', 0, 30);
+            ctx.restore();
+
+            // --- 8. Waktu Cetak & Footer ---
+            const waktuSekarang = new Date();
+            const opsiWaktu = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const stringWaktuCetak = waktuSekarang.toLocaleDateString('id-ID', opsiWaktu) + ' WIB';
+
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#9CA3AF';
+            ctx.font = '22px Arial';
+            ctx.fillText('Waktu Cetak Dokumen: ' + stringWaktuCetak, 150, 1480);
+
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#9CA3AF';
+            ctx.font = 'italic 25px Arial';
+            ctx.fillText('Dokumen ini sah sebagai tanda terima pembayaran tercatat di database Aplikasi.', canvas.width / 2, 1530);
+
+            // --- 9. Convert ke Base64 Image (JPG) 100% Kualitas ---
+            const dataUrl = canvas.toDataURL('image/jpeg', 1.0);
+            
+            // Buka Modal & Pass Data
+            bukaModalPreviewStruk(dataUrl, namaWarga, bulanDibayar);
         }
 
         // FUNGSI KONTROL MODAL PREVIEW STRUK
