@@ -1470,7 +1470,7 @@
         }
 
         async function tarikDataIuran() {
-            // CEK STATUS NUNGGAK/LUNAS BULAN INI UNTUK WARGA TERSEBUT DARI DATABASE
+            // CEK STATUS NUNGGAK BACA LANGSUNG DARI BACKEND
             let resStatus = await fetchAPI("cekStatusBulanIni", { username: getUserUsername() });
             
             const bannerNunggak = document.getElementById('status-iuran-banner');
@@ -1484,7 +1484,7 @@
                 } else {
                     bannerNunggak.classList.add('hidden');
                     bannerLunas.classList.remove('hidden');
-                    document.getElementById('bulan-lunas').innerText = "semua bulan hingga saat ini";
+                    document.getElementById('bulan-lunas').innerText = "seluruh bulan";
                 }
             }
 
@@ -1972,27 +1972,18 @@
             }
         }
 
-        // 4. Daftar Warga (DENGAN INDIKATOR NUNGGAK BULAN INI)
+        // 4. Daftar Warga (BACA OTOMATIS DARI REKAP NUNGGAK BACKEND)
         async function tarikDataWargaAdmin() {
             const container = document.getElementById('admin-warga-list');
             if(!container) return;
             container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20 col-span-full"></div>`;
             document.getElementById('input-cari-warga').value = ''; 
             
-            let [resWarga, resIuran] = await Promise.all([
-                fetchAPI("getWarga"),
-                fetchAPI("getIuran")
-            ]);
+            // Backend sekarang akan menyuplai status Nunggak langsung dari rekapnunggak
+            let resWarga = await fetchAPI("getWarga");
             
             if(resWarga && resWarga.data) {
-                // Kalkulasi bulan nunggak untuk masing-masing warga di halaman admin
-                globalWargaData = resWarga.data.map(w => {
-                    let unpaid = getUnpaidMonths(extractUsername(w.username), resIuran.data || []);
-                    w.unpaid_months = unpaid; // array
-                    w.status_bulan_ini = unpaid.length > 0 ? "Nunggak" : "Lunas";
-                    w.nama_bulan_ini = unpaid.join(', '); // string dipisahkan koma
-                    return w;
-                });
+                globalWargaData = resWarga.data; 
                 
                 // Set default filter to 'Semua' initially
                 const selectFilter = document.getElementById('filter-status-warga');
@@ -2268,13 +2259,19 @@
             // Bersihkan centang bulan sebelumnya
             document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]').forEach(c => c.checked = false);
             
-            // Centang bulan otomatis jika ada data yang dilempar
+            // Centang bulan otomatis jika ada data yang dilempar dari tab rekapnunggak
             if(defaultBulan) {
                 let arrBulan = defaultBulan.split(',').map(b => b.trim());
                 arrBulan.forEach(b => {
-                    // Konversi format bulan "JANUARI" jadi "Januari"
-                    let bulanFormat = b.charAt(0).toUpperCase() + b.slice(1).toLowerCase();
-                    let cb = document.querySelector(`#grid-wa-bulan input[value="${bulanFormat}"]`);
+                    // Konversi dari "JAN" di rekapnunggak menjadi format id "Januari" di Checkbox
+                    const mapBulan = {
+                        "JAN": "Januari", "FEB": "Februari", "MAR": "Maret", "APR": "April",
+                        "MEI": "Mei", "JUN": "Juni", "JUL": "Juli", "AGS": "Agustus",
+                        "SEP": "September", "OKT": "Oktober", "NOV": "November", "DES": "Desember"
+                    };
+                    
+                    let bulanFullName = mapBulan[b.toUpperCase()] || (b.charAt(0).toUpperCase() + b.slice(1).toLowerCase());
+                    let cb = document.querySelector(`#grid-wa-bulan input[value="${bulanFullName}"]`);
                     if(cb) cb.checked = true;
                 });
             }
