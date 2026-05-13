@@ -6,6 +6,7 @@
     <title>Aplikasi BLOK 9 BSR</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         ::-webkit-scrollbar { width: 0px; background: transparent; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -286,9 +287,9 @@
                                             <label class="cursor-pointer"><input type="checkbox" value="Juli" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">JUL</div></label>
                                             <label class="cursor-pointer"><input type="checkbox" value="Agustus" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">AGS</div></label>
                                             <label class="cursor-pointer"><input type="checkbox" value="September" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition hover:shadow-md">SEP</div></label>
-                                            <label class="cursor-pointer"><input type="checkbox" value="Oktober" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">OKT</div></label>
-                                            <label class="cursor-pointer"><input type="checkbox" value="November" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">NOV</div></label>
-                                            <label class="cursor-pointer"><input type="checkbox" value="Desember" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">DES</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="Oktober" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border py-3 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">OKT</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="November" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-3 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">NOV</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="Desember" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-3 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">DES</div></label>
                                         </div>
                                     </div>
                                     <div class="mb-5">
@@ -547,7 +548,7 @@
             <!-- SECTION ADMIN: DAFTAR WARGA -->
             <div id="section-admin-warga" class="p-5 md:p-8 section-admin hidden">
                 <div class="max-w-6xl mx-auto w-full">
-                    <div class="flex flex-col md:flex-row md:justify-between md:items-end mb-6 border-b pb-4">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-end mb-6 md:mb-8 border-b pb-4">
                         <div class="mb-4 md:mb-0">
                             <h2 class="text-2xl md:text-3xl font-black text-gray-800 uppercase tracking-wide">Daftar Warga</h2>
                             <p class="text-sm text-gray-500 mt-1">Cari dan hubungi warga terkait tunggakan iuran.</p>
@@ -767,33 +768,6 @@
             if (!str) return "";
             let match = str.match(/\((.*?)\)$/);
             return match ? match[1].trim().toLowerCase() : str.trim().toLowerCase();
-        }
-
-        // FUNGSI CERDAS: KALKULASI BULAN NUNGGAK (Januari s.d Bulan Saat Ini)
-        function getUnpaidMonths(username, iuranData) {
-            if(!username) return [];
-            const currentMonthIdx = new Date().getMonth();
-            const allMonths = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            
-            // Kita cek dari Januari sampai bulan saat ini
-            const monthsToCheck = allMonths.slice(0, currentMonthIdx + 1);
-
-            let paidMonths = [];
-            let targetUser = username.toLowerCase().trim();
-
-            iuranData.forEach(item => {
-                let w = extractUsername(item.warga);
-                // EXACT MATCH
-                if (w === targetUser &&
-                    (item.status.toLowerCase().includes('lunas') || item.status.toLowerCase().includes('selesai'))) {
-                    // Masukkan ke daftar bulan yang sudah dibayar
-                    let mArr = item.bulan.split(',').map(m => m.trim().toLowerCase());
-                    paidMonths.push(...mArr);
-                }
-            });
-
-            // Saring bulan-bulan yang belum ada di daftar pembayaran
-            return monthsToCheck.filter(m => !paidMonths.includes(m.toLowerCase()));
         }
 
         async function fetchAPI(action, payloadData = {}) {
@@ -1106,7 +1080,7 @@
                     let tanggapan = parts[1];
                     tanggapanHtml = `
                     <div class="mt-4 p-5 bg-emerald-50 border border-emerald-100 rounded-xl text-sm md:text-base text-gray-800 relative shadow-inner">
-                        <i class="fas fa-reply text-emerald-50 absolute top-4 right-4 opacity-10 text-4xl pointer-events-none"></i>
+                        <i class="fas fa-reply text-emerald-500 absolute top-4 right-4 opacity-10 text-4xl pointer-events-none"></i>
                         <span class="font-black text-emerald-700 block mb-2 uppercase tracking-wider text-xs">Tanggapan Pengurus:</span>
                         <p class="leading-relaxed relative z-10">${tanggapan}</p>
                     </div>`;
@@ -1407,84 +1381,6 @@
 
         const formatRupiah = (angka) => {
             return 'Rp ' + new Intl.NumberFormat('id-ID').format(angka);
-        }
-
-        // --- CETAK STRUK PDF ---
-        function cetakStrukIuran(namaWarga, tanggalLunas, bulanDibayar, nominal) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Pengaturan Desain Kuitansi
-            doc.setFillColor(245, 247, 250);
-            doc.rect(0, 0, 210, 297, 'F'); 
-            
-            doc.setFillColor(255, 255, 255);
-            doc.roundedRect(20, 20, 170, 120, 5, 5, 'F');
-            
-            doc.setDrawColor(79, 70, 229); 
-            doc.setLineWidth(1);
-            doc.line(20, 20, 190, 20);
-
-            // Judul Kuitansi
-            doc.setTextColor(31, 41, 55);
-            doc.setFontSize(22);
-            doc.setFont("helvetica", "bold");
-            doc.text("BUKTI PEMBAYARAN", 105, 35, null, null, "center");
-            
-            doc.setFontSize(12);
-            doc.setFont("helvetica", "normal");
-            doc.text("KAS PAGUYUBAN BLOK 9 BSR", 105, 43, null, null, "center");
-
-            doc.setDrawColor(229, 231, 235);
-            doc.setLineWidth(0.5);
-            doc.line(30, 50, 180, 50);
-
-            // Detail Pembayaran
-            doc.setFontSize(11);
-            doc.setTextColor(75, 85, 99);
-            doc.text("Diterima Dari", 30, 65);
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(31, 41, 55);
-            doc.text(`: ${namaWarga.toUpperCase()}`, 75, 65);
-
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(75, 85, 99);
-            doc.text("Tanggal Bayar", 30, 75);
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(31, 41, 55);
-            doc.text(`: ${tanggalLunas}`, 75, 75);
-
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(75, 85, 99);
-            doc.text("Untuk Iuran Bulan", 30, 85);
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(31, 41, 55);
-            
-            // Handle multiple months wrapping
-            const splitBulan = doc.splitTextToSize(`: ${bulanDibayar.toUpperCase()}`, 110);
-            doc.text(splitBulan, 75, 85);
-
-            // Nominal Box
-            doc.setFillColor(238, 242, 255);
-            doc.roundedRect(30, 105, 80, 20, 3, 3, 'F');
-            doc.setFontSize(14);
-            doc.setTextColor(79, 70, 229);
-            doc.text(`Rp ${parseInt(nominal).toLocaleString('id-ID')}`, 70, 118, null, null, "center");
-
-            // LUNAS Stamp
-            doc.setTextColor(16, 185, 129); // Emerald Green
-            doc.setFontSize(28);
-            doc.setFont("helvetica", "bolditalic");
-            doc.text("L U N A S", 145, 118);
-
-            // Footer
-            doc.setFontSize(9);
-            doc.setFont("helvetica", "italic");
-            doc.setTextColor(156, 163, 175);
-            doc.text("*Kuitansi ini dicetak otomatis oleh sistem Aplikasi BLOK 9 BSR.", 105, 135, null, null, "center");
-
-            // Save the PDF
-            doc.save(`Kuitansi_Iuran_${namaWarga}_${bulanDibayar.replace(/,/g, '-')}.pdf`);
         }
 
         async function tarikDataIuran() {
@@ -1990,18 +1886,27 @@
             }
         }
 
-        // 4. Daftar Warga (BACA OTOMATIS DARI REKAP NUNGGAK BACKEND)
+        // 4. Daftar Warga (DENGAN INDIKATOR NUNGGAK BULAN INI)
         async function tarikDataWargaAdmin() {
             const container = document.getElementById('admin-warga-list');
             if(!container) return;
             container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20 col-span-full"></div>`;
             document.getElementById('input-cari-warga').value = ''; 
             
-            // Backend sekarang akan menyuplai status Nunggak langsung dari rekapnunggak
-            let resWarga = await fetchAPI("getWarga");
+            let [resWarga, resIuran] = await Promise.all([
+                fetchAPI("getWarga"),
+                fetchAPI("getIuran")
+            ]);
             
             if(resWarga && resWarga.data) {
-                globalWargaData = resWarga.data; 
+                // Kalkulasi bulan nunggak untuk masing-masing warga di halaman admin
+                globalWargaData = resWarga.data.map(w => {
+                    let unpaid = getUnpaidMonths(extractUsername(w.username), resIuran.data || []);
+                    w.unpaid_months = unpaid; // array
+                    w.status_bulan_ini = unpaid.length > 0 ? "Nunggak" : "Lunas";
+                    w.nama_bulan_ini = unpaid.join(', '); // string dipisahkan koma
+                    return w;
+                });
                 
                 // Set default filter to 'Semua' initially
                 const selectFilter = document.getElementById('filter-status-warga');
@@ -2187,9 +2092,149 @@
             modal.style.display = 'none';
         }
 
-        // --- FUNGSI CETAK KUITANSI KE JPG CANVAS (BARU) ---
+        // FUNGSI SHORTCUT TAGIHAN MASAL ADMIN
+        function bukaModalTagihanMasal() {
+            const modal = document.getElementById('tagihan-masal-modal');
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+        }
+
+        function tutupModalTagihanMasal() {
+            const modal = document.getElementById('tagihan-masal-modal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
+
+        function tagihSemuaWarga() {
+            tutupModalTagihanMasal();
+
+            let teks = `PENGUMUMAN IURAN KAS BLOK 9 BSR\n\nYth. Bapak/Ibu Warga Blok 9 BSR,\n\nBerdasarkan catatan kas Paguyuban Blok 9 BSR, masih terdapat beberapa warga yang belum melakukan pembayaran iuran kas dan telah melewati batas waktu yang ditentukan.\n\nUntuk itu, kami mohon kerja samanya agar Bapak/Ibu segera melakukan pembayaran iuran kas tersebut. Pembayaran dapat dilakukan melalui transfer atau secara tunai/cash kepada pengurus yang berwenang.\n\nTerima kasih atas perhatian dan kerja sama Bapak/Ibu dalam mendukung kelancaran kegiatan serta kebersamaan lingkungan Blok 9 BSR.`;
+            
+            // Mengambil dan membersihkan nomor WA untuk disalin (HANYA YANG NUNGGAK)
+            let daftarNomor = [];
+            let wargaTanpaWa = 0;
+
+            if(globalWargaData && globalWargaData.length > 0) {
+                // Filter hanya warga yang menunggak
+                const wargaNunggak = globalWargaData.filter(w => w.status_bulan_ini === 'Nunggak');
+
+                wargaNunggak.forEach(w => {
+                    if(w.no_wa && w.no_wa !== "-" && w.no_wa.trim() !== "") {
+                        let waClean = w.no_wa.replace(/[^0-9]/g, '');
+                        if (waClean.startsWith('0')) {
+                            waClean = '62' + waClean.substring(1);
+                        }
+                        if(!daftarNomor.includes(waClean)) {
+                            daftarNomor.push(waClean);
+                        }
+                    } else {
+                        wargaTanpaWa++;
+                    }
+                });
+            }
+
+            if(daftarNomor.length > 0) {
+                navigator.clipboard.writeText(daftarNomor.join(', ')).then(() => {
+                    let pesanModal = `${daftarNomor.length} nomor WA warga yang menunggak telah disalin ke clipboard. Silakan Paste di aplikasi WA Blast/Broadcast Anda. Membuka WhatsApp...`;
+                    if (wargaTanpaWa > 0) {
+                        pesanModal += `\n\n*(Catatan: Ada ${wargaTanpaWa} warga nunggak yang dilewati karena nomor WA-nya kosong di database Excel)*`;
+                    }
+                    tampilkanModal('Daftar Nomor Tersalin!', pesanModal, 'sukses');
+                }).catch(err => console.error('Gagal salin nomor', err));
+                
+                setTimeout(() => {
+                    const url = `https://wa.me/?text=${encodeURIComponent(teks)}`;
+                    window.open(url, '_blank');
+                }, 4000);
+            } else {
+                tampilkanModal('Informasi', 'Saat ini tidak ada warga menunggak yang memiliki nomor WA di database.', 'sukses');
+            }
+        }
+
+        function filterWargaNunggak() {
+            tutupModalTagihanMasal();
+            switchTab('admin-warga');
+            setTimeout(() => {
+                const selectFilter = document.getElementById('filter-status-warga');
+                if(selectFilter) {
+                    selectFilter.value = 'Nunggak';
+                    cariWargaAdmin();
+                }
+            }, 100);
+        }
+
+        function hitungTotalWa() {
+            const cbCount = document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]:checked').length;
+            // Gunakan nilai 20.000 sebagai standar peringatan WhatsApp
+            document.getElementById('wa-nominal').value = cbCount * 20000;
+        }
+
+        // FUNGSI WA OTOMATIS CENTANG BULAN NUNGGAK
+        function bukaModalWA(nama, noWa, defaultBulan = '') {
+            if(!noWa || noWa === "-" || noWa.trim() === "") {
+                tampilkanModal('Peringatan', 'Warga ini tidak memiliki data nomor WhatsApp di Database Excel.', 'gagal');
+                return;
+            }
+            document.getElementById('wa-nama-warga').innerText = nama;
+            document.getElementById('wa-no-hp').value = noWa;
+            document.getElementById('wa-nama').value = nama;
+            
+            // Bersihkan centang bulan sebelumnya
+            document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]').forEach(c => c.checked = false);
+            
+            // Centang bulan otomatis jika ada data yang dilempar
+            if(defaultBulan) {
+                let arrBulan = defaultBulan.split(',').map(b => b.trim());
+                arrBulan.forEach(b => {
+                    // Konversi format bulan "JANUARI" jadi "Januari"
+                    let bulanFormat = b.charAt(0).toUpperCase() + b.slice(1).toLowerCase();
+                    let cb = document.querySelector(`#grid-wa-bulan input[value="${bulanFormat}"]`);
+                    if(cb) cb.checked = true;
+                });
+            }
+            
+            hitungTotalWa(); // Perbarui nominal
+            
+            const modal = document.getElementById('wa-modal');
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+        }
+
+        function tutupModalWA() {
+            const modal = document.getElementById('wa-modal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
+
+        function prosesKirimWA() {
+            const nama = document.getElementById('wa-nama').value;
+            const noWa = document.getElementById('wa-no-hp').value;
+            
+            const cb = document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]:checked');
+            if (cb.length === 0) {
+                tampilkanModal('Peringatan', 'Pilih minimal 1 bulan nunggak.', 'gagal');
+                return;
+            }
+            
+            const bulan = Array.from(cb).map(c => c.value).join(', ');
+            let nominalStr = document.getElementById('wa-nominal').value;
+            const nominal = 'Rp ' + parseInt(nominalStr).toLocaleString('id-ID');
+
+            let waClean = noWa.replace(/[^0-9]/g, '');
+            if (waClean.startsWith('0')) {
+                waClean = '62' + waClean.substring(1);
+            }
+            
+            const teks = `Halo Bpk/Ibu *${nama}*,\n\nKami dari Pengurus Paguyuban BLOK 9 BSR ingin menginformasikan bahwa tagihan iuran kas Anda untuk bulan *${bulan}* dengan total *${nominal}* belum terbayar/terkonfirmasi.\n\nMohon untuk segera melakukan konfirmasi pembayaran di Aplikasi. Terima kasih 🙏`;
+            
+            const url = `https://wa.me/${waClean}?text=${encodeURIComponent(teks)}`;
+            window.open(url, '_blank');
+            tutupModalWA();
+        }
+
+        // --- FUNGSI CETAK KUITANSI KE JPG CANVAS ---
         function cetakStrukIuran(namaWarga, tanggalLunas, bulanDibayar, nominal) {
-            // Membuat elemen canvas off-screen dengan rasio A5 Portrait (1200 x 1700 piksel)
+            // Membuat elemen canvas off-screen dengan rasio A5 Portrait
             const canvas = document.createElement('canvas');
             canvas.width = 1200;
             canvas.height = 1700;
@@ -2205,7 +2250,7 @@
             ctx.shadowBlur = 40;
             ctx.shadowOffsetY = 10;
             
-            // Menggambar rounded rectangle manual agar kompatibel di semua browser
+            // Menggambar rounded rectangle
             const x = 80; const y = 80; const w = 1040; const h = 1540; const r = 30;
             ctx.beginPath();
             ctx.moveTo(x + r, y);
@@ -2414,151 +2459,6 @@
             modal.style.display = 'none';
         }
 
-        // FUNGSI SHORTCUT TAGIHAN MASAL ADMIN
-        function bukaModalTagihanMasal() {
-            const modal = document.getElementById('tagihan-masal-modal');
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-        }
-
-        function tutupModalTagihanMasal() {
-            const modal = document.getElementById('tagihan-masal-modal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
-        }
-
-        function tagihSemuaWarga() {
-            tutupModalTagihanMasal();
-
-            let teks = `PENGUMUMAN IURAN KAS BLOK 9 BSR\n\nYth. Bapak/Ibu Warga Blok 9 BSR,\n\nBerdasarkan catatan kas Paguyuban Blok 9 BSR, masih terdapat beberapa warga yang belum melakukan pembayaran iuran kas dan telah melewati batas waktu yang ditentukan.\n\nUntuk itu, kami mohon kerja samanya agar Bapak/Ibu segera melakukan pembayaran iuran kas tersebut. Pembayaran dapat dilakukan melalui transfer atau secara tunai/cash kepada pengurus yang berwenang.\n\nTerima kasih atas perhatian dan kerja sama Bapak/Ibu dalam mendukung kelancaran kegiatan serta kebersamaan lingkungan Blok 9 BSR.`;
-            
-            // Mengambil dan membersihkan nomor WA untuk disalin (HANYA YANG NUNGGAK)
-            let daftarNomor = [];
-            let wargaTanpaWa = 0;
-
-            if(globalWargaData && globalWargaData.length > 0) {
-                // Filter hanya warga yang menunggak
-                const wargaNunggak = globalWargaData.filter(w => w.status_bulan_ini === 'Nunggak');
-
-                wargaNunggak.forEach(w => {
-                    if(w.no_wa && w.no_wa !== "-" && w.no_wa.trim() !== "") {
-                        let waClean = w.no_wa.replace(/[^0-9]/g, '');
-                        if (waClean.startsWith('0')) {
-                            waClean = '62' + waClean.substring(1);
-                        }
-                        if(!daftarNomor.includes(waClean)) {
-                            daftarNomor.push(waClean);
-                        }
-                    } else {
-                        wargaTanpaWa++;
-                    }
-                });
-            }
-
-            if(daftarNomor.length > 0) {
-                navigator.clipboard.writeText(daftarNomor.join(', ')).then(() => {
-                    let pesanModal = `${daftarNomor.length} nomor WA warga yang menunggak telah disalin ke clipboard. Silakan Paste di aplikasi WA Blast/Broadcast Anda. Membuka WhatsApp...`;
-                    if (wargaTanpaWa > 0) {
-                        pesanModal += `\n\n*(Catatan: Ada ${wargaTanpaWa} warga nunggak yang dilewati karena nomor WA-nya kosong di database Excel)*`;
-                    }
-                    tampilkanModal('Daftar Nomor Tersalin!', pesanModal, 'sukses');
-                }).catch(err => console.error('Gagal salin nomor', err));
-                
-                setTimeout(() => {
-                    const url = `https://wa.me/?text=${encodeURIComponent(teks)}`;
-                    window.open(url, '_blank');
-                }, 4000);
-            } else {
-                tampilkanModal('Informasi', 'Saat ini tidak ada warga menunggak yang memiliki nomor WA di database.', 'sukses');
-            }
-        }
-
-        function filterWargaNunggak() {
-            tutupModalTagihanMasal();
-            switchTab('admin-warga');
-            setTimeout(() => {
-                const selectFilter = document.getElementById('filter-status-warga');
-                if(selectFilter) {
-                    selectFilter.value = 'Nunggak';
-                    cariWargaAdmin();
-                }
-            }, 100);
-        }
-
-        function hitungTotalWa() {
-            const cbCount = document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]:checked').length;
-            // Gunakan nilai 20.000 sebagai standar peringatan WhatsApp
-            document.getElementById('wa-nominal').value = cbCount * 20000;
-        }
-
-        // FUNGSI WA OTOMATIS CENTANG BULAN NUNGGAK
-        function bukaModalWA(nama, noWa, defaultBulan = '') {
-            if(!noWa || noWa === "-" || noWa.trim() === "") {
-                tampilkanModal('Peringatan', 'Warga ini tidak memiliki data nomor WhatsApp di Database Excel.', 'gagal');
-                return;
-            }
-            document.getElementById('wa-nama-warga').innerText = nama;
-            document.getElementById('wa-no-hp').value = noWa;
-            document.getElementById('wa-nama').value = nama;
-            
-            // Bersihkan centang bulan sebelumnya
-            document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]').forEach(c => c.checked = false);
-            
-            // Centang bulan otomatis jika ada data yang dilempar dari tab rekapnunggak
-            if(defaultBulan) {
-                let arrBulan = defaultBulan.split(',').map(b => b.trim());
-                arrBulan.forEach(b => {
-                    // Konversi dari "JAN" di rekapnunggak menjadi format id "Januari" di Checkbox
-                    const mapBulan = {
-                        "JAN": "Januari", "FEB": "Februari", "MAR": "Maret", "APR": "April",
-                        "MEI": "Mei", "JUN": "Juni", "JUL": "Juli", "AGS": "Agustus",
-                        "SEP": "September", "OKT": "Oktober", "NOV": "November", "DES": "Desember"
-                    };
-                    
-                    let bulanFullName = mapBulan[b.toUpperCase()] || (b.charAt(0).toUpperCase() + b.slice(1).toLowerCase());
-                    let cb = document.querySelector(`#grid-wa-bulan input[value="${bulanFullName}"]`);
-                    if(cb) cb.checked = true;
-                });
-            }
-            
-            hitungTotalWa(); // Perbarui nominal
-            
-            const modal = document.getElementById('wa-modal');
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-        }
-
-        function tutupModalWA() {
-            const modal = document.getElementById('wa-modal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
-        }
-
-        function prosesKirimWA() {
-            const nama = document.getElementById('wa-nama').value;
-            const noWa = document.getElementById('wa-no-hp').value;
-            
-            const cb = document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]:checked');
-            if (cb.length === 0) {
-                tampilkanModal('Peringatan', 'Pilih minimal 1 bulan nunggak.', 'gagal');
-                return;
-            }
-            
-            const bulan = Array.from(cb).map(c => c.value).join(', ');
-            let nominalStr = document.getElementById('wa-nominal').value;
-            const nominal = 'Rp ' + parseInt(nominalStr).toLocaleString('id-ID');
-
-            let waClean = noWa.replace(/[^0-9]/g, '');
-            if (waClean.startsWith('0')) {
-                waClean = '62' + waClean.substring(1);
-            }
-            
-            const teks = `Halo Bpk/Ibu *${nama}*,\n\nKami dari Pengurus Paguyuban BLOK 9 BSR ingin menginformasikan bahwa tagihan iuran kas Anda untuk bulan *${bulan}* dengan total *${nominal}* belum terbayar/terkonfirmasi.\n\nMohon untuk segera melakukan konfirmasi pembayaran di Aplikasi. Terima kasih 🙏`;
-            
-            const url = `https://wa.me/${waClean}?text=${encodeURIComponent(teks)}`;
-            window.open(url, '_blank');
-            tutupModalWA();
-        }
     </script>
 </body>
 </html>
