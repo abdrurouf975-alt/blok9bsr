@@ -738,116 +738,15 @@
         // =========================================================================
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_koZ4yBOXDvk8hAsRaVWi-lnCJyXYkD5GBozgW45Ie6fxGYJr0gv-qftwntSuTzADaA/exec";
 
-        // Global Variable untuk menyimpan data
+        // Global Variable untuk menyimpan data warga agar fitur cari lebih cepat
         let globalWargaData = [];
         let globalKeuanganData = { riwayat: [], totalMasuk: 0, totalKeluar: 0, saldoAkhir: 0 };
-
-        // FUNGSI CETAK BUKTI IURAN (STRUK PDF/PRINT)
-        function cetakStrukIuran(nama, tanggal, bulan, nominal) {
-            let safeNama = nama.replace(/\\'/g, "'"); // Kembalikan tanda kutip jika ada
-            let safeBulan = bulan.replace(/\\'/g, "'");
-            
-            const strukHTML = `
-                <!DOCTYPE html>
-                <html lang="id">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Bukti Pembayaran Iuran</title>
-                    <style>
-                        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #f0f0f0; margin: 0; padding: 20px; display: flex; justify-content: center; }
-                        .struk { background: #fff; width: 100%; max-width: 400px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-top: 6px solid #10b981; position: relative; overflow: hidden; }
-                        .header { text-align: center; border-bottom: 2px dashed #ccc; padding-bottom: 15px; margin-bottom: 20px; }
-                        .header h2 { margin: 0 0 5px 0; color: #1f2937; font-size: 20px; font-weight: 800; }
-                        .header p { margin: 0; color: #6b7280; font-size: 12px; }
-                        .row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; color: #374151; }
-                        .row .label { font-weight: bold; color: #6b7280; }
-                        .row .value { font-weight: 600; text-align: right; max-width: 60%; line-height: 1.4; }
-                        .total { border-top: 2px dashed #ccc; padding-top: 15px; margin-top: 5px; font-size: 18px; font-weight: 900; color: #10b981; }
-                        .stempel { margin-top: 30px; text-align: center; }
-                        .stempel-lunas { display: inline-block; border: 3px solid #10b981; color: #10b981; font-size: 26px; font-weight: 900; padding: 10px 25px; border-radius: 8px; transform: rotate(-5deg); letter-spacing: 3px; }
-                        .footer { text-align: center; margin-top: 35px; font-size: 11px; color: #9ca3af; line-height: 1.5; }
-                        @media print {
-                            body { background: #fff; padding: 0; }
-                            .struk { box-shadow: none; max-width: 100%; border-top: 4px solid #10b981; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="struk">
-                        <div class="header">
-                            <h2>PAGUYUBAN BLOK 9 BSR</h2>
-                            <p>BUKTI PEMBAYARAN IURAN KAS</p>
-                        </div>
-                        <div class="row">
-                            <span class="label">Nama Warga</span>
-                            <span class="value">${safeNama}</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Tanggal Bayar</span>
-                            <span class="value">${tanggal}</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Untuk Bulan</span>
-                            <span class="value">${safeBulan}</span>
-                        </div>
-                        <div class="row total">
-                            <span class="label">Total Dibayar</span>
-                            <span class="value">Rp ${parseInt(nominal).toLocaleString('id-ID')}</span>
-                        </div>
-                        
-                        <div class="stempel">
-                            <div class="stempel-lunas">L U N A S</div>
-                        </div>
-                        
-                        <div class="footer">
-                            <p>Dokumen ini adalah bukti pembayaran yang sah.</p>
-                            <p>Diterbitkan secara otomatis oleh Sistem Digital Blok 9 BSR.</p>
-                        </div>
-                    </div>
-                    <script>
-                        window.onload = function() { setTimeout(function(){ window.print(); }, 500); }
-                    <\/script>
-                </body>
-                </html>
-            `;
-
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(strukHTML);
-            printWindow.document.close();
-        }
 
         // FUNGSI CERDAS: EKSTRAK USERNAME (NAMA ASLI -> Username)
         function extractUsername(str) {
             if (!str) return "";
             let match = str.match(/\((.*?)\)$/);
             return match ? match[1].trim().toLowerCase() : str.trim().toLowerCase();
-        }
-
-        // FUNGSI CERDAS: KALKULASI BULAN NUNGGAK (Januari s.d Bulan Saat Ini)
-        function getUnpaidMonths(username, iuranData) {
-            if(!username) return [];
-            const currentMonthIdx = new Date().getMonth();
-            const allMonths = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            
-            // Kita cek dari Januari sampai bulan saat ini
-            const monthsToCheck = allMonths.slice(0, currentMonthIdx + 1);
-
-            let paidMonths = [];
-            let targetUser = username.toLowerCase().trim();
-
-            iuranData.forEach(item => {
-                let w = extractUsername(item.warga);
-                // PERBAIKAN: Gunakan exact match (===) agar warga1 tidak bentrok dengan warga10, warga11, dst.
-                if (w === targetUser &&
-                    (item.status.toLowerCase().includes('lunas') || item.status.toLowerCase().includes('selesai'))) {
-                    // Masukkan ke daftar bulan yang sudah dibayar
-                    let mArr = item.bulan.split(',').map(m => m.trim().toLowerCase());
-                    paidMonths.push(...mArr);
-                }
-            });
-
-            // Saring bulan-bulan yang belum ada di daftar pembayaran
-            return monthsToCheck.filter(m => !paidMonths.includes(m.toLowerCase()));
         }
 
         async function fetchAPI(action, payloadData = {}) {
@@ -863,9 +762,6 @@
                 return { success: false, message: "Koneksi ke server gagal!" };
             }
         }
-
-        // Variable untuk menyimpan ID Interval pengecekan sesi
-        let sessionCheckInterval;
 
         // --- SISTEM ---
         function inisialisasiAplikasi() {
@@ -1392,30 +1288,30 @@
         }
 
         const formatRupiah = (angka) => {
-            return 'Rp ' + new Intl.NumberFormat('id-ID').format(angka);
+            document.getElementById('total-kas-warga').innerText = "Rp " + totalKasGlobal.toLocaleString('id-ID');
         }
 
         async function tarikDataIuran() {
-            let res = await fetchAPI("getIuran");
-            let iuranData = res.data || [];
-            
-            // FUNGSI CEK SEMUA BULAN NUNGGAK
-            let unpaidMonths = getUnpaidMonths(getUserUsername(), iuranData);
+            // CEK STATUS NUNGGAK/LUNAS LANGSUNG DARI BACKEND
+            let resStatus = await fetchAPI("cekStatusBulanIni", { username: getUserUsername() });
             
             const bannerNunggak = document.getElementById('status-iuran-banner');
             const bannerLunas = document.getElementById('status-iuran-banner-lunas');
             
-            if(unpaidMonths.length > 0) {
-                bannerNunggak.classList.remove('hidden');
-                bannerLunas.classList.add('hidden');
-                document.getElementById('bulan-nunggak').innerText = unpaidMonths.join(', ');
-            } else {
-                bannerNunggak.classList.add('hidden');
-                bannerLunas.classList.remove('hidden');
-                document.getElementById('bulan-lunas').innerText = "semua bulan hingga saat ini";
+            if(resStatus && resStatus.data) {
+                if(resStatus.data.status === "Nunggak") {
+                    bannerNunggak.classList.remove('hidden');
+                    bannerLunas.classList.add('hidden');
+                    document.getElementById('bulan-nunggak').innerText = resStatus.data.bulan;
+                } else {
+                    bannerNunggak.classList.add('hidden');
+                    bannerLunas.classList.remove('hidden');
+                    document.getElementById('bulan-lunas').innerText = "semua bulan hingga saat ini";
+                }
             }
 
-            tampilkanDataIuranUI(iuranData);
+            let res = await fetchAPI("getIuran");
+            tampilkanDataIuranUI(res.data || []);
         }
 
         function tampilkanDataIuranUI(data) {
@@ -1905,20 +1801,10 @@
             container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20 col-span-full"></div>`;
             document.getElementById('input-cari-warga').value = ''; 
             
-            let [resWarga, resIuran] = await Promise.all([
-                fetchAPI("getWarga"),
-                fetchAPI("getIuran")
-            ]);
+            let resWarga = await fetchAPI("getWarga");
             
             if(resWarga && resWarga.data) {
-                // Kalkulasi bulan nunggak untuk masing-masing warga di halaman admin
-                globalWargaData = resWarga.data.map(w => {
-                    let unpaid = getUnpaidMonths(extractUsername(w.username), resIuran.data || []);
-                    w.unpaid_months = unpaid; // array
-                    w.status_bulan_ini = unpaid.length > 0 ? "Nunggak" : "Lunas";
-                    w.nama_bulan_ini = unpaid.join(', '); // string dipisahkan koma
-                    return w;
-                });
+                globalWargaData = resWarga.data; 
                 
                 // Set default filter to 'Semua' initially
                 const selectFilter = document.getElementById('filter-status-warga');
