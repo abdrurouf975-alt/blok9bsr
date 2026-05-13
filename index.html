@@ -6,7 +6,6 @@
     <title>Aplikasi BLOK 9 BSR</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         ::-webkit-scrollbar { width: 0px; background: transparent; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -34,15 +33,15 @@
                 Pesan Error
             </div>
 
-            <!-- FORM LOGIN DENGAN AUTO-ENTER -->
+            <!-- FORM LOGIN -->
             <form id="form-login" onsubmit="return prosesLogin(event)" class="text-left mt-2 relative z-10">
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-gray-700 mb-1">USERNAME</label>
-                    <input type="text" id="login-username" onkeydown="if(event.key === 'Enter'){ event.preventDefault(); document.getElementById('login-password').focus(); }" placeholder="Cth: warga1 / admin" class="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-gray-50 text-sm font-bold tracking-wider" required>
+                    <input type="text" id="login-username" placeholder="Cth: warga1 / admin" class="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-gray-50 text-sm font-bold tracking-wider" required>
                 </div>
                 <div class="mb-8">
                     <label class="block text-xs font-bold text-gray-700 mb-1">PASSWORD</label>
-                    <input type="password" id="login-password" onkeydown="if(event.key === 'Enter'){ event.preventDefault(); prosesLogin(event); }" placeholder="Masukkan password" class="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-gray-50 text-sm" required>
+                    <input type="password" id="login-password" placeholder="Masukkan password" class="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-gray-50 text-sm" required>
                 </div>
                 <button type="submit" id="btn-submit-login" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-4 rounded-xl transition duration-200 shadow-md flex justify-center items-center text-sm uppercase tracking-wide cursor-pointer active:scale-95">
                     Masuk Aplikasi <i class="fas fa-sign-in-alt ml-2"></i>
@@ -287,9 +286,9 @@
                                             <label class="cursor-pointer"><input type="checkbox" value="Juli" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">JUL</div></label>
                                             <label class="cursor-pointer"><input type="checkbox" value="Agustus" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">AGS</div></label>
                                             <label class="cursor-pointer"><input type="checkbox" value="September" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition hover:shadow-md">SEP</div></label>
-                                            <label class="cursor-pointer"><input type="checkbox" value="Oktober" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border py-3 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">OKT</div></label>
-                                            <label class="cursor-pointer"><input type="checkbox" value="November" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-3 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">NOV</div></label>
-                                            <label class="cursor-pointer"><input type="checkbox" value="Desember" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-3 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">DES</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="Oktober" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">OKT</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="November" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">NOV</div></label>
+                                            <label class="cursor-pointer"><input type="checkbox" value="Desember" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-xl border border-gray-200 py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition hover:shadow-md">DES</div></label>
                                         </div>
                                     </div>
                                     <div class="mb-5">
@@ -548,7 +547,7 @@
             <!-- SECTION ADMIN: DAFTAR WARGA -->
             <div id="section-admin-warga" class="p-5 md:p-8 section-admin hidden">
                 <div class="max-w-6xl mx-auto w-full">
-                    <div class="flex flex-col md:flex-row md:justify-between md:items-end mb-6 md:mb-8 border-b pb-4">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-end mb-6 border-b pb-4">
                         <div class="mb-4 md:mb-0">
                             <h2 class="text-2xl md:text-3xl font-black text-gray-800 uppercase tracking-wide">Daftar Warga</h2>
                             <p class="text-sm text-gray-500 mt-1">Cari dan hubungi warga terkait tunggakan iuran.</p>
@@ -1080,7 +1079,7 @@
                     let tanggapan = parts[1];
                     tanggapanHtml = `
                     <div class="mt-4 p-5 bg-emerald-50 border border-emerald-100 rounded-xl text-sm md:text-base text-gray-800 relative shadow-inner">
-                        <i class="fas fa-reply text-emerald-500 absolute top-4 right-4 opacity-10 text-4xl pointer-events-none"></i>
+                        <i class="fas fa-reply text-emerald-50 absolute top-4 right-4 opacity-10 text-4xl pointer-events-none"></i>
                         <span class="font-black text-emerald-700 block mb-2 uppercase tracking-wider text-xs">Tanggapan Pengurus:</span>
                         <p class="leading-relaxed relative z-10">${tanggapan}</p>
                     </div>`;
@@ -1383,6 +1382,235 @@
             return 'Rp ' + new Intl.NumberFormat('id-ID').format(angka);
         }
 
+        // --- CETAK STRUK KUITANSI KE JPG CANVAS (BARU) ---
+        function cetakStrukIuran(namaWarga, tanggalLunas, bulanDibayar, nominal) {
+            // Membuat elemen canvas off-screen dengan rasio A5 Portrait (1200 x 1700 piksel)
+            const canvas = document.createElement('canvas');
+            canvas.width = 1200;
+            canvas.height = 1700;
+            const ctx = canvas.getContext('2d');
+
+            // --- 1. Background Dasar ---
+            ctx.fillStyle = '#F3F4F6'; // Abu-abu terang soft
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // --- 2. Kotak Putih Utama (Kertas Kuitansi) ---
+            ctx.fillStyle = '#FFFFFF';
+            ctx.shadowColor = "rgba(0,0,0,0.15)";
+            ctx.shadowBlur = 40;
+            ctx.shadowOffsetY = 10;
+            
+            // Menggambar rounded rectangle manual agar kompatibel di semua browser
+            const x = 80; const y = 80; const w = 1040; const h = 1540; const r = 30;
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+            ctx.fill();
+
+            // Matikan shadow agar elemen di dalamnya tidak berbayang
+            ctx.shadowColor = "transparent";
+
+            // --- 3. Aksen Garis Biru Atas Kuitansi ---
+            ctx.fillStyle = '#4F46E5'; // Indigo-600
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + 40);
+            ctx.lineTo(x, y + 40);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+            ctx.fill();
+
+            // --- 4. Render Keseluruhan (Teks & Data) ---
+            const renderKeseluruhan = () => {
+                // Judul Kuitansi
+                ctx.fillStyle = '#111827';
+                ctx.font = 'bold 50px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText('BUKTI PEMBAYARAN KAS', 150, 210);
+
+                ctx.fillStyle = '#6B7280';
+                ctx.font = 'bold 30px Arial';
+                ctx.fillText('PAGUYUBAN BLOK 9 BSR', 150, 260);
+
+                // Garis Pembatas
+                ctx.strokeStyle = '#E5E7EB';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(150, 360);
+                ctx.lineTo(1050, 360);
+                ctx.stroke();
+
+                // Teks Rincian Data
+                ctx.textAlign = 'left';
+                const startX = 150;
+                const valueX = 480; 
+                let startY = 460;
+                const lineH = 90;
+
+                // Diterima Dari
+                ctx.fillStyle = '#6B7280';
+                ctx.font = '35px Arial';
+                ctx.fillText('Diterima Dari', startX, startY);
+                ctx.fillStyle = '#111827';
+                ctx.font = 'bold 35px Arial';
+                ctx.fillText(':   ' + namaWarga.toUpperCase(), valueX, startY);
+
+                // Tanggal Bayar
+                startY += lineH;
+                ctx.fillStyle = '#6B7280';
+                ctx.font = '35px Arial';
+                ctx.fillText('Tanggal Bayar', startX, startY);
+                ctx.fillStyle = '#111827';
+                ctx.font = 'bold 35px Arial';
+                ctx.fillText(':   ' + tanggalLunas, valueX, startY);
+
+                // Untuk Iuran Bulan
+                startY += lineH;
+                ctx.fillStyle = '#6B7280';
+                ctx.font = '35px Arial';
+                ctx.fillText('Pembayaran Bulan', startX, startY);
+                ctx.fillStyle = '#111827';
+                ctx.font = 'bold 35px Arial';
+                
+                // Logika Word-Wrap otomatis jika nama bulan sangat panjang
+                let textBulan = ':   ' + bulanDibayar.toUpperCase();
+                let words = textBulan.split(', ');
+                let lineStr = '';
+                for(let n = 0; n < words.length; n++) {
+                    let testLine = lineStr + words[n] + (n < words.length - 1 ? ', ' : '');
+                    let metrics = ctx.measureText(testLine);
+                    if (metrics.width > 550 && n > 0) {
+                        ctx.fillText(lineStr, valueX, startY);
+                        // Tambahkan spasi inden untuk baris berikutnya agar sejajar dengan titik dua
+                        lineStr = '    ' + words[n] + (n < words.length - 1 ? ', ' : '');
+                        startY += 50; 
+                    } else {
+                        lineStr = testLine;
+                    }
+                }
+                ctx.fillText(lineStr, valueX, startY);
+
+                // Kotak Nominal Angka
+                startY += 150;
+                const boxY = startY;
+                
+                ctx.fillStyle = '#EEF2FF'; // Indigo-50
+                ctx.strokeStyle = '#C7D2FE'; // Indigo-200
+                ctx.lineWidth = 3;
+                
+                ctx.beginPath();
+                ctx.moveTo(150 + 20, boxY);
+                ctx.lineTo(600 - 20, boxY);
+                ctx.quadraticCurveTo(600, boxY, 600, boxY + 20);
+                ctx.lineTo(600, boxY + 120 - 20);
+                ctx.quadraticCurveTo(600, boxY + 120, 600 - 20, boxY + 120);
+                ctx.lineTo(150 + 20, boxY + 120);
+                ctx.quadraticCurveTo(150, boxY + 120, 150, boxY + 120 - 20);
+                ctx.lineTo(150, boxY + 20);
+                ctx.quadraticCurveTo(150, boxY, 150 + 20, boxY);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // Teks Angka Nominal
+                ctx.fillStyle = '#4F46E5'; 
+                ctx.font = 'bold 55px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Rp ' + parseInt(nominal).toLocaleString('id-ID'), 375, boxY + 80);
+
+                // STEMPEL LUNAS
+                ctx.save();
+                ctx.translate(850, boxY + 50); 
+                ctx.rotate(-0.35); 
+                
+                ctx.strokeStyle = '#10B981'; 
+                ctx.lineWidth = 10;
+                ctx.beginPath();
+                ctx.roundRect ? ctx.roundRect(-220, -70, 440, 140, 20) : ctx.strokeRect(-220, -70, 440, 140);
+                ctx.stroke();
+                
+                ctx.fillStyle = '#10B981';
+                ctx.font = 'italic black 80px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('L U N A S', 0, 30);
+                ctx.restore();
+
+                // Waktu Cetak & Footer
+                const waktuSekarang = new Date();
+                const opsiWaktu = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+                const stringWaktuCetak = waktuSekarang.toLocaleDateString('id-ID', opsiWaktu) + ' WIB';
+
+                ctx.textAlign = 'left';
+                ctx.fillStyle = '#9CA3AF';
+                ctx.font = '22px Arial';
+                ctx.fillText('Waktu Cetak Dokumen: ' + stringWaktuCetak, 150, 1480);
+
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#9CA3AF';
+                ctx.font = 'italic 25px Arial';
+                ctx.fillText('Dokumen ini sah sebagai tanda terima pembayaran tercatat di database Aplikasi.', canvas.width / 2, 1530);
+
+                // Convert ke Base64 Image (JPG) 100% Kualitas
+                const dataUrl = canvas.toDataURL('image/jpeg', 1.0);
+                
+                // Buka Modal & Pass Data
+                bukaModalPreviewStruk(dataUrl, namaWarga, bulanDibayar);
+            };
+
+            // Karena Logo Dihapus, Langsung Panggil Fungsi Render
+            renderKeseluruhan();
+        }
+
+        // FUNGSI KONTROL MODAL PREVIEW STRUK
+        function bukaModalPreviewStruk(dataUrl, namaWarga, bulanDibayar) {
+            // Pasang gambar ke tag IMG di dalam modal
+            const imgEl = document.getElementById('struk-preview-img');
+            imgEl.src = dataUrl;
+            
+            // Atur event klik tombol Download
+            const btnDownload = document.getElementById('btn-download-struk');
+            btnDownload.onclick = function() {
+                // Generate format nama file yang rapi tanpa spasi dan koma
+                const safeNama = namaWarga.replace(/\s+/g, '_');
+                const safeBulan = bulanDibayar.replace(/,\s*/g, '-');
+                
+                // Link pemicu download otomatis
+                const link = document.createElement('a');
+                link.download = `Kuitansi_Lunas_${safeNama}_${safeBulan}.jpg`;
+                link.href = dataUrl;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Optional: Beri tahu berhasil
+                setTimeout(() => {
+                    tampilkanModal('Berhasil Diunduh!', 'File Kuitansi JPG telah disimpan ke Galeri/Penyimpanan HP Anda.', 'sukses');
+                }, 1000);
+            };
+
+            // Tampilkan Modal Full Screen
+            const modal = document.getElementById('struk-preview-modal');
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+        }
+
+        function tutupModalPreviewStruk() {
+            const modal = document.getElementById('struk-preview-modal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
+
         async function tarikDataIuran() {
             // CEK STATUS NUNGGAK BACA LANGSUNG DARI BACKEND
             let resStatus = await fetchAPI("cekStatusBulanIni", { username: getUserUsername() });
@@ -1603,7 +1831,7 @@
             }
             pending.forEach(item => {
                 let buktiBtn = (item.bukti && item.bukti !== "-" && item.bukti !== "") 
-                    ? `<button onclick="bukaModalBukti('${item.bukti}')" class="bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center shadow-sm hover:bg-blue-100 transition"><i class="fas fa-image mr-1"></i> Lihat Bukti</button>` 
+                    ? `<button onclick="bukaModalBukti('${item.bukti}')" class="bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-bold px-4 py-2 rounded-lg flex items-center shadow-sm hover:bg-blue-100 transition"><i class="fas fa-image mr-1"></i> Lihat Bukti</button>` 
                     : `<span class="text-[10px] text-gray-400 font-bold">Tanpa Bukti</span>`;
                 
                 // Menyiapkan Nama + No Rumah
@@ -2182,13 +2410,19 @@
             // Bersihkan centang bulan sebelumnya
             document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]').forEach(c => c.checked = false);
             
-            // Centang bulan otomatis jika ada data yang dilempar
+            // Centang bulan otomatis jika ada data yang dilempar dari tab rekapnunggak
             if(defaultBulan) {
                 let arrBulan = defaultBulan.split(',').map(b => b.trim());
                 arrBulan.forEach(b => {
-                    // Konversi format bulan "JANUARI" jadi "Januari"
-                    let bulanFormat = b.charAt(0).toUpperCase() + b.slice(1).toLowerCase();
-                    let cb = document.querySelector(`#grid-wa-bulan input[value="${bulanFormat}"]`);
+                    // Konversi dari "JAN" di rekapnunggak menjadi format id "Januari" di Checkbox
+                    const mapBulan = {
+                        "JAN": "Januari", "FEB": "Februari", "MAR": "Maret", "APR": "April",
+                        "MEI": "Mei", "JUN": "Juni", "JUL": "Juli", "AGS": "Agustus",
+                        "SEP": "September", "OKT": "Oktober", "NOV": "November", "DES": "Desember"
+                    };
+                    
+                    let bulanFullName = mapBulan[b.toUpperCase()] || (b.charAt(0).toUpperCase() + b.slice(1).toLowerCase());
+                    let cb = document.querySelector(`#grid-wa-bulan input[value="${bulanFullName}"]`);
                     if(cb) cb.checked = true;
                 });
             }
@@ -2231,234 +2465,6 @@
             window.open(url, '_blank');
             tutupModalWA();
         }
-
-        // --- FUNGSI CETAK KUITANSI KE JPG CANVAS ---
-        function cetakStrukIuran(namaWarga, tanggalLunas, bulanDibayar, nominal) {
-            // Membuat elemen canvas off-screen dengan rasio A5 Portrait
-            const canvas = document.createElement('canvas');
-            canvas.width = 1200;
-            canvas.height = 1700;
-            const ctx = canvas.getContext('2d');
-
-            // --- 1. Background Dasar ---
-            ctx.fillStyle = '#F3F4F6'; // Abu-abu terang soft
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // --- 2. Kotak Putih Utama (Kertas Kuitansi) ---
-            ctx.fillStyle = '#FFFFFF';
-            ctx.shadowColor = "rgba(0,0,0,0.15)";
-            ctx.shadowBlur = 40;
-            ctx.shadowOffsetY = 10;
-            
-            // Menggambar rounded rectangle
-            const x = 80; const y = 80; const w = 1040; const h = 1540; const r = 30;
-            ctx.beginPath();
-            ctx.moveTo(x + r, y);
-            ctx.lineTo(x + w - r, y);
-            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-            ctx.lineTo(x + w, y + h - r);
-            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-            ctx.lineTo(x + r, y + h);
-            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-            ctx.lineTo(x, y + r);
-            ctx.quadraticCurveTo(x, y, x + r, y);
-            ctx.closePath();
-            ctx.fill();
-
-            // Matikan shadow agar elemen di dalamnya tidak berbayang
-            ctx.shadowColor = "transparent";
-
-            // --- 3. Aksen Garis Biru Atas Kuitansi ---
-            ctx.fillStyle = '#4F46E5'; // Indigo-600
-            ctx.beginPath();
-            ctx.moveTo(x + r, y);
-            ctx.lineTo(x + w - r, y);
-            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-            ctx.lineTo(x + w, y + 40);
-            ctx.lineTo(x, y + 40);
-            ctx.lineTo(x, y + r);
-            ctx.quadraticCurveTo(x, y, x + r, y);
-            ctx.closePath();
-            ctx.fill();
-
-            // --- 4. Render Teks Keseluruhan ---
-            // --- Judul Kuitansi ---
-            ctx.fillStyle = '#111827';
-            ctx.font = 'bold 50px Arial';
-            ctx.textAlign = 'left';
-            ctx.fillText('BUKTI PEMBAYARAN KAS', 150, 210);
-
-            ctx.fillStyle = '#6B7280';
-            ctx.font = 'bold 30px Arial';
-            ctx.fillText('PAGUYUBAN BLOK 9 BSR', 150, 260);
-
-            // Garis Pembatas
-            ctx.strokeStyle = '#E5E7EB';
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.moveTo(150, 360);
-            ctx.lineTo(1050, 360);
-            ctx.stroke();
-
-            // --- 5. Teks Rincian Data ---
-            ctx.textAlign = 'left';
-            const startX = 150;
-            const valueX = 480; // Titik awal tulisan value
-            let startY = 460;
-            const lineH = 90;
-
-            // Diterima Dari
-            ctx.fillStyle = '#6B7280';
-            ctx.font = '35px Arial';
-            ctx.fillText('Diterima Dari', startX, startY);
-            ctx.fillStyle = '#111827';
-            ctx.font = 'bold 35px Arial';
-            ctx.fillText(':   ' + namaWarga.toUpperCase(), valueX, startY);
-
-            // Tanggal Bayar
-            startY += lineH;
-            ctx.fillStyle = '#6B7280';
-            ctx.font = '35px Arial';
-            ctx.fillText('Tanggal Bayar', startX, startY);
-            ctx.fillStyle = '#111827';
-            ctx.font = 'bold 35px Arial';
-            ctx.fillText(':   ' + tanggalLunas, valueX, startY);
-
-            // Untuk Iuran Bulan
-            startY += lineH;
-            ctx.fillStyle = '#6B7280';
-            ctx.font = '35px Arial';
-            ctx.fillText('Pembayaran Bulan', startX, startY);
-            ctx.fillStyle = '#111827';
-            ctx.font = 'bold 35px Arial';
-            
-            // Logika Word-Wrap otomatis jika nama bulan sangat panjang
-            let textBulan = ':   ' + bulanDibayar.toUpperCase();
-            let words = textBulan.split(', ');
-            let lineStr = '';
-            for(let n = 0; n < words.length; n++) {
-                let testLine = lineStr + words[n] + (n < words.length - 1 ? ', ' : '');
-                let metrics = ctx.measureText(testLine);
-                if (metrics.width > 550 && n > 0) {
-                    ctx.fillText(lineStr, valueX, startY);
-                    // Tambahkan spasi inden untuk baris berikutnya agar sejajar dengan titik dua
-                    lineStr = '    ' + words[n] + (n < words.length - 1 ? ', ' : '');
-                    startY += 50; // Jarak antar baris text bulan
-                } else {
-                    lineStr = testLine;
-                }
-            }
-            ctx.fillText(lineStr, valueX, startY);
-
-            // --- 6. Kotak Nominal Angka ---
-            startY += 150;
-            const boxY = startY;
-            
-            // Kotak background nominal
-            ctx.fillStyle = '#EEF2FF'; // Indigo-50
-            ctx.strokeStyle = '#C7D2FE'; // Indigo-200
-            ctx.lineWidth = 3;
-            
-            ctx.beginPath();
-            ctx.moveTo(150 + 20, boxY);
-            ctx.lineTo(600 - 20, boxY);
-            ctx.quadraticCurveTo(600, boxY, 600, boxY + 20);
-            ctx.lineTo(600, boxY + 120 - 20);
-            ctx.quadraticCurveTo(600, boxY + 120, 600 - 20, boxY + 120);
-            ctx.lineTo(150 + 20, boxY + 120);
-            ctx.quadraticCurveTo(150, boxY + 120, 150, boxY + 120 - 20);
-            ctx.lineTo(150, boxY + 20);
-            ctx.quadraticCurveTo(150, boxY, 150 + 20, boxY);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-
-            // Teks Angka Nominal
-            ctx.fillStyle = '#4F46E5'; // Indigo-600
-            ctx.font = 'bold 55px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Rp ' + parseInt(nominal).toLocaleString('id-ID'), 375, boxY + 80);
-
-            // --- 7. STEMPEL LUNAS (Miring Merah/Hijau) ---
-            ctx.save();
-            ctx.translate(850, boxY + 50); // Titik pusat stempel di kanan kotak angka
-            ctx.rotate(-0.35); // Putar miring sedikit ke atas
-            
-            // Kotak border Stempel
-            ctx.strokeStyle = '#10B981'; // Hijau Emerald
-            ctx.lineWidth = 10;
-            ctx.beginPath();
-            ctx.roundRect ? ctx.roundRect(-220, -70, 440, 140, 20) : ctx.strokeRect(-220, -70, 440, 140);
-            ctx.stroke();
-            
-            // Teks Stempel
-            ctx.fillStyle = '#10B981';
-            ctx.font = 'italic black 80px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('L U N A S', 0, 30);
-            ctx.restore();
-
-            // --- 8. Waktu Cetak & Footer ---
-            const waktuSekarang = new Date();
-            const opsiWaktu = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            const stringWaktuCetak = waktuSekarang.toLocaleDateString('id-ID', opsiWaktu) + ' WIB';
-
-            ctx.textAlign = 'left';
-            ctx.fillStyle = '#9CA3AF';
-            ctx.font = '22px Arial';
-            ctx.fillText('Waktu Cetak Dokumen: ' + stringWaktuCetak, 150, 1480);
-
-            ctx.textAlign = 'center';
-            ctx.fillStyle = '#9CA3AF';
-            ctx.font = 'italic 25px Arial';
-            ctx.fillText('Dokumen ini sah sebagai tanda terima pembayaran tercatat di database Aplikasi.', canvas.width / 2, 1530);
-
-            // --- 9. Convert ke Base64 Image (JPG) 100% Kualitas ---
-            const dataUrl = canvas.toDataURL('image/jpeg', 1.0);
-            
-            // Buka Modal & Pass Data
-            bukaModalPreviewStruk(dataUrl, namaWarga, bulanDibayar);
-        }
-
-        // FUNGSI KONTROL MODAL PREVIEW STRUK
-        function bukaModalPreviewStruk(dataUrl, namaWarga, bulanDibayar) {
-            // Pasang gambar ke tag IMG di dalam modal
-            const imgEl = document.getElementById('struk-preview-img');
-            imgEl.src = dataUrl;
-            
-            // Atur event klik tombol Download
-            const btnDownload = document.getElementById('btn-download-struk');
-            btnDownload.onclick = function() {
-                // Generate format nama file yang rapi tanpa spasi dan koma
-                const safeNama = namaWarga.replace(/\s+/g, '_');
-                const safeBulan = bulanDibayar.replace(/,\s*/g, '-');
-                
-                // Link pemicu download otomatis
-                const link = document.createElement('a');
-                link.download = `Kuitansi_Lunas_${safeNama}_${safeBulan}.jpg`;
-                link.href = dataUrl;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                // Optional: Beri tahu berhasil
-                setTimeout(() => {
-                    tampilkanModal('Berhasil Diunduh!', 'File Kuitansi JPG telah disimpan ke Galeri/Penyimpanan HP Anda.', 'sukses');
-                }, 1000);
-            };
-
-            // Tampilkan Modal Full Screen
-            const modal = document.getElementById('struk-preview-modal');
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-        }
-
-        function tutupModalPreviewStruk() {
-            const modal = document.getElementById('struk-preview-modal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
-        }
-
     </script>
 </body>
 </html>
