@@ -6,13 +6,14 @@
     <title>Aplikasi BLOK 9 BSR</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Pustaka jsPDF untuk Cetak PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         ::-webkit-scrollbar { width: 0px; background: transparent; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-slide-down { animation: slideDown 0.4s ease-out forwards; }
         .shimmer { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmerEffect 1.5s infinite; }
         @keyframes shimmerEffect { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        /* Tampilan 100% Full Lebar Tanpa Batasan HP di Laptop */
         .app-container { width: 100%; min-height: 100vh; display: flex; flex-direction: column; }
     </style>
 </head>
@@ -33,7 +34,7 @@
                 Pesan Error
             </div>
 
-            <!-- FORM LOGIN DENGAN ENTER AUTO-NEXT -->
+            <!-- FORM LOGIN DENGAN AUTO-ENTER -->
             <form id="form-login" onsubmit="return prosesLogin(event)" class="text-left mt-2 relative z-10">
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-gray-700 mb-1">USERNAME</label>
@@ -741,12 +742,40 @@
         // Global Variable untuk menyimpan data warga agar fitur cari lebih cepat
         let globalWargaData = [];
         let globalKeuanganData = { riwayat: [], totalMasuk: 0, totalKeluar: 0, saldoAkhir: 0 };
+        let sessionCheckInterval = null;
 
         // FUNGSI CERDAS: EKSTRAK USERNAME (NAMA ASLI -> Username)
         function extractUsername(str) {
             if (!str) return "";
             let match = str.match(/\((.*?)\)$/);
             return match ? match[1].trim().toLowerCase() : str.trim().toLowerCase();
+        }
+
+        // FUNGSI CERDAS: KALKULASI BULAN NUNGGAK (Januari s.d Bulan Saat Ini)
+        function getUnpaidMonths(username, iuranData) {
+            if(!username) return [];
+            const currentMonthIdx = new Date().getMonth();
+            const allMonths = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            
+            // Kita cek dari Januari sampai bulan saat ini
+            const monthsToCheck = allMonths.slice(0, currentMonthIdx + 1);
+
+            let paidMonths = [];
+            let targetUser = username.toLowerCase().trim();
+
+            iuranData.forEach(item => {
+                let w = extractUsername(item.warga);
+                // EXACT MATCH
+                if (w === targetUser &&
+                    (item.status.toLowerCase().includes('lunas') || item.status.toLowerCase().includes('selesai'))) {
+                    // Masukkan ke daftar bulan yang sudah dibayar
+                    let mArr = item.bulan.split(',').map(m => m.trim().toLowerCase());
+                    paidMonths.push(...mArr);
+                }
+            });
+
+            // Saring bulan-bulan yang belum ada di daftar pembayaran
+            return monthsToCheck.filter(m => !paidMonths.includes(m.toLowerCase()));
         }
 
         async function fetchAPI(action, payloadData = {}) {
@@ -777,17 +806,15 @@
                 document.getElementById('main-app').classList.remove('hidden');
                 muatProfilData(userObj); 
 
-                // Mulai pengecekan Sesi Ganda setiap 30 detik (jika bukan admin)
+                // Mulai pengecekan Sesi Ganda setiap 10 detik
                 if(sessionCheckInterval) clearInterval(sessionCheckInterval);
-                if (userObj.role !== 'admin') {
-                    sessionCheckInterval = setInterval(async () => {
-                        let res = await fetchAPI("cekSession", { username: userObj.username, sessionId: userObj.sessionId, role: userObj.role });
-                        if(res && res.data && res.data.valid === false) {
-                            clearInterval(sessionCheckInterval);
-                            prosesLogout(true); // Paksa Logout
-                        }
-                    }, 30000); // 30000 ms = 30 detik
-                }
+                sessionCheckInterval = setInterval(async () => {
+                    let res = await fetchAPI("cekSession", { username: userObj.username, sessionId: userObj.sessionId });
+                    if(res && res.data && res.data.valid === false) {
+                        clearInterval(sessionCheckInterval); // Hentikan timer
+                        prosesLogout(true); // Paksa Logout
+                    }
+                }, 10000); // 10000 ms = 10 detik
 
                 if (userObj.role === 'admin') {
                     document.getElementById('nav-warga').classList.add('hidden');
@@ -813,8 +840,6 @@
             errDiv.classList.remove('hidden');
             setTimeout(() => { errDiv.classList.add('hidden'); }, 5000);
         }
-
-        function handleEnter(e) { if (e.key === 'Enter') { e.preventDefault(); prosesLogin(e); } }
 
         async function prosesLogin(e) {
             if (e) e.preventDefault();
@@ -847,11 +872,7 @@
                     try {
                         const userObj = JSON.parse(sessionStr);
                         // Hapus sesi di backend jika logout normal
-                        if(!isForced) {
-                            btnObj = document.querySelector('button[onclick="prosesLogout()"]');
-                            if(btnObj) btnObj.innerHTML = '<i class="fas fa-spinner fa-spin mr-2 text-lg"></i> KELUAR...';
-                            await fetchAPI("logout", { username: userObj.username });
-                        }
+                        if(!isForced) await fetchAPI("logout", { username: userObj.username });
                     } catch(e) {}
                 }
 
@@ -860,10 +881,6 @@
                 document.getElementById('form-login').reset();
                 document.getElementById('main-app').classList.add('hidden');
                 document.getElementById('login-overlay').classList.remove('hidden');
-                
-                // Kembalikan teks tombol logout
-                btnObj = document.querySelector('button[onclick="prosesLogout()"]');
-                if(btnObj) btnObj.innerHTML = '<i class="fas fa-power-off mr-2 text-lg"></i> Keluar / Logout';
 
                 if(isForced) {
                     alert("⚠️ PERHATIAN!\n\nAkun Anda telah dilogout secara otomatis karena sedang digunakan login di HP/Perangkat lain.");
@@ -1153,6 +1170,89 @@
             }
         }
         
+        // --- FITUR TRANSPARANSI (REKAP IURAN LUNAS GLOBAL) ---
+        async function tarikDataRekapIuran() {
+            const container = document.getElementById('rekap-iuran-list');
+            if(!container) return;
+            container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 shimmer h-16 col-span-full"></div>`;
+            
+            // Ambil rekap iuran dan data warga bersamaan untuk mencocokkan nama
+            let [resIuran, resWarga] = await Promise.all([
+                fetchAPI("getRekapIuran"),
+                fetchAPI("getWarga")
+            ]);
+
+            if(resIuran && resIuran.data) {
+                let dictWarga = {};
+                if(resWarga && resWarga.data) {
+                    resWarga.data.forEach(w => {
+                        dictWarga[w.username.toLowerCase()] = w.nama;
+                    });
+                }
+                tampilkanDataRekapIuranUI(resIuran.data, dictWarga);
+            } else {
+                container.innerHTML = `<p class="text-center text-xs text-red-500 font-bold col-span-full">Gagal memuat rekap kas.</p>`;
+            }
+        }
+
+        function tampilkanDataRekapIuranUI(data, dictWarga = {}) {
+            const container = document.getElementById('rekap-iuran-list');
+            container.innerHTML = '';
+            
+            if(!data || data.length === 0) {
+                container.innerHTML = `<div class="bg-white p-4 rounded-xl text-center text-xs font-bold uppercase shadow-sm col-span-full">Belum ada kas masuk.</div>`;
+                document.getElementById('total-kas-warga').innerText = "Rp 0";
+                return;
+            }
+
+            // MENGURUTKAN DATA BERDASARKAN USERNAME (warga1, warga2, dst)
+            data.sort((a, b) => {
+                let wargaA = extractUsername(a.warga);
+                let wargaB = extractUsername(b.warga);
+                return wargaA.localeCompare(wargaB, undefined, { numeric: true, sensitivity: 'base' });
+            });
+
+            let totalKasGlobal = 0;
+
+            data.forEach(item => {
+                totalKasGlobal += parseInt(item.nominal) || 0;
+                let dateStr = "-";
+                if (item.waktu) {
+                    const d = new Date(item.waktu);
+                    if(!isNaN(d.getTime())) {
+                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+                        dateStr = `${d.getDate().toString().padStart(2, '0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
+                    }
+                }
+
+                // Gabungkan Nama Asli dan Username
+                let uname = extractUsername(item.warga);
+                let namaAsli = dictWarga[uname];
+                let displayTeks = item.warga;
+                
+                if(namaAsli && extractUsername(namaAsli) !== uname) {
+                    displayTeks = `${namaAsli} - ${uname.toUpperCase()}`;
+                }
+
+                container.innerHTML += `
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center animate-slide-down">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center shrink-0 text-sm"><i class="fas fa-check"></i></div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-xs md:text-sm uppercase">${displayTeks}</h4>
+                                <p class="text-[10px] md:text-xs text-gray-400 mt-0.5">${item.bulan}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs md:text-sm font-black text-emerald-600">+ Rp ${parseInt(item.nominal).toLocaleString('id-ID')}</p>
+                            <p class="text-[9px] md:text-[10px] text-gray-400 mt-0.5">${dateStr}</p>
+                        </div>
+                    </div>`;
+            });
+            
+            document.getElementById('total-kas-warga').innerText = "Rp " + totalKasGlobal.toLocaleString('id-ID');
+        }
+
         // --- FITUR KEUANGAN TERPADU (MASUK & KELUAR) ---
         async function tarikDataKeuangan() {
             const containerWarga = document.getElementById('rekap-iuran-list');
@@ -1288,11 +1388,89 @@
         }
 
         const formatRupiah = (angka) => {
-            document.getElementById('total-kas-warga').innerText = "Rp " + totalKasGlobal.toLocaleString('id-ID');
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(angka);
+        }
+
+        // --- CETAK STRUK PDF ---
+        function cetakStrukIuran(namaWarga, tanggalLunas, bulanDibayar, nominal) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Pengaturan Desain Kuitansi
+            doc.setFillColor(245, 247, 250);
+            doc.rect(0, 0, 210, 297, 'F'); 
+            
+            doc.setFillColor(255, 255, 255);
+            doc.roundedRect(20, 20, 170, 120, 5, 5, 'F');
+            
+            doc.setDrawColor(79, 70, 229); 
+            doc.setLineWidth(1);
+            doc.line(20, 20, 190, 20);
+
+            // Judul Kuitansi
+            doc.setTextColor(31, 41, 55);
+            doc.setFontSize(22);
+            doc.setFont("helvetica", "bold");
+            doc.text("BUKTI PEMBAYARAN", 105, 35, null, null, "center");
+            
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "normal");
+            doc.text("KAS PAGUYUBAN BLOK 9 BSR", 105, 43, null, null, "center");
+
+            doc.setDrawColor(229, 231, 235);
+            doc.setLineWidth(0.5);
+            doc.line(30, 50, 180, 50);
+
+            // Detail Pembayaran
+            doc.setFontSize(11);
+            doc.setTextColor(75, 85, 99);
+            doc.text("Diterima Dari", 30, 65);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(31, 41, 55);
+            doc.text(`: ${namaWarga.toUpperCase()}`, 75, 65);
+
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(75, 85, 99);
+            doc.text("Tanggal Bayar", 30, 75);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(31, 41, 55);
+            doc.text(`: ${tanggalLunas}`, 75, 75);
+
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(75, 85, 99);
+            doc.text("Untuk Iuran Bulan", 30, 85);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(31, 41, 55);
+            
+            // Handle multiple months wrapping
+            const splitBulan = doc.splitTextToSize(`: ${bulanDibayar.toUpperCase()}`, 110);
+            doc.text(splitBulan, 75, 85);
+
+            // Nominal Box
+            doc.setFillColor(238, 242, 255);
+            doc.roundedRect(30, 105, 80, 20, 3, 3, 'F');
+            doc.setFontSize(14);
+            doc.setTextColor(79, 70, 229);
+            doc.text(`Rp ${parseInt(nominal).toLocaleString('id-ID')}`, 70, 118, null, null, "center");
+
+            // LUNAS Stamp
+            doc.setTextColor(16, 185, 129); // Emerald Green
+            doc.setFontSize(28);
+            doc.setFont("helvetica", "bolditalic");
+            doc.text("L U N A S", 145, 118);
+
+            // Footer
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "italic");
+            doc.setTextColor(156, 163, 175);
+            doc.text("*Kuitansi ini dicetak otomatis oleh sistem Aplikasi BLOK 9 BSR.", 105, 135, null, null, "center");
+
+            // Save the PDF
+            doc.save(`Kuitansi_Iuran_${namaWarga}_${bulanDibayar.replace(/,/g, '-')}.pdf`);
         }
 
         async function tarikDataIuran() {
-            // CEK STATUS NUNGGAK/LUNAS LANGSUNG DARI BACKEND
+            // CEK STATUS NUNGGAK/LUNAS BULAN INI UNTUK WARGA TERSEBUT DARI DATABASE
             let resStatus = await fetchAPI("cekStatusBulanIni", { username: getUserUsername() });
             
             const bannerNunggak = document.getElementById('status-iuran-banner');
@@ -1409,7 +1587,7 @@
                 if(res && res.data === "Sukses") {
                     tampilkanModal('Berhasil', 'Konfirmasi Iuran Terkirim', 'sukses'); 
                     tarikDataIuran(); 
-                    tarikDataRekapIuran(); // Refresh data transparansi juga
+                    tarikDataKeuangan(); // Refresh data transparansi juga
                     document.getElementById('form-iuran').reset(); 
                     
                     // Reset pilihan dan perhitungan nominal kembali default
@@ -1801,10 +1979,20 @@
             container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20 col-span-full"></div>`;
             document.getElementById('input-cari-warga').value = ''; 
             
-            let resWarga = await fetchAPI("getWarga");
+            let [resWarga, resIuran] = await Promise.all([
+                fetchAPI("getWarga"),
+                fetchAPI("getIuran")
+            ]);
             
             if(resWarga && resWarga.data) {
-                globalWargaData = resWarga.data; 
+                // Kalkulasi bulan nunggak untuk masing-masing warga di halaman admin
+                globalWargaData = resWarga.data.map(w => {
+                    let unpaid = getUnpaidMonths(extractUsername(w.username), resIuran.data || []);
+                    w.unpaid_months = unpaid; // array
+                    w.status_bulan_ini = unpaid.length > 0 ? "Nunggak" : "Lunas";
+                    w.nama_bulan_ini = unpaid.join(', '); // string dipisahkan koma
+                    return w;
+                });
                 
                 // Set default filter to 'Semua' initially
                 const selectFilter = document.getElementById('filter-status-warga');
@@ -1883,11 +2071,7 @@
                 if (keyword === "") {
                     matchKeyword = true;
                 } else {
-                    // Pencarian nama asli tetap bebas (boleh ketik sebagian)
                     const matchNama = item.nama && item.nama.toLowerCase().includes(keyword);
-                    
-                    // Pencarian pintar Username & No Rumah: 
-                    // Jika ada ANGKA yang diketik, sistem akan mencari SAMA PERSIS.
                     const mengandungAngka = /\d/.test(keyword);
                     
                     const exactUsername = item.username && item.username.toLowerCase() === keyword;
@@ -2037,13 +2221,17 @@
 
             if(daftarNomor.length > 0) {
                 navigator.clipboard.writeText(daftarNomor.join(', ')).then(() => {
-                    // Berhasil disalin, langsung buka WA setelah sedikit jeda
+                    let pesanModal = `${daftarNomor.length} nomor WA warga yang menunggak telah disalin ke clipboard. Silakan Paste di aplikasi WA Blast/Broadcast Anda. Membuka WhatsApp...`;
+                    if (wargaTanpaWa > 0) {
+                        pesanModal += `\n\n*(Catatan: Ada ${wargaTanpaWa} warga nunggak yang dilewati karena nomor WA-nya kosong di database Excel)*`;
+                    }
+                    tampilkanModal('Daftar Nomor Tersalin!', pesanModal, 'sukses');
                 }).catch(err => console.error('Gagal salin nomor', err));
                 
                 setTimeout(() => {
                     const url = `https://wa.me/?text=${encodeURIComponent(teks)}`;
                     window.open(url, '_blank');
-                }, 500);
+                }, 4000);
             } else {
                 tampilkanModal('Informasi', 'Saat ini tidak ada warga menunggak yang memiliki nomor WA di database.', 'sukses');
             }
