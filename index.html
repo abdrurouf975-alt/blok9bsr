@@ -144,15 +144,15 @@
                         <!-- Gambar QR Code Tampil Langsung -->
                         <div class="bg-white p-4 rounded-xl border border-blue-50 shadow-sm relative z-10 flex flex-col items-center">
                             <p class="text-[11px] text-gray-500 font-bold uppercase mb-2"><i class="fas fa-qrcode mr-1"></i> Scan QRIS Pembayaran</p>
-                            
-                            <!-- Link foto QRIS sudah dimasukkan di bawah ini -->
-                            <img src="https://cdn.phototourl.com/free/2026-05-11-8900fd55-13c7-42f8-880c-f064db4aac0e.jpg" alt="QR Code QRIS" class="w-full max-w-[200px] rounded-lg border border-gray-100 mb-2" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=Gambar+QRIS+Belum+Tersedia';">
-                            
-                            <p class="text-[10px] text-gray-600 font-black uppercase tracking-widest">A/N ABDUR ROUF</p>
+                            <img src="https://i.ibb.co/Y58h5dR/QRISARUNIKA.jpg" alt="QR Code QRIS" class="w-full max-w-[200px] rounded-lg border border-gray-100 mb-2">
+                            <p class="text-[10px] text-gray-600 font-black uppercase tracking-widest">A/N ARUNIKA CREATIVE</p>
                         </div>
                     </div>
 
-                    <form id="form-iuran" onsubmit="kirimIuranKeSpreadsheet(event)">
+                    <form onsubmit="kirimIuranKeSpreadsheet(event)">
+                        <div class="mb-4">
+                            <label class="block text-xs font-bold text-gray-700 mb-2 uppercase">Pilih Bulan</label>
+                            <div class="grid grid-cols-4 gap-2" id="grid-bulan">
                                 <label class="cursor-pointer"><input type="checkbox" value="Januari" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">JAN</div></label>
                                 <label class="cursor-pointer"><input type="checkbox" value="Februari" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">FEB</div></label>
                                 <label class="cursor-pointer"><input type="checkbox" value="Maret" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">MAR</div></label>
