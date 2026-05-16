@@ -2139,20 +2139,10 @@
             container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20 col-span-full"></div>`;
             document.getElementById('input-cari-warga').value = ''; 
             
-            let [resWarga, resIuran] = await Promise.all([
-                fetchAPI("getWarga"),
-                fetchAPI("getIuran")
-            ]);
+            let resWarga = await fetchAPI("getWarga");
             
             if(resWarga && resWarga.data) {
-                // Kalkulasi bulan nunggak untuk masing-masing warga di halaman admin
-                globalWargaData = resWarga.data.map(w => {
-                    let unpaid = getUnpaidMonths(extractUsername(w.username), resIuran.data || []);
-                    w.unpaid_months = unpaid; // array
-                    w.status_bulan_ini = unpaid.length > 0 ? "Nunggak" : "Lunas";
-                    w.nama_bulan_ini = unpaid.join(', '); // string dipisahkan koma
-                    return w;
-                });
+                globalWargaData = resWarga.data;
                 
                 // Set default filter to 'Semua' initially
                 const selectFilter = document.getElementById('filter-status-warga');
