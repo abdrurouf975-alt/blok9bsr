@@ -156,7 +156,7 @@
                         <!-- PILIHAN JENIS IURAN -->
                         <div class="mb-4">
                             <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Jenis Iuran / Tagihan</label>
-                            <select id="input-jenis-iuran" class="w-full p-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 bg-gray-50 text-sm font-bold shadow-sm" required>
+                            <select id="input-jenis-iuran" onchange="hitungTotalIuran()" class="w-full p-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 bg-gray-50 text-sm font-bold shadow-sm" required>
                                 <option value="IuranPaguyuban">Iuran Kas Paguyuban (RT)</option>
                                 <option value="IuranBlok9">Iuran Khusus Blok 9 Saja</option>
                             </select>
@@ -644,7 +644,9 @@
         }
 
         function hitungTotalIuran() { 
-            document.getElementById('input-nominal').value = document.querySelectorAll('#grid-bulan input[type="checkbox"]:checked').length * 20000; 
+            const jenisIuran = document.getElementById('input-jenis-iuran').value;
+            const nominalPerBulan = (jenisIuran === 'IuranBlok9') ? 5000 : 20000;
+            document.getElementById('input-nominal').value = document.querySelectorAll('#grid-bulan input[type="checkbox"]:checked').length * nominalPerBulan; 
         }
         
         function toggleUploadBukti() {
