@@ -274,8 +274,8 @@
                 <h2 class="text-xl font-black text-gray-800 mb-0.5 uppercase tracking-wide" id="display-nama-profil">NAMA AKUN</h2>
                 <span class="text-xs bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-full border uppercase mb-8" id="display-role-profil">WARGA</span>
                 
-                <!-- REKAP PEMBAYARAN DI PROFIL -->
-                <div class="w-full bg-white p-5 rounded-2xl shadow-sm border border-gray-100 text-left mb-5">
+                <!-- REKAP PEMBAYARAN DI PROFIL (HANYA WARGA) -->
+                <div id="profil-rekap-container" class="w-full bg-white p-5 rounded-2xl shadow-sm border border-gray-100 text-left mb-5">
                     <h3 class="font-bold text-gray-800 mb-4 border-b pb-2 uppercase text-sm"><i class="fas fa-calendar-check mr-2 text-emerald-500"></i> Rekap Iuran Tahun Ini</h3>
                     <div id="profil-rekap-bulan" class="grid grid-cols-4 gap-2.5">
                         <div class="col-span-4 text-center text-xs text-gray-400 py-4 shimmer rounded-lg border border-gray-100">Memuat data...</div>
@@ -284,6 +284,15 @@
                         <div class="flex items-center text-[9px] font-bold text-gray-500"><span class="w-2.5 h-2.5 rounded-full bg-green-500 mr-1.5 shadow-sm border border-green-600"></span>Lunas</div>
                         <div class="flex items-center text-[9px] font-bold text-gray-500"><span class="w-2.5 h-2.5 rounded-full bg-red-500 mr-1.5 shadow-sm border border-red-600"></span>Nunggak</div>
                         <div class="flex items-center text-[9px] font-bold text-gray-500"><span class="w-2.5 h-2.5 rounded-full bg-gray-200 mr-1.5 shadow-sm border border-gray-300"></span>Belum Waktunya</div>
+                    </div>
+                </div>
+
+                <!-- KONTAK PENGURUS (HANYA ADMIN) -->
+                <div id="profil-kontak-admin-container" class="w-full bg-white p-5 rounded-2xl shadow-sm border border-gray-100 text-left mb-5 hidden">
+                    <h3 class="font-bold text-gray-800 mb-4 border-b pb-2 uppercase text-sm"><i class="fas fa-address-book mr-2 text-blue-500"></i> Kontak Pengurus</h3>
+                    <p class="text-[10px] text-gray-500 mb-3">Daftar nomor pengurus yang dapat dihubungi. Klik ikon WA untuk chat.</p>
+                    <div id="list-kontak-pengurus" class="flex flex-col gap-3">
+                        <!-- Di-render oleh JS -->
                     </div>
                 </div>
 
@@ -541,6 +550,33 @@
 
         // Global Variable untuk menyimpan data warga agar fitur cari lebih cepat
         let globalWargaData = [];
+
+        // --- DAFTAR KONTAK PENGURUS (BISA DIEDIT/DITAMBAH DI SINI) ---
+        const kontakPengurus = [
+            { nama: "ROUF", noWa: "6282230280004" },
+            { nama: "BAGUS", noWa: "6285746058818" }
+            // Untuk menambahkan kontak lain, copy baris di atas, hapus tanda // dan ganti nama/nomornya
+            // { nama: "NAMA PENGURUS", noWa: "628123456789" }
+        ];
+
+        function renderKontakPengurus() {
+            const container = document.getElementById('list-kontak-pengurus');
+            if (!container) return;
+            container.innerHTML = '';
+            kontakPengurus.forEach(kontak => {
+                container.innerHTML += `
+                    <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-gray-800 text-sm">${kontak.nama}</h4>
+                            <p class="text-xs text-gray-500 font-medium">${kontak.noWa}</p>
+                        </div>
+                        <a href="https://wa.me/${kontak.noWa}" target="_blank" class="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center hover:bg-green-200 transition shadow-sm">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                `;
+            });
+        }
 
         // FUNGSI JAM REAL-TIME
         function updateClock() {
@@ -1415,7 +1451,23 @@
             document.getElementById('display-nama-profil').innerText = nama;
             document.getElementById('display-role-profil').innerText = userObj.role.toUpperCase();
             document.getElementById('header-avatar').innerText = nama.charAt(0);
+
+            // Pengaturan Tampilan Profil Admin vs Warga
+            const containerRekap = document.getElementById('profil-rekap-container');
+            const containerKontak = document.getElementById('profil-kontak-admin-container');
+            
+            if (userObj.role === 'admin') {
+                if(containerRekap) containerRekap.classList.add('hidden');
+                if(containerKontak) {
+                    containerKontak.classList.remove('hidden');
+                    renderKontakPengurus(); // Load list kontak
+                }
+            } else {
+                if(containerRekap) containerRekap.classList.remove('hidden');
+                if(containerKontak) containerKontak.classList.add('hidden');
+            }
         }
+
         function getUserFullName() { try { return JSON.parse(localStorage.getItem('wargaSessionAktif')).nama.toUpperCase(); } catch(e) { return 'WARGA'; } }
         function getUserUsername() { try { return JSON.parse(localStorage.getItem('wargaSessionAktif')).username.toUpperCase(); } catch(e) { return 'WARGA'; } }
         
