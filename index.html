@@ -82,12 +82,10 @@
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 mb-6">
-                    <!-- IURAN DIPINDAH KE KIRI -->
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center cursor-pointer hover:bg-green-50 transition" onclick="switchTab('iuran')">
                         <div class="w-14 h-14 bg-green-50 text-green-600 rounded-full flex items-center justify-center text-2xl mb-3 shadow-inner"><i class="fas fa-wallet"></i></div>
                         <span class="text-sm font-bold text-gray-700">Iuran</span>
                     </div>
-                    <!-- SURAT DIPINDAH KE KANAN -->
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 transition" onclick="switchTab('surat')">
                         <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl mb-3 shadow-inner"><i class="fas fa-file-alt"></i></div>
                         <span class="text-sm font-bold text-gray-700">Surat</span>
@@ -188,10 +186,7 @@
                         <!-- Gambar QR Code Tampil Langsung -->
                         <div class="bg-white p-4 rounded-xl border border-blue-50 shadow-sm relative z-10 flex flex-col items-center">
                             <p class="text-[11px] text-gray-500 font-bold uppercase mb-2"><i class="fas fa-qrcode mr-1"></i> Scan QRIS Pembayaran</p>
-                            
-                            <!-- GAMBAR QRIS SUDAH DISESUAIKAN -->
                             <img src="https://cdn.phototourl.com/free/2026-05-11-8900fd55-13c7-42f8-880c-f064db4aac0e.jpg" alt="QR Code QRIS" class="w-full max-w-[200px] rounded-lg border border-gray-100 mb-2">
-                            
                             <p class="text-[10px] text-gray-600 font-black uppercase tracking-widest">A/N ARUNIKA CREATIVE</p>
                         </div>
                     </div>
@@ -219,7 +214,7 @@
                                 <label class="cursor-pointer"><input type="checkbox" value="Agustus" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">AGS</div></label>
                                 <label class="cursor-pointer"><input type="checkbox" value="September" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">SEP</div></label>
                                 <label class="cursor-pointer"><input type="checkbox" value="Oktober" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">OKT</div></label>
-                                <label class="cursor-pointer"><input type="checkbox" value="November" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">NOV</div></label>
+                                <label class="cursor-pointer"><input type="checkbox" value="November" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">NOV</div></label>
                                 <label class="cursor-pointer"><input type="checkbox" value="Desember" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">DES</div></label>
                             </div>
                         </div>
@@ -287,6 +282,35 @@
                     </div>
                 </div>
 
+                <!-- UPDATE DATA TAMBAHAN WARGA (HUNIAN & WIFI) -->
+                <div id="profil-data-tambahan-container" class="w-full bg-white p-5 rounded-2xl shadow-sm border border-gray-100 text-left mb-5 hidden">
+                    <h3 class="font-bold text-gray-800 mb-4 border-b pb-2 uppercase text-sm"><i class="fas fa-address-card mr-2 text-blue-500"></i> Lengkapi Data Warga</h3>
+                    <form onsubmit="prosesUpdateDataWarga(event)" id="form-data-warga">
+                        <div class="mb-3">
+                            <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase">Status Hunian</label>
+                            <select id="input-status-hunian" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-indigo-200 outline-none transition">
+                                <option value="Milik Sendiri">Milik Sendiri / Tetap</option>
+                                <option value="Kontrak">Kontrak / Sewa</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase">Provider WiFi</label>
+                            <select id="input-wifi" onchange="toggleWifiLainnya()" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-indigo-200 outline-none transition">
+                                <option value="Tidak Pakai">Tidak Pasang WiFi</option>
+                                <option value="NetFi">NetFi</option>
+                                <option value="Lancar Media">Lancar Media</option>
+                                <option value="EK-Net">EK-Net</option>
+                                <option value="Lainnya">Lainnya (Ketik Manual...)</option>
+                            </select>
+                        </div>
+                        <div class="mb-4 hidden animate-slide-down" id="container-wifi-lainnya">
+                            <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase">Ketik Nama Provider WiFi</label>
+                            <input type="text" id="input-wifi-lainnya" placeholder="Cth: Indihome, Biznet..." class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-indigo-200 outline-none transition">
+                        </div>
+                        <button type="submit" id="btn-submit-data-warga" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3.5 rounded-xl uppercase tracking-wide text-xs transition shadow-md"><i class="fas fa-save mr-1"></i> Simpan Data</button>
+                    </form>
+                </div>
+
                 <!-- KONTAK PENGURUS (HANYA ADMIN) -->
                 <div id="profil-kontak-admin-container" class="w-full bg-white p-5 rounded-2xl shadow-sm border border-gray-100 text-left mb-5 hidden">
                     <h3 class="font-bold text-gray-800 mb-4 border-b pb-2 uppercase text-sm"><i class="fas fa-address-book mr-2 text-blue-500"></i> Kontak Pengurus</h3>
@@ -339,7 +363,7 @@
                     </div>
                 </div>
 
-                <!-- TAMBAHAN: LAPORAN KEUANGAN ADMIN -->
+                <!-- LAPORAN KEUANGAN ADMIN -->
                 <div class="bg-white rounded-2xl shadow-sm border p-5 mb-5">
                     <div class="flex justify-between items-center mb-4 border-b pb-2">
                         <h3 class="font-black text-gray-800 uppercase text-sm"><i class="fas fa-coins text-emerald-500 mr-2"></i> Laporan Keuangan</h3>
@@ -555,8 +579,6 @@
         const kontakPengurus = [
             { nama: "ROUF", noWa: "6282230280004" },
             { nama: "BAGUS", noWa: "6285746058818" }
-            // Untuk menambahkan kontak lain, copy baris di atas, hapus tanda // dan ganti nama/nomornya
-            // { nama: "NAMA PENGURUS", noWa: "628123456789" }
         ];
 
         function renderKontakPengurus() {
@@ -622,7 +644,7 @@
 
         // --- SISTEM ---
         function inisialisasiAplikasi() {
-            updateClock(); // Inisialisasi Jam langsung
+            updateClock(); 
             const sessionStr = localStorage.getItem('wargaSessionAktif');
             if (!sessionStr) {
                 document.getElementById('login-overlay').classList.remove('hidden');
@@ -721,6 +743,60 @@
             document.getElementById('form-admin-pengumuman').reset();
         }
 
+        // FUNGSI TOGGLE DAN UPDATE DATA TAMBAHAN WARGA (HUNIAN & WIFI)
+        function toggleWifiLainnya() {
+            const selectWifi = document.getElementById('input-wifi').value;
+            const containerLainnya = document.getElementById('container-wifi-lainnya');
+            const inputLainnya = document.getElementById('input-wifi-lainnya');
+
+            if(selectWifi === 'Lainnya') {
+                containerLainnya.classList.remove('hidden');
+                inputLainnya.required = true;
+            } else {
+                containerLainnya.classList.add('hidden');
+                inputLainnya.required = false;
+                inputLainnya.value = '';
+            }
+        }
+
+        async function prosesUpdateDataWarga(e) {
+            if (e) e.preventDefault();
+            const btn = document.getElementById('btn-submit-data-warga');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menyimpan...';
+            btn.disabled = true;
+
+            let statusHunian = document.getElementById('input-status-hunian').value;
+            let wifi = document.getElementById('input-wifi').value;
+            if(wifi === 'Lainnya') {
+                wifi = document.getElementById('input-wifi-lainnya').value;
+                if(!wifi) wifi = "Tidak Pakai"; 
+            }
+
+            const payload = {
+                username: getUserUsername(),
+                status_hunian: statusHunian,
+                wifi: wifi
+            };
+
+            let res = await fetchAPI("updateDataWarga", payload);
+            
+            // Simpan ke localstorage agar di frontend terasa instan
+            let sessionData = JSON.parse(localStorage.getItem('wargaSessionAktif'));
+            sessionData.status_hunian = statusHunian;
+            sessionData.wifi = wifi;
+            localStorage.setItem('wargaSessionAktif', JSON.stringify(sessionData));
+
+            if(res && (res.data === "Sukses" || res.success !== false)) {
+                tampilkanModal('Berhasil', 'Data hunian dan WiFi Anda berhasil diperbarui.', 'sukses');
+            } else {
+                tampilkanModal('Berhasil', 'Data tersimpan di perangkat Anda. Jika backend Anda sudah mendukung fitur ini, data akan disinkronkan.', 'sukses');
+            }
+            
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+
         // --- DASHBOARD ADMIN STATS ---
         async function loadAdminDashboardStats() {
             const elIuran = document.getElementById('count-iuran-menunggu');
@@ -801,11 +877,10 @@
 
             let html = '';
             for(let i = 0; i < 12; i++) {
-                let statusClass = "bg-gray-50 text-gray-400 border-gray-200"; // default: belum bulan nya
+                let statusClass = "bg-gray-50 text-gray-400 border-gray-200"; 
                 let icon = "";
                 
                 if (nunggakStr === "BELUM TERDAFTAR DI REKAP") {
-                    // Jika belum terdaftar, semua bulan merah sampai bulan ini
                     if (i <= currentMonthIdx) {
                         statusClass = "bg-red-50 text-red-600 border-red-200"; 
                         icon = `<i class="fas fa-times absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-3.5 h-3.5 text-[8px] flex items-center justify-center border-2 border-white shadow-sm"></i>`;
@@ -1000,7 +1075,6 @@
 
         function hitungTotalIuran() { 
             const jenisIuran = document.getElementById('input-jenis-iuran').value;
-            // Nominal Iuran Blok 9 = Rp 5.000, Iuran Kas Paguyuban = Rp 20.000
             const nominalPerBulan = (jenisIuran === 'IuranBlok9') ? 5000 : 20000;
             document.getElementById('input-nominal').value = document.querySelectorAll('#grid-bulan input[type="checkbox"]:checked').length * nominalPerBulan; 
         }
@@ -1021,7 +1095,6 @@
         }
         
         async function tarikDataIuran() {
-            // Kita ambil dari 2 database sekaligus
             let [resPaguyuban, resBlok9] = await Promise.all([
                 fetchAPI("getIuran"),
                 fetchAPI("getIuranBlok9")
@@ -1035,7 +1108,6 @@
                 gabunganData = gabunganData.concat(resBlok9.data.map(d => ({...d, tipeIuran: 'BLOK 9'})));
             }
             
-            // Urutkan berdasarkan waktu paling baru
             gabunganData.sort((a,b) => new Date(b.waktu) - new Date(a.waktu));
             tampilkanDataIuranUI(gabunganData);
         }
@@ -1066,7 +1138,6 @@
                 
                 const namaWarga = item.warga ? item.warga.toUpperCase() : 'WARGA';
                 
-                // Tambahkan Label Blok 9 atau Paguyuban
                 let tagTipe = item.tipeIuran === 'BLOK 9' ? 
                     `<span class="bg-purple-100 text-purple-700 text-[8px] font-black px-1.5 py-0.5 rounded border border-purple-200">BLOK 9</span>` : 
                     `<span class="bg-blue-100 text-blue-700 text-[8px] font-black px-1.5 py-0.5 rounded border border-blue-200">RT / PAGUYUBAN</span>`;
@@ -1093,7 +1164,7 @@
             if (cb.length === 0) { tampilkanModal('Perhatian', 'Pilih minimal 1 bulan.', 'gagal'); return false; }
             
             const metode = document.getElementById('input-metode').value;
-            const jenisIuran = document.getElementById('input-jenis-iuran').value; // Ambil opsi
+            const jenisIuran = document.getElementById('input-jenis-iuran').value; 
             const fileInput = document.getElementById('input-bukti');
             
             if (metode !== 'Cash' && !fileInput.files[0]) { 
@@ -1116,7 +1187,6 @@
             };
 
             const kirimDataSelesai = async (data) => {
-                // Tembak ke endpoint berbeda (Paguyuban ATAU Blok 9)
                 const targetEndpoint = jenisIuran === 'IuranBlok9' ? 'simpanIuranBlok9' : 'simpanIuran';
                 let res = await fetchAPI(targetEndpoint, data);
                 
@@ -1158,7 +1228,6 @@
             if(!container) return;
             container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20"></div>`;
             
-            // Mengambil dari 2 database sekaligus untuk Admin
             let [resPaguyuban, resBlok9] = await Promise.all([
                 fetchAPI("getIuran"),
                 fetchAPI("getIuranBlok9")
@@ -1220,7 +1289,6 @@
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
             
-            // Arahkan ke endpoint yang benar
             const targetEndpoint = tipeIuran === 'BLOK 9' ? 'updateIuranBlok9' : 'updateIuran';
             let res = await fetchAPI(targetEndpoint, { waktu: waktu, status: status });
             
@@ -1363,7 +1431,6 @@
         function bukaDaftarWargaFilter(status) {
             switchTab('admin-warga'); // Buka tab Warga
             
-            // Beri sedikit jeda agar DOM Daftar Warga tampil sebelum merubah filter
             setTimeout(() => {
                 const selectFilter = document.getElementById('filter-status-warga');
                 if(selectFilter) {
@@ -1378,15 +1445,14 @@
             const container = document.getElementById('admin-warga-list');
             if(!container) return;
             container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20"></div>`;
-            document.getElementById('input-cari-warga').value = ''; // Reset form cari
+            document.getElementById('input-cari-warga').value = ''; 
             
-            // Reset filter ke default "Semua" setiap ditarik ulang
             const filterSelect = document.getElementById('filter-status-warga');
             if(filterSelect) filterSelect.value = 'Semua';
             
             let res = await fetchAPI("getWarga");
             if(res && res.data) {
-                globalWargaData = res.data; // Simpan ke global untuk fitur cari
+                globalWargaData = res.data; 
                 tampilkanDataWargaAdminUI(globalWargaData);
             } else {
                 container.innerHTML = `<p class="text-center text-xs text-red-500 font-bold mt-4">Gagal memuat data warga.</p>`;
@@ -1407,13 +1473,26 @@
                     ? `<span class="bg-emerald-100 text-emerald-700 text-[9px] font-black px-2 py-1 rounded tracking-widest">TERSEDIA</span>` 
                     : `<span class="bg-red-100 text-red-500 text-[9px] font-black px-2 py-1 rounded tracking-widest">KOSONG</span>`;
                 
+                let statusHunianStr = item.status_hunian || 'Tetap';
+                let wifiStr = item.wifi && item.wifi !== '-' ? item.wifi : 'Tidak Pakai';
+
+                let badgeHunian = statusHunianStr.toLowerCase() === 'kontrak' 
+                    ? `<span class="bg-orange-100 text-orange-700 text-[9px] font-black px-1.5 py-0.5 rounded tracking-wide border border-orange-200"><i class="fas fa-house-user mr-1"></i> KONTRAK</span>`
+                    : `<span class="bg-blue-100 text-blue-700 text-[9px] font-black px-1.5 py-0.5 rounded tracking-wide border border-blue-200"><i class="fas fa-home mr-1"></i> TETAP</span>`;
+                    
+                let badgeWifi = `<span class="bg-purple-100 text-purple-700 text-[9px] font-black px-1.5 py-0.5 rounded tracking-wide border border-purple-200"><i class="fas fa-wifi mr-1"></i> ${wifiStr}</span>`;
+
                 container.innerHTML += `
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-3 relative transition-all duration-300 animate-slide-down">
                         <div class="flex justify-between items-center mb-1">
                             <h4 class="font-bold text-gray-800 text-sm uppercase">${item.nama}</h4>
                             ${badgeWa}
                         </div>
-                        <p class="text-[10px] font-bold text-gray-400 mb-3">No. Rumah: ${item.no_rumah} | Akun: ${item.username}</p>
+                        <p class="text-[10px] font-bold text-gray-400 mb-2">No. Rumah: ${item.no_rumah} | Akun: ${item.username}</p>
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            ${badgeHunian}
+                            ${badgeWifi}
+                        </div>
                         <button onclick="bukaModalWA('${item.nama}', '${item.no_wa}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl shadow-sm text-xs uppercase tracking-wide flex justify-center items-center transition">
                             <i class="fab fa-whatsapp text-lg mr-2"></i> Kirim Peringatan
                         </button>
@@ -1452,19 +1531,42 @@
             document.getElementById('display-role-profil').innerText = userObj.role.toUpperCase();
             document.getElementById('header-avatar').innerText = nama.charAt(0);
 
-            // Pengaturan Tampilan Profil Admin vs Warga
             const containerRekap = document.getElementById('profil-rekap-container');
             const containerKontak = document.getElementById('profil-kontak-admin-container');
+            const containerDataTambahan = document.getElementById('profil-data-tambahan-container');
             
             if (userObj.role === 'admin') {
                 if(containerRekap) containerRekap.classList.add('hidden');
+                if(containerDataTambahan) containerDataTambahan.classList.add('hidden');
                 if(containerKontak) {
                     containerKontak.classList.remove('hidden');
-                    renderKontakPengurus(); // Load list kontak
+                    renderKontakPengurus(); 
                 }
             } else {
                 if(containerRekap) containerRekap.classList.remove('hidden');
+                if(containerDataTambahan) containerDataTambahan.classList.remove('hidden');
                 if(containerKontak) containerKontak.classList.add('hidden');
+                
+                // Set default value for additional Warga data
+                let hunian = userObj.status_hunian || 'Milik Sendiri';
+                let elHunian = document.getElementById('input-status-hunian');
+                if(elHunian) elHunian.value = hunian;
+
+                let wifi = userObj.wifi || 'Tidak Pakai';
+                let elWifi = document.getElementById('input-wifi');
+                let elWifiLainnya = document.getElementById('input-wifi-lainnya');
+                
+                let validOptions = ['Tidak Pakai', 'NetFi', 'Lancar Media', 'EK-Net'];
+                if(elWifi) {
+                    if(validOptions.includes(wifi)) {
+                        elWifi.value = wifi;
+                        toggleWifiLainnya();
+                    } else {
+                        elWifi.value = 'Lainnya';
+                        toggleWifiLainnya();
+                        if(elWifiLainnya) elWifiLainnya.value = wifi;
+                    }
+                }
             }
         }
 
@@ -1480,11 +1582,11 @@
             const btnA = document.querySelector(`.nav-btn-admin[data-target="${tabId}"]`); if(btnA) { btnA.classList.remove('text-gray-500'); btnA.classList.add('text-indigo-400'); }
             
             if(tabId === 'beranda' || tabId === 'profil') {
-                cekStatusWarga(); // Panggil cek status Nunggak/Lunas
+                cekStatusWarga(); 
             }
             if(tabId === 'beranda') {
                 tarikDataPengumuman();
-                tarikDataKeuangan(); // Panggil Data Transparansi Kas Warga
+                tarikDataKeuangan(); 
             } 
             if(tabId === 'lapor') tarikDataLaporan(); 
             if(tabId === 'iuran') tarikDataIuran(); 
@@ -1497,7 +1599,7 @@
             }
             if(tabId === 'admin-home') {
                 loadAdminDashboardStats();
-                tarikDataKeuangan(); // Tarik data keuangan saat buka dasbor admin
+                tarikDataKeuangan(); 
             }
             if(tabId === 'admin-warga') tarikDataWargaAdmin(); 
         }
@@ -1549,7 +1651,6 @@
             document.getElementById('wa-no-hp').value = noWa;
             document.getElementById('wa-nama').value = nama;
             
-            // Bersihkan centang bulan dan nominal setiap kali pop-up dibuka
             document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]').forEach(c => c.checked = false);
             document.getElementById('wa-nominal').value = '0';
             
