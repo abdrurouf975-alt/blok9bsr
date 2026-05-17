@@ -310,14 +310,22 @@
                         <p id="live-clock-admin" class="text-[9px] bg-white/20 px-2 py-1 rounded border border-white/30 backdrop-blur-sm text-right"></p>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-4 mt-2 relative z-10">
-                        <div class="bg-white/10 p-4 rounded-2xl border border-white/20">
-                            <h3 id="count-iuran-menunggu" class="text-3xl font-black text-green-400">-</h3>
-                            <p class="text-[10px] font-bold uppercase mt-1">Iuran Menunggu</p>
+                    <div class="grid grid-cols-2 gap-3 mt-2 relative z-10">
+                        <div class="bg-white/10 p-3 rounded-2xl border border-white/20">
+                            <h3 id="count-warga-lunas" class="text-2xl font-black text-green-400">-</h3>
+                            <p class="text-[9px] font-bold uppercase mt-1">Warga Lunas</p>
                         </div>
-                        <div class="bg-white/10 p-4 rounded-2xl border border-white/20">
-                            <h3 id="count-surat-laporan" class="text-3xl font-black text-amber-400">-</h3>
-                            <p class="text-[10px] font-bold uppercase mt-1">Surat & Laporan</p>
+                        <div class="bg-white/10 p-3 rounded-2xl border border-white/20">
+                            <h3 id="count-warga-nunggak" class="text-2xl font-black text-red-400">-</h3>
+                            <p class="text-[9px] font-bold uppercase mt-1">Warga Nunggak</p>
+                        </div>
+                        <div class="bg-white/10 p-3 rounded-2xl border border-white/20">
+                            <h3 id="count-iuran-menunggu" class="text-2xl font-black text-amber-400">-</h3>
+                            <p class="text-[9px] font-bold uppercase mt-1">Iuran Menunggu</p>
+                        </div>
+                        <div class="bg-white/10 p-3 rounded-2xl border border-white/20">
+                            <h3 id="count-surat-laporan" class="text-2xl font-black text-blue-400">-</h3>
+                            <p class="text-[9px] font-bold uppercase mt-1">Surat & Laporan</p>
                         </div>
                     </div>
                 </div>
@@ -640,19 +648,26 @@
         async function loadAdminDashboardStats() {
             const elIuran = document.getElementById('count-iuran-menunggu');
             const elSuratLapor = document.getElementById('count-surat-laporan');
+            const elLunas = document.getElementById('count-warga-lunas');
+            const elNunggak = document.getElementById('count-warga-nunggak');
             
             if(elIuran) elIuran.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i>';
             if(elSuratLapor) elSuratLapor.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i>';
+            if(elLunas) elLunas.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i>';
+            if(elNunggak) elNunggak.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i>';
 
             try {
-                const [resIuran, resSurat, resLaporan] = await Promise.all([
+                const [resIuran, resSurat, resLaporan, resWarga] = await Promise.all([
                     fetchAPI("getIuran"),
                     fetchAPI("getSurat"),
-                    fetchAPI("getLaporan")
+                    fetchAPI("getLaporan"),
+                    fetchAPI("getWarga")
                 ]);
 
                 let pendingIuran = 0;
                 let pendingSuratLaporan = 0;
+                let countLunas = 0;
+                let countNunggak = 0;
 
                 if(resIuran && resIuran.data) {
                     pendingIuran = resIuran.data.filter(item => item.status.toLowerCase().includes('menunggu')).length;
@@ -663,14 +678,22 @@
                 if(resLaporan && resLaporan.data) {
                     pendingSuratLaporan += resLaporan.data.filter(item => item.status.toLowerCase().includes('menunggu') || item.status.toLowerCase().includes('diproses')).length;
                 }
+                if(resWarga && resWarga.data) {
+                    countLunas = resWarga.data.filter(w => w.status_bulan_ini === 'Lunas').length;
+                    countNunggak = resWarga.data.filter(w => w.status_bulan_ini === 'Nunggak').length;
+                }
 
                 if(elIuran) elIuran.innerText = pendingIuran;
                 if(elSuratLapor) elSuratLapor.innerText = pendingSuratLaporan;
+                if(elLunas) elLunas.innerText = countLunas;
+                if(elNunggak) elNunggak.innerText = countNunggak;
 
             } catch (error) {
                 console.error("Gagal memuat statistik", error);
                 if(elIuran) elIuran.innerText = "-";
                 if(elSuratLapor) elSuratLapor.innerText = "-";
+                if(elLunas) elLunas.innerText = "-";
+                if(elNunggak) elNunggak.innerText = "-";
             }
         }
 
