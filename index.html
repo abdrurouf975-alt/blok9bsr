@@ -274,6 +274,19 @@
                 <h2 class="text-xl font-black text-gray-800 mb-0.5 uppercase tracking-wide" id="display-nama-profil">NAMA AKUN</h2>
                 <span class="text-xs bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-full border uppercase mb-8" id="display-role-profil">WARGA</span>
                 
+                <!-- REKAP PEMBAYARAN DI PROFIL -->
+                <div class="w-full bg-white p-5 rounded-2xl shadow-sm border border-gray-100 text-left mb-5">
+                    <h3 class="font-bold text-gray-800 mb-4 border-b pb-2 uppercase text-sm"><i class="fas fa-calendar-check mr-2 text-emerald-500"></i> Rekap Iuran Tahun Ini</h3>
+                    <div id="profil-rekap-bulan" class="grid grid-cols-4 gap-2.5">
+                        <div class="col-span-4 text-center text-xs text-gray-400 py-4 shimmer rounded-lg border border-gray-100">Memuat data...</div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-gray-50 flex justify-center gap-4">
+                        <div class="flex items-center text-[9px] font-bold text-gray-500"><span class="w-2.5 h-2.5 rounded-full bg-green-500 mr-1.5 shadow-sm border border-green-600"></span>Lunas</div>
+                        <div class="flex items-center text-[9px] font-bold text-gray-500"><span class="w-2.5 h-2.5 rounded-full bg-red-500 mr-1.5 shadow-sm border border-red-600"></span>Nunggak</div>
+                        <div class="flex items-center text-[9px] font-bold text-gray-500"><span class="w-2.5 h-2.5 rounded-full bg-gray-200 mr-1.5 shadow-sm border border-gray-300"></span>Belum Waktunya</div>
+                    </div>
+                </div>
+
                 <div class="w-full bg-white p-5 rounded-2xl shadow-sm border border-gray-100 text-left mb-4">
                     <h3 class="font-bold text-gray-800 mb-4 border-b pb-2 uppercase text-sm"><i class="fas fa-lock mr-2 text-gray-400"></i> Ganti Password</h3>
                     <form onsubmit="prosesGantiPassword(event)" id="form-ganti-password">
@@ -667,6 +680,56 @@
             document.getElementById('tempat-pengumuman').innerHTML = `<p>${res.data || 'Tidak ada pengumuman'}</p>`;
         }
 
+        // FUNGSI RENDER REKAP PROFIL (12 BULAN)
+        function renderRekapProfil(nunggakStr) {
+            const container = document.getElementById('profil-rekap-bulan');
+            if(!container) return;
+
+            if (nunggakStr === "ERROR") {
+                container.innerHTML = `<div class="col-span-4 text-center text-xs text-red-500 font-bold py-3">Gagal memuat rekap.</div>`;
+                return;
+            }
+
+            const currentMonthIdx = new Date().getMonth();
+            const namaBulanArrFull = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
+            const namaBulanSingkat = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGS", "SEP", "OKT", "NOV", "DES"];
+            
+            let nunggakArr = [];
+            if(nunggakStr && nunggakStr !== "SEMUA BULAN HINGGA SAAT INI" && nunggakStr !== "BELUM TERDAFTAR DI REKAP") {
+                nunggakArr = nunggakStr.split(',').map(s => s.trim().toUpperCase());
+            }
+
+            let html = '';
+            for(let i = 0; i < 12; i++) {
+                let statusClass = "bg-gray-50 text-gray-400 border-gray-200"; // default: belum bulan nya
+                let icon = "";
+                
+                if (nunggakStr === "BELUM TERDAFTAR DI REKAP") {
+                    // Jika belum terdaftar, semua bulan merah sampai bulan ini
+                    if (i <= currentMonthIdx) {
+                        statusClass = "bg-red-50 text-red-600 border-red-200"; 
+                        icon = `<i class="fas fa-times absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-3.5 h-3.5 text-[8px] flex items-center justify-center border-2 border-white shadow-sm"></i>`;
+                    }
+                } else if (i <= currentMonthIdx) {
+                    if (nunggakArr.includes(namaBulanArrFull[i])) {
+                        statusClass = "bg-red-50 text-red-600 border-red-200"; // Nunggak
+                        icon = `<i class="fas fa-times absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-3.5 h-3.5 text-[8px] flex items-center justify-center border-2 border-white shadow-sm"></i>`;
+                    } else {
+                        statusClass = "bg-green-50 text-green-600 border-green-200"; // Lunas
+                        icon = `<i class="fas fa-check absolute -top-1 -right-1 bg-green-500 text-white rounded-full w-3.5 h-3.5 text-[8px] flex items-center justify-center border-2 border-white shadow-sm"></i>`;
+                    }
+                }
+                
+                html += `
+                    <div class="relative border rounded-lg py-2.5 text-center shadow-sm ${statusClass} flex items-center justify-center">
+                        <span class="text-[10px] font-black">${namaBulanSingkat[i]}</span>
+                        ${icon}
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
         // FUNGSI CEK STATUS NUNGGAK/LUNAS WARGA DI DASBOR
         async function cekStatusWarga() {
             const container = document.getElementById('beranda-status-iuran');
@@ -688,6 +751,7 @@
                         <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-green-50 text-green-500 flex items-center justify-center text-xl shadow-inner border border-green-100"><i class="fas fa-shield-alt"></i></div>
                     `;
                     container.className = "bg-green-50/50 p-4 rounded-2xl shadow-sm border border-green-200 mb-6 flex items-center justify-between";
+                    renderRekapProfil(""); // Lunas semua
                 } else {
                     container.innerHTML = `
                         <div class="pr-2">
@@ -698,9 +762,11 @@
                         <button onclick="switchTab('iuran')" class="bg-red-500 text-white text-[10px] md:text-xs font-bold px-3 md:px-4 py-2 md:py-2.5 rounded-xl shadow-md hover:bg-red-600 transition flex items-center shrink-0"><i class="fas fa-wallet mr-1.5"></i> Bayar</button>
                     `;
                     container.className = "bg-red-50 p-4 rounded-2xl shadow-sm border border-red-200 mb-6 flex items-center justify-between";
+                    renderRekapProfil(res.data.bulan); // Menampilkan bulan yang nunggak
                 }
             } else {
                 container.innerHTML = `<p class="text-xs text-gray-500">Gagal memuat status.</p>`;
+                renderRekapProfil("ERROR");
             }
         }
 
@@ -1263,9 +1329,11 @@
             const btnW = document.querySelector(`.nav-btn-warga[data-target="${tabId}"]`); if(btnW) { btnW.classList.remove('text-gray-400'); btnW.classList.add('text-indigo-600'); }
             const btnA = document.querySelector(`.nav-btn-admin[data-target="${tabId}"]`); if(btnA) { btnA.classList.remove('text-gray-500'); btnA.classList.add('text-indigo-400'); }
             
+            if(tabId === 'beranda' || tabId === 'profil') {
+                cekStatusWarga(); // Panggil cek status Nunggak/Lunas
+            }
             if(tabId === 'beranda') {
                 tarikDataPengumuman();
-                cekStatusWarga(); // Panggil cek status Nunggak/Lunas
                 tarikDataKeuangan(); // Panggil Data Transparansi Kas Warga
             } 
             if(tabId === 'lapor') tarikDataLaporan(); 
