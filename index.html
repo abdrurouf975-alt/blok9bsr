@@ -311,19 +311,19 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-3 mt-2 relative z-10">
-                        <div class="bg-white/10 p-3 rounded-2xl border border-white/20">
+                        <div onclick="bukaDaftarWargaFilter('Lunas')" class="bg-white/10 p-3 rounded-2xl border border-white/20 cursor-pointer hover:bg-white/20 transition transform hover:scale-105 active:scale-95">
                             <h3 id="count-warga-lunas" class="text-2xl font-black text-green-400">-</h3>
                             <p class="text-[9px] font-bold uppercase mt-1">Warga Lunas</p>
                         </div>
-                        <div class="bg-white/10 p-3 rounded-2xl border border-white/20">
+                        <div onclick="bukaDaftarWargaFilter('Nunggak')" class="bg-white/10 p-3 rounded-2xl border border-white/20 cursor-pointer hover:bg-white/20 transition transform hover:scale-105 active:scale-95">
                             <h3 id="count-warga-nunggak" class="text-2xl font-black text-red-400">-</h3>
                             <p class="text-[9px] font-bold uppercase mt-1">Warga Nunggak</p>
                         </div>
-                        <div class="bg-white/10 p-3 rounded-2xl border border-white/20">
+                        <div onclick="switchTab('admin-verifikasi')" class="bg-white/10 p-3 rounded-2xl border border-white/20 cursor-pointer hover:bg-white/20 transition transform hover:scale-105 active:scale-95">
                             <h3 id="count-iuran-menunggu" class="text-2xl font-black text-amber-400">-</h3>
                             <p class="text-[9px] font-bold uppercase mt-1">Iuran Menunggu</p>
                         </div>
-                        <div class="bg-white/10 p-3 rounded-2xl border border-white/20">
+                        <div onclick="switchTab('admin-verifikasi')" class="bg-white/10 p-3 rounded-2xl border border-white/20 cursor-pointer hover:bg-white/20 transition transform hover:scale-105 active:scale-95">
                             <h3 id="count-surat-laporan" class="text-2xl font-black text-blue-400">-</h3>
                             <p class="text-[9px] font-bold uppercase mt-1">Surat & Laporan</p>
                         </div>
@@ -391,12 +391,27 @@
                     <button onclick="tarikDataWargaAdmin()" class="text-xs text-indigo-600 bg-indigo-50 px-3 py-2 rounded-full shadow-sm"><i class="fas fa-sync-alt"></i></button>
                 </div>
 
-                <!-- KOLOM PENCARIAN -->
-                <div class="mb-5 relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-search text-gray-400"></i>
+                <!-- KOLOM PENCARIAN & FILTER -->
+                <div class="mb-5 flex flex-col gap-3">
+                    <div class="relative w-full">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" id="input-cari-warga" onkeyup="cariWargaAdmin()" placeholder="Cari nama warga atau nomor rumah..." class="w-full pl-10 p-3 border border-gray-200 rounded-xl bg-white text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-sm transition">
                     </div>
-                    <input type="text" id="input-cari-warga" onkeyup="cariWargaAdmin()" placeholder="Cari nama warga atau nomor rumah..." class="w-full pl-10 p-3 border border-gray-200 rounded-xl bg-white text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-sm transition">
+                    <div class="relative w-full">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-filter text-gray-400"></i>
+                        </div>
+                        <select id="filter-status-warga" onchange="cariWargaAdmin()" class="w-full pl-10 p-3 border border-gray-200 rounded-xl bg-white text-sm font-bold text-gray-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-sm transition appearance-none cursor-pointer">
+                            <option value="Semua">Tampilkan Semua Warga</option>
+                            <option value="Lunas">Hanya Warga Lunas</option>
+                            <option value="Nunggak">Hanya Warga Nunggak</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                            <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="admin-warga-list" class="flex flex-col gap-3">
@@ -1273,12 +1288,30 @@
             }
         }
 
+        // FUNGSI SHORTCUT FILTER DARI DASBOR ADMIN KE DAFTAR WARGA
+        function bukaDaftarWargaFilter(status) {
+            switchTab('admin-warga'); // Buka tab Warga
+            
+            // Beri sedikit jeda agar DOM Daftar Warga tampil sebelum merubah filter
+            setTimeout(() => {
+                const selectFilter = document.getElementById('filter-status-warga');
+                if(selectFilter) {
+                    selectFilter.value = status;
+                    cariWargaAdmin(); // Render ulang sesuai filter
+                }
+            }, 150); 
+        }
+
         // 4. Daftar Warga & Fitur Pencarian (Otomatis dari Database)
         async function tarikDataWargaAdmin() {
             const container = document.getElementById('admin-warga-list');
             if(!container) return;
             container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20"></div>`;
             document.getElementById('input-cari-warga').value = ''; // Reset form cari
+            
+            // Reset filter ke default "Semua" setiap ditarik ulang
+            const filterSelect = document.getElementById('filter-status-warga');
+            if(filterSelect) filterSelect.value = 'Semua';
             
             let res = await fetchAPI("getWarga");
             if(res && res.data) {
@@ -1317,17 +1350,24 @@
             });
         }
 
-        // FUNGSI CARI WARGA
+        // FUNGSI CARI & FILTER WARGA
         function cariWargaAdmin() {
             const keyword = document.getElementById('input-cari-warga').value.toLowerCase();
+            const filterStatus = document.getElementById('filter-status-warga').value;
             
             if(!globalWargaData || globalWargaData.length === 0) return;
 
-            const filteredData = globalWargaData.filter(item => 
-                (item.nama && item.nama.toLowerCase().includes(keyword)) || 
-                (item.no_rumah && item.no_rumah.toLowerCase().includes(keyword)) ||
-                (item.username && item.username.toLowerCase().includes(keyword))
-            );
+            const filteredData = globalWargaData.filter(item => {
+                let matchKeyword = (item.nama && item.nama.toLowerCase().includes(keyword)) || 
+                                   (item.no_rumah && item.no_rumah.toLowerCase().includes(keyword)) ||
+                                   (item.username && item.username.toLowerCase().includes(keyword));
+                
+                let matchStatus = true;
+                if(filterStatus === 'Lunas') matchStatus = item.status_bulan_ini === 'Lunas';
+                if(filterStatus === 'Nunggak') matchStatus = item.status_bulan_ini === 'Nunggak';
+                
+                return matchKeyword && matchStatus;
+            });
 
             tampilkanDataWargaAdminUI(filteredData);
         }
