@@ -163,7 +163,6 @@
                         <i class="fas fa-university absolute right-[-10px] bottom-[-10px] text-6xl text-blue-100 opacity-50"></i>
                         <p class="text-xs text-blue-800 font-bold mb-3 uppercase tracking-wide">Transfer Ke Rekening Berikut:</p>
                         
-                        <!-- BCA -->
                         <div class="bg-white p-3 rounded-xl border border-blue-50 mb-2 shadow-sm relative z-10 flex justify-between items-center">
                             <div>
                                 <p class="text-[10px] text-gray-500 font-bold uppercase mb-0.5">Bank BCA</p>
@@ -173,7 +172,6 @@
                             <button type="button" onclick="salinTeks('3301144677')" class="w-10 h-10 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full flex justify-center items-center transition"><i class="fas fa-copy"></i></button>
                         </div>
                         
-                        <!-- BRI -->
                         <div class="bg-white p-3 rounded-xl border border-blue-50 mb-4 shadow-sm relative z-10 flex justify-between items-center">
                             <div>
                                 <p class="text-[10px] text-gray-500 font-bold uppercase mb-0.5">Bank BRI</p>
@@ -183,7 +181,6 @@
                             <button type="button" onclick="salinTeks('628801016232530')" class="w-10 h-10 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full flex justify-center items-center transition"><i class="fas fa-copy"></i></button>
                         </div>
 
-                        <!-- Gambar QR Code Tampil Langsung -->
                         <div class="bg-white p-4 rounded-xl border border-blue-50 shadow-sm relative z-10 flex flex-col items-center">
                             <p class="text-[11px] text-gray-500 font-bold uppercase mb-2"><i class="fas fa-qrcode mr-1"></i> Scan QRIS Pembayaran</p>
                             <img src="https://cdn.phototourl.com/free/2026-05-11-8900fd55-13c7-42f8-880c-f064db4aac0e.jpg" alt="QR Code QRIS" class="w-full max-w-[200px] rounded-lg border border-gray-100 mb-2">
@@ -192,7 +189,6 @@
                     </div>
 
                     <form id="form-iuran" onsubmit="kirimIuranKeSpreadsheet(event)">
-                        <!-- PILIHAN JENIS IURAN -->
                         <div class="mb-4">
                             <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Jenis Iuran / Tagihan</label>
                             <select id="input-jenis-iuran" onchange="hitungTotalIuran()" class="w-full p-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 bg-gray-50 text-sm font-bold shadow-sm" required>
@@ -214,7 +210,7 @@
                                 <label class="cursor-pointer"><input type="checkbox" value="Agustus" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">AGS</div></label>
                                 <label class="cursor-pointer"><input type="checkbox" value="September" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">SEP</div></label>
                                 <label class="cursor-pointer"><input type="checkbox" value="Oktober" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">OKT</div></label>
-                                <label class="cursor-pointer"><input type="checkbox" value="November" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">NOV</div></label>
+                                <label class="cursor-pointer"><input type="checkbox" value="November" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">NOV</div></label>
                                 <label class="cursor-pointer"><input type="checkbox" value="Desember" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">DES</div></label>
                             </div>
                         </div>
@@ -481,7 +477,6 @@
         </div> <!-- Penutup content-area -->
 
         <!-- BOTTOM NAVIGATIONS -->
-        <!-- Warga Nav (Tombol Iuran & Surat digeser) -->
         <div id="nav-warga" class="bottom-nav-container fixed bottom-0 w-full bg-white border-t flex justify-around py-2 pb-4 z-20 hidden shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
             <button onclick="switchTab('beranda')" class="nav-btn-warga flex-1 flex flex-col items-center text-indigo-600 transition" data-target="beranda"><i class="fas fa-home text-xl mb-1"></i><span class="text-[9px] font-bold uppercase">Beranda</span></button>
             <button onclick="switchTab('iuran')" class="nav-btn-warga flex-1 flex flex-col items-center text-gray-400 transition" data-target="iuran"><i class="fas fa-wallet text-xl mb-1"></i><span class="text-[9px] font-bold uppercase">Iuran</span></button>
@@ -500,13 +495,14 @@
     </div> <!-- Penutup main-app -->
 
     <!-- MODALS -->
-    <!-- Modal Utama -->
+    <!-- Modal Utama (Telah Diperbaiki Bug-nya) -->
     <div id="custom-modal" class="fixed inset-0 bg-black bg-opacity-75 z-[200] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-sm text-center">
-            <div id="modal-icon-container" class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-green-100 mb-4 border-4 border-white"><i id="modal-icon" class="fas fa-check text-green-600 text-4xl"></i></div>
+        <!-- PERBAIKAN: id="custom-modal-box" HARUS ada di elemen putih ini agar pop-up tidak error -->
+        <div id="custom-modal-box" class="bg-white rounded-3xl p-6 w-full max-w-sm text-center transform transition-transform duration-300">
+            <div id="modal-icon-container" class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-green-100 mb-4 border-4 border-white shadow-sm"><i id="modal-icon" class="fas fa-check text-green-600 text-4xl"></i></div>
             <h3 id="modal-title" class="text-2xl font-black text-gray-800 mb-2 uppercase">Berhasil!</h3>
             <p id="modal-message" class="text-sm text-gray-500 mb-6 font-medium">Pesan</p>
-            <button onclick="tutupModal()" class="w-full bg-gray-900 text-white font-bold py-3.5 rounded-xl uppercase text-sm">Tutup</button>
+            <button onclick="tutupModal()" class="w-full bg-gray-900 hover:bg-black text-white font-bold py-3.5 rounded-xl uppercase text-sm shadow-md transition">Tutup</button>
         </div>
     </div>
 
@@ -763,7 +759,7 @@
             if (e) e.preventDefault();
             const btn = document.getElementById('btn-submit-data-warga');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menyimpan...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>MENYIMPAN...';
             btn.disabled = true;
 
             let statusHunian = document.getElementById('input-status-hunian').value;
@@ -783,11 +779,13 @@
             
             // Simpan ke localstorage agar di frontend terasa instan
             let sessionData = JSON.parse(localStorage.getItem('wargaSessionAktif'));
-            sessionData.status_hunian = statusHunian;
-            sessionData.wifi = wifi;
-            localStorage.setItem('wargaSessionAktif', JSON.stringify(sessionData));
+            if(sessionData) {
+                sessionData.status_hunian = statusHunian;
+                sessionData.wifi = wifi;
+                localStorage.setItem('wargaSessionAktif', JSON.stringify(sessionData));
+            }
 
-            if(res && (res.data === "Sukses" || res.success !== false)) {
+            if(res && res.data === "Sukses") {
                 tampilkanModal('Berhasil', 'Data hunian dan WiFi Anda berhasil diperbarui.', 'sukses');
             } else {
                 tampilkanModal('Berhasil', 'Data tersimpan di perangkat Anda. Jika backend Anda sudah mendukung fitur ini, data akan disinkronkan.', 'sukses');
@@ -877,10 +875,11 @@
 
             let html = '';
             for(let i = 0; i < 12; i++) {
-                let statusClass = "bg-gray-50 text-gray-400 border-gray-200"; 
+                let statusClass = "bg-gray-50 text-gray-400 border-gray-200"; // default: belum bulan nya
                 let icon = "";
                 
                 if (nunggakStr === "BELUM TERDAFTAR DI REKAP") {
+                    // Jika belum terdaftar, semua bulan merah sampai bulan ini
                     if (i <= currentMonthIdx) {
                         statusClass = "bg-red-50 text-red-600 border-red-200"; 
                         icon = `<i class="fas fa-times absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-3.5 h-3.5 text-[8px] flex items-center justify-center border-2 border-white shadow-sm"></i>`;
@@ -1075,6 +1074,7 @@
 
         function hitungTotalIuran() { 
             const jenisIuran = document.getElementById('input-jenis-iuran').value;
+            // Nominal Iuran Blok 9 = Rp 5.000, Iuran Kas Paguyuban = Rp 20.000
             const nominalPerBulan = (jenisIuran === 'IuranBlok9') ? 5000 : 20000;
             document.getElementById('input-nominal').value = document.querySelectorAll('#grid-bulan input[type="checkbox"]:checked').length * nominalPerBulan; 
         }
@@ -1429,13 +1429,13 @@
 
         // FUNGSI SHORTCUT FILTER DARI DASBOR ADMIN KE DAFTAR WARGA
         function bukaDaftarWargaFilter(status) {
-            switchTab('admin-warga'); // Buka tab Warga
+            switchTab('admin-warga'); 
             
             setTimeout(() => {
                 const selectFilter = document.getElementById('filter-status-warga');
                 if(selectFilter) {
                     selectFilter.value = status;
-                    cariWargaAdmin(); // Render ulang sesuai filter
+                    cariWargaAdmin(); 
                 }
             }, 150); 
         }
@@ -1547,7 +1547,6 @@
                 if(containerDataTambahan) containerDataTambahan.classList.remove('hidden');
                 if(containerKontak) containerKontak.classList.add('hidden');
                 
-                // Set default value for additional Warga data
                 let hunian = userObj.status_hunian || 'Milik Sendiri';
                 let elHunian = document.getElementById('input-status-hunian');
                 if(elHunian) elHunian.value = hunian;
@@ -1614,12 +1613,17 @@
 
         // Modals Functions
         function tampilkanModal(judul, pesan, tipe) {
-            document.getElementById('modal-title').innerText = judul; document.getElementById('modal-message').innerText = pesan;
-            document.getElementById('custom-modal').classList.remove('hidden'); document.getElementById('custom-modal').style.display = 'flex';
+            document.getElementById('modal-title').innerText = judul; 
+            document.getElementById('modal-message').innerText = pesan;
+            document.getElementById('custom-modal').classList.remove('hidden'); 
+            document.getElementById('custom-modal').style.display = 'flex';
             
+            // PERBAIKAN: Memastikan elemen dengan ID custom-modal-box ditemukan sebelum memberikan efek animasi
             const box = document.getElementById('custom-modal-box');
-            box.style.transform = 'scale(0.8)';
-            setTimeout(() => { box.style.transform = 'scale(1)'; }, 50);
+            if(box) {
+                box.style.transform = 'scale(0.8)';
+                setTimeout(() => { box.style.transform = 'scale(1)'; }, 50);
+            }
         }
         function tutupModal() { document.getElementById('custom-modal').classList.add('hidden'); document.getElementById('custom-modal').style.display = 'none'; }
         
