@@ -214,7 +214,7 @@
                                 <label class="cursor-pointer"><input type="checkbox" value="Agustus" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">AGS</div></label>
                                 <label class="cursor-pointer"><input type="checkbox" value="September" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">SEP</div></label>
                                 <label class="cursor-pointer"><input type="checkbox" value="Oktober" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">OKT</div></label>
-                                <label class="cursor-pointer"><input type="checkbox" value="November" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">NOV</div></label>
+                                <label class="cursor-pointer"><input type="checkbox" value="November" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">NOV</div></label>
                                 <label class="cursor-pointer"><input type="checkbox" value="Desember" class="peer hidden" onchange="hitungTotalIuran()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase">DES</div></label>
                             </div>
                         </div>
@@ -297,15 +297,17 @@
                             <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase">Provider WiFi</label>
                             <select id="input-wifi" onchange="toggleWifiLainnya()" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-indigo-200 outline-none transition">
                                 <option value="Tidak Pakai">Tidak Pasang WiFi</option>
-                                <option value="NetFi">NetFi</option>
-                                <option value="Lancar Media">Lancar Media</option>
-                                <option value="EK-Net">EK-Net</option>
+                                <option value="Netf">Netf</option>
+                                <option value="Lancar">Lancar</option>
+                                <option value="Indosat">Indosat</option>
+                                <option value="Eka">Eka</option>
+                                <option value="Sneis">Sneis</option>
                                 <option value="Lainnya">Lainnya (Ketik Manual...)</option>
                             </select>
                         </div>
                         <div class="mb-4 hidden animate-slide-down" id="container-wifi-lainnya">
                             <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase">Ketik Nama Provider WiFi</label>
-                            <input type="text" id="input-wifi-lainnya" placeholder="Cth: Indihome, Biznet..." class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-indigo-200 outline-none transition">
+                            <input type="text" id="input-wifi-lainnya" placeholder="Cth: Biznet, FirstMedia..." class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-indigo-200 outline-none transition">
                         </div>
                         <button type="submit" id="btn-submit-data-warga" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3.5 rounded-xl uppercase tracking-wide text-xs transition shadow-md"><i class="fas fa-save mr-1"></i> Simpan Data</button>
                     </form>
@@ -481,7 +483,6 @@
         </div> <!-- Penutup content-area -->
 
         <!-- BOTTOM NAVIGATIONS -->
-        <!-- Warga Nav (Tombol Iuran & Surat digeser) -->
         <div id="nav-warga" class="bottom-nav-container fixed bottom-0 w-full bg-white border-t flex justify-around py-2 pb-4 z-20 hidden shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
             <button onclick="switchTab('beranda')" class="nav-btn-warga flex-1 flex flex-col items-center text-indigo-600 transition" data-target="beranda"><i class="fas fa-home text-xl mb-1"></i><span class="text-[9px] font-bold uppercase">Beranda</span></button>
             <button onclick="switchTab('iuran')" class="nav-btn-warga flex-1 flex flex-col items-center text-gray-400 transition" data-target="iuran"><i class="fas fa-wallet text-xl mb-1"></i><span class="text-[9px] font-bold uppercase">Iuran</span></button>
@@ -500,13 +501,13 @@
     </div> <!-- Penutup main-app -->
 
     <!-- MODALS -->
-    <!-- Modal Utama -->
+    <!-- Modal Utama (Telah Diperbaiki Bug-nya dengan ID khusus) -->
     <div id="custom-modal" class="fixed inset-0 bg-black bg-opacity-75 z-[200] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-sm text-center">
-            <div id="modal-icon-container" class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-green-100 mb-4 border-4 border-white"><i id="modal-icon" class="fas fa-check text-green-600 text-4xl"></i></div>
+        <div id="custom-modal-box" class="bg-white rounded-3xl p-6 w-full max-w-sm text-center transform transition-transform duration-300">
+            <div id="modal-icon-container" class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-green-100 mb-4 border-4 border-white shadow-sm"><i id="modal-icon" class="fas fa-check text-green-600 text-4xl"></i></div>
             <h3 id="modal-title" class="text-2xl font-black text-gray-800 mb-2 uppercase">Berhasil!</h3>
             <p id="modal-message" class="text-sm text-gray-500 mb-6 font-medium">Pesan</p>
-            <button onclick="tutupModal()" class="w-full bg-gray-900 text-white font-bold py-3.5 rounded-xl uppercase text-sm">Tutup</button>
+            <button onclick="tutupModal()" class="w-full bg-gray-900 hover:bg-black text-white font-bold py-3.5 rounded-xl uppercase text-sm shadow-md transition">Tutup</button>
         </div>
     </div>
 
@@ -763,7 +764,7 @@
             if (e) e.preventDefault();
             const btn = document.getElementById('btn-submit-data-warga');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menyimpan...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>MENYIMPAN...';
             btn.disabled = true;
 
             let statusHunian = document.getElementById('input-status-hunian').value;
@@ -783,11 +784,13 @@
             
             // Simpan ke localstorage agar di frontend terasa instan
             let sessionData = JSON.parse(localStorage.getItem('wargaSessionAktif'));
-            sessionData.status_hunian = statusHunian;
-            sessionData.wifi = wifi;
-            localStorage.setItem('wargaSessionAktif', JSON.stringify(sessionData));
+            if(sessionData) {
+                sessionData.status_hunian = statusHunian;
+                sessionData.wifi = wifi;
+                localStorage.setItem('wargaSessionAktif', JSON.stringify(sessionData));
+            }
 
-            if(res && (res.data === "Sukses" || res.success !== false)) {
+            if(res && res.data === "Sukses") {
                 tampilkanModal('Berhasil', 'Data hunian dan WiFi Anda berhasil diperbarui.', 'sukses');
             } else {
                 tampilkanModal('Berhasil', 'Data tersimpan di perangkat Anda. Jika backend Anda sudah mendukung fitur ini, data akan disinkronkan.', 'sukses');
@@ -1429,13 +1432,13 @@
 
         // FUNGSI SHORTCUT FILTER DARI DASBOR ADMIN KE DAFTAR WARGA
         function bukaDaftarWargaFilter(status) {
-            switchTab('admin-warga'); // Buka tab Warga
+            switchTab('admin-warga'); 
             
             setTimeout(() => {
                 const selectFilter = document.getElementById('filter-status-warga');
                 if(selectFilter) {
                     selectFilter.value = status;
-                    cariWargaAdmin(); // Render ulang sesuai filter
+                    cariWargaAdmin(); 
                 }
             }, 150); 
         }
@@ -1547,7 +1550,6 @@
                 if(containerDataTambahan) containerDataTambahan.classList.remove('hidden');
                 if(containerKontak) containerKontak.classList.add('hidden');
                 
-                // Set default value for additional Warga data
                 let hunian = userObj.status_hunian || 'Milik Sendiri';
                 let elHunian = document.getElementById('input-status-hunian');
                 if(elHunian) elHunian.value = hunian;
@@ -1556,7 +1558,9 @@
                 let elWifi = document.getElementById('input-wifi');
                 let elWifiLainnya = document.getElementById('input-wifi-lainnya');
                 
-                let validOptions = ['Tidak Pakai', 'NetFi', 'Lancar Media', 'EK-Net'];
+                // --- UPDATE PROVIDER WIFI ---
+                let validOptions = ['Tidak Pakai', 'Netf', 'Lancar', 'Indosat', 'Eka', 'Sneis'];
+                
                 if(elWifi) {
                     if(validOptions.includes(wifi)) {
                         elWifi.value = wifi;
@@ -1604,20 +1608,18 @@
             if(tabId === 'admin-warga') tarikDataWargaAdmin(); 
         }
         
+        // FUNGSI COPY TEXT DENGAN EXEC COMMAND AGAR TIDAK ERROR DI IFRAME/PREVIEW
         function salinTeks(teks) {
             try {
-                // Buat elemen textarea sementara yang tidak terlihat
                 const tempInput = document.createElement("textarea");
                 tempInput.value = teks;
                 tempInput.style.position = "absolute";
                 tempInput.style.left = "-9999px";
                 document.body.appendChild(tempInput);
                 
-                // Pilih teks dan eksekusi perintah copy
                 tempInput.select();
                 document.execCommand("copy");
                 
-                // Hapus elemen sementaranya
                 document.body.removeChild(tempInput);
                 
                 tampilkanModal('Tersalin!', 'Nomor rekening ' + teks + ' berhasil disalin.', 'sukses');
@@ -1628,14 +1630,21 @@
 
         // Modals Functions
         function tampilkanModal(judul, pesan, tipe) {
-            document.getElementById('modal-title').innerText = judul; document.getElementById('modal-message').innerText = pesan;
-            document.getElementById('custom-modal').classList.remove('hidden'); document.getElementById('custom-modal').style.display = 'flex';
+            document.getElementById('modal-title').innerText = judul; 
+            document.getElementById('modal-message').innerText = pesan;
+            document.getElementById('custom-modal').classList.remove('hidden'); 
+            document.getElementById('custom-modal').style.display = 'flex';
             
             const box = document.getElementById('custom-modal-box');
-            box.style.transform = 'scale(0.8)';
-            setTimeout(() => { box.style.transform = 'scale(1)'; }, 50);
+            if(box) {
+                box.style.transform = 'scale(0.8)';
+                setTimeout(() => { box.style.transform = 'scale(1)'; }, 50);
+            }
         }
-        function tutupModal() { document.getElementById('custom-modal').classList.add('hidden'); document.getElementById('custom-modal').style.display = 'none'; }
+        function tutupModal() { 
+            document.getElementById('custom-modal').classList.add('hidden'); 
+            document.getElementById('custom-modal').style.display = 'none'; 
+        }
         
         // ADMIN BUKTI MODAL
         function bukaModalBukti(urlGambar) {
