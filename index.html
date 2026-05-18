@@ -183,11 +183,14 @@
                             <button type="button" onclick="salinTeks('628801016232530')" class="w-10 h-10 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full flex justify-center items-center transition"><i class="fas fa-copy"></i></button>
                         </div>
 
-                        <!-- Gambar QR Code Tampil Langsung -->
+                        <!-- Gambar QR Code Tampil Langsung (BISA DIKLIK) -->
                         <div class="bg-white p-4 rounded-xl border border-blue-50 shadow-sm relative z-10 flex flex-col items-center">
                             <p class="text-[11px] text-gray-500 font-bold uppercase mb-2"><i class="fas fa-qrcode mr-1"></i> Scan QRIS Pembayaran</p>
-                            <img src="https://cdn.phototourl.com/free/2026-05-11-8900fd55-13c7-42f8-880c-f064db4aac0e.jpg" alt="QR Code QRIS" class="w-full max-w-[200px] rounded-lg border border-gray-100 mb-2">
-                            <p class="text-[10px] text-gray-600 font-black uppercase tracking-widest">A/N ARUNIKA CREATIVE</p>
+                            <img src="https://cdn.phototourl.com/free/2026-05-11-8900fd55-13c7-42f8-880c-f064db4aac0e.jpg" alt="QR Code QRIS" onclick="bukaModalQRIS()" class="w-full max-w-[200px] rounded-lg border border-gray-100 mb-2 cursor-pointer hover:opacity-80 transition transform hover:scale-105 active:scale-95 shadow-sm">
+                            <p class="text-[10px] text-gray-600 font-black uppercase tracking-widest mb-3">A/N ARUNIKA CREATIVE</p>
+                            <button type="button" onclick="bukaModalQRIS()" class="text-[10px] bg-blue-600 text-white px-4 py-2 rounded-full font-bold hover:bg-blue-700 transition flex items-center shadow-md active:scale-95">
+                                <i class="fas fa-search-plus mr-1.5"></i> Perbesar / Download
+                            </button>
                         </div>
                     </div>
 
@@ -483,6 +486,7 @@
         </div> <!-- Penutup content-area -->
 
         <!-- BOTTOM NAVIGATIONS -->
+        <!-- Warga Nav (Tombol Iuran & Surat digeser) -->
         <div id="nav-warga" class="bottom-nav-container fixed bottom-0 w-full bg-white border-t flex justify-around py-2 pb-4 z-20 hidden shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
             <button onclick="switchTab('beranda')" class="nav-btn-warga flex-1 flex flex-col items-center text-indigo-600 transition" data-target="beranda"><i class="fas fa-home text-xl mb-1"></i><span class="text-[9px] font-bold uppercase">Beranda</span></button>
             <button onclick="switchTab('iuran')" class="nav-btn-warga flex-1 flex flex-col items-center text-gray-400 transition" data-target="iuran"><i class="fas fa-wallet text-xl mb-1"></i><span class="text-[9px] font-bold uppercase">Iuran</span></button>
@@ -524,6 +528,27 @@
                 <a id="link-bukti-transfer" href="" target="_blank" class="text-xs text-blue-500 underline font-bold mt-3 mb-2"><i class="fas fa-external-link-alt mr-1"></i> Buka Gambar di Tab Baru</a>
             </div>
             <button onclick="tutupModalBukti()" class="w-full bg-gray-900 hover:bg-black text-white font-bold py-3 rounded-xl uppercase text-sm tracking-widest transition">Tutup</button>
+        </div>
+    </div>
+
+    <!-- MODAL QRIS KHUSUS WARGA -->
+    <div id="qris-modal" class="fixed inset-0 bg-black bg-opacity-80 z-[150] hidden items-center justify-center p-4 transition-opacity backdrop-blur-md">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl transform transition-all text-center animate-slide-down relative flex flex-col h-auto max-h-[90vh]">
+            <button onclick="tutupModalQRIS()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="text-xl font-black text-gray-800 mb-1 mt-2 uppercase tracking-wide">Scan QRIS</h3>
+            <p class="text-xs text-gray-500 font-medium mb-1">A/N ARUNIKA CREATIVE</p>
+            
+            <div class="mt-2 border-2 border-gray-100 rounded-2xl mb-4 bg-gray-50 flex flex-col justify-center items-center shadow-inner p-2 flex-1 overflow-hidden">
+                <img src="https://cdn.phototourl.com/free/2026-05-11-8900fd55-13c7-42f8-880c-f064db4aac0e.jpg" alt="QRIS Besar" class="w-full rounded-xl object-contain" style="max-height: 50vh;">
+            </div>
+            
+            <!-- Tombol Download diarahkan ke file gambar agar bisa di-save ke HP warga -->
+            <a href="https://cdn.phototourl.com/free/2026-05-11-8900fd55-13c7-42f8-880c-f064db4aac0e.jpg" target="_blank" download="QRIS_BLOK9" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl uppercase text-sm tracking-widest transition mb-2 shadow-md flex justify-center items-center">
+                <i class="fas fa-download mr-2"></i> Download QRIS
+            </a>
+            <button onclick="tutupModalQRIS()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3.5 rounded-xl uppercase text-sm tracking-widest transition">Tutup</button>
         </div>
     </div>
 
@@ -1658,6 +1683,22 @@
             const modal = document.getElementById('bukti-modal');
             modal.classList.add('hidden');
             modal.style.display = 'none';
+        }
+
+        // --- TAMBAHAN MODAL QRIS KHUSUS WARGA ---
+        function bukaModalQRIS() {
+            const modal = document.getElementById('qris-modal');
+            if(modal) {
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+            }
+        }
+        function tutupModalQRIS() {
+            const modal = document.getElementById('qris-modal');
+            if(modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+            }
         }
 
         // CHAT WA ADMIN MODAL
