@@ -397,8 +397,43 @@
                     <h3 class="font-black text-gray-800 uppercase text-sm mb-4 border-b pb-2">Akses Cepat Pengurus</h3>
                     <div class="grid grid-cols-2 gap-3">
                         <button onclick="switchTab('admin-verifikasi')" class="bg-indigo-50 text-indigo-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-indigo-100 transition"><i class="fas fa-check-double text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Verifikasi</span></button>
+                        <button onclick="switchTab('admin-keuangan')" class="bg-purple-50 text-purple-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-purple-100 transition"><i class="fas fa-wallet text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Keuangan</span></button>
                         <button onclick="switchTab('admin-pengumuman')" class="bg-amber-50 text-amber-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-amber-100 transition"><i class="fas fa-bullhorn text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Buat Siaran</span></button>
-                        <button onclick="switchTab('admin-warga')" class="col-span-2 bg-emerald-50 text-emerald-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-emerald-100 transition"><i class="fab fa-whatsapp text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Daftar & Chat Warga</span></button>
+                        <button onclick="switchTab('admin-warga')" class="bg-emerald-50 text-emerald-700 p-4 rounded-2xl font-bold flex flex-col items-center hover:bg-emerald-100 transition"><i class="fab fa-whatsapp text-2xl mb-2"></i><span class="text-[11px] uppercase mt-1">Warga</span></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LAPORAN & KONTROL KEUANGAN (ADMIN) -->
+            <div id="section-admin-keuangan" class="p-5 section-admin hidden">
+                <h2 class="text-xl font-black text-gray-800 mb-4 uppercase">Kelola Keuangan</h2>
+
+                <!-- Form Catat Pengeluaran -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-5">
+                    <h3 class="font-bold text-gray-800 mb-3 border-b pb-2 text-sm uppercase"><i class="fas fa-minus-circle text-red-500 mr-2"></i> Catat Pengeluaran Kas</h3>
+                    <form onsubmit="kirimPengeluaranAdmin(event)" id="form-admin-pengeluaran">
+                        <div class="mb-3">
+                            <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase">Nominal Pengeluaran (Rp)</label>
+                            <input type="number" id="input-pengeluaran-nominal" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-indigo-200 outline-none transition" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase">Keterangan / Keperluan</label>
+                            <textarea id="input-pengeluaran-ket" rows="2" class="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-indigo-200 outline-none transition" placeholder="Cth: Beli lampu jalan, konsumsi rapat..." required></textarea>
+                        </div>
+                        <button type="submit" id="btn-submit-pengeluaran" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl uppercase tracking-wide text-xs transition shadow-md flex items-center justify-center">
+                            <i class="fas fa-save mr-2"></i> Simpan Pengeluaran
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Riwayat Lengkap Admin -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-5">
+                    <div class="flex justify-between items-center mb-3 border-b pb-2">
+                        <h3 class="font-bold text-gray-800 uppercase tracking-wide text-sm"><i class="fas fa-history text-indigo-500 mr-2"></i> Riwayat Kas Lengkap</h3>
+                        <button onclick="tarikDataKeuangan()" class="text-[10px] text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded-full transition"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                    <div id="admin-riwayat-keuangan-list" class="flex flex-col gap-2 max-h-[400px] overflow-y-auto pr-1">
+                        <!-- Loaded via JS -->
                     </div>
                 </div>
             </div>
@@ -757,6 +792,31 @@
             btn.innerHTML = 'Simpan Password Baru'; btn.disabled = false;
         }
 
+        async function kirimPengeluaranAdmin(e) {
+            if (e) e.preventDefault();
+            const btn = document.getElementById('btn-submit-pengeluaran');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menyimpan...';
+            btn.disabled = true;
+
+            const nominal = document.getElementById('input-pengeluaran-nominal').value;
+            const keterangan = document.getElementById('input-pengeluaran-ket').value;
+
+            let res = await fetchAPI("simpanPengeluaran", { nominal: nominal, keterangan: keterangan });
+            
+            if(res && (res.data === "Sukses" || res.success !== false)) {
+                tampilkanModal('Berhasil', 'Data pengeluaran kas berhasil dicatat.', 'sukses');
+                document.getElementById('form-admin-pengeluaran').reset();
+                tarikDataKeuangan(); // Update saldo dan riwayat langsung
+                loadAdminDashboardStats(); // Refresh dashboard
+            } else {
+                tampilkanModal('Gagal', res.message || 'Terjadi kesalahan saat menyimpan data.', 'gagal');
+            }
+            
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+
         async function kirimPengumumanAdmin(e) {
             if (e) e.preventDefault();
             const isi = document.getElementById('input-admin-pengumuman').value;
@@ -1005,10 +1065,14 @@
             if(elKeluarAdmin) elKeluarAdmin.innerText = formatRupiah(data.totalKeluar || 0);
 
             const containerWarga = document.getElementById('rekap-iuran-list');
+            const containerAdmin = document.getElementById('admin-riwayat-keuangan-list'); // Tambahan untuk admin
             if(containerWarga) containerWarga.innerHTML = '';
+            if(containerAdmin) containerAdmin.innerHTML = '';
             
             if(!data.riwayat || data.riwayat.length === 0) {
-                if(containerWarga) containerWarga.innerHTML = `<div class="bg-gray-50 p-3 rounded-lg text-center text-[10px] font-bold uppercase text-gray-400 border border-gray-100 mt-2">Belum ada riwayat mutasi kas.</div>`;
+                const emptyState = `<div class="bg-gray-50 p-3 rounded-lg text-center text-[10px] font-bold uppercase text-gray-400 border border-gray-100 mt-2">Belum ada riwayat mutasi kas.</div>`;
+                if(containerWarga) containerWarga.innerHTML = emptyState;
+                if(containerAdmin) containerAdmin.innerHTML = emptyState;
                 return;
             }
 
@@ -1042,6 +1106,7 @@
                     </div>`;
 
                 if(containerWarga) containerWarga.innerHTML += htmlItem;
+                if(containerAdmin) containerAdmin.innerHTML += htmlItem;
             });
         }
 
@@ -1603,7 +1668,7 @@
         function getUserUsername() { try { return JSON.parse(localStorage.getItem('wargaSessionAktif')).username.toUpperCase(); } catch(e) { return 'WARGA'; } }
         
         function switchTab(tabId) {
-            ['section-beranda','section-surat','section-iuran','section-lapor','section-profil','section-admin-home','section-admin-verifikasi','section-admin-pengumuman','section-admin-warga'].forEach(s => { const el = document.getElementById(s); if(el) el.classList.add('hidden'); });
+            ['section-beranda','section-surat','section-iuran','section-lapor','section-profil','section-admin-home','section-admin-verifikasi','section-admin-pengumuman','section-admin-warga','section-admin-keuangan'].forEach(s => { const el = document.getElementById(s); if(el) el.classList.add('hidden'); });
             document.getElementById('section-' + tabId).classList.remove('hidden');
             document.querySelectorAll('.nav-btn-warga, .nav-btn-admin').forEach(b => { b.classList.remove('text-indigo-600', 'text-indigo-400'); b.classList.add('text-gray-400', 'text-gray-500'); });
             
@@ -1630,6 +1695,7 @@
                 loadAdminDashboardStats();
                 tarikDataKeuangan(); 
             }
+            if(tabId === 'admin-keuangan') tarikDataKeuangan();
             if(tabId === 'admin-warga') tarikDataWargaAdmin(); 
         }
         
