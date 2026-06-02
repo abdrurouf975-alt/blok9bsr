@@ -162,6 +162,27 @@
 
             <!-- IURAN WARGA -->
             <div id="section-iuran" class="p-4 hidden section-warga">
+                
+                <!-- INDIKATOR STATUS IURAN KHUSUS DI HALAMAN IURAN -->
+                <div id="iuran-alert-nunggak" class="mb-5 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl shadow-sm hidden animate-slide-down">
+                    <div class="flex items-start">
+                        <i class="fas fa-exclamation-circle text-red-500 mt-0.5 mr-3 text-lg"></i>
+                        <div>
+                            <h3 class="text-red-800 font-bold text-sm uppercase">Status: Nunggak</h3>
+                            <p class="text-xs text-red-600 mt-1">Anda belum melunasi iuran untuk bulan: <span id="iuran-text-nunggak" class="font-black uppercase"></span>.</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="iuran-alert-lunas" class="mb-5 bg-green-50 border-l-4 border-green-500 p-4 rounded-r-xl shadow-sm hidden animate-slide-down">
+                    <div class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mt-0.5 mr-3 text-lg"></i>
+                        <div>
+                            <h3 class="text-green-800 font-bold text-sm uppercase">Status: Lunas</h3>
+                            <p class="text-xs text-green-600 mt-1">Terima kasih, iuran Anda untuk tahun ini sudah lunas.</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="mb-6 bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                     <h2 class="text-xl font-black text-gray-800 mb-1 uppercase">Iuran Warga</h2>
                     <p class="text-sm text-gray-500 mb-4">Konfirmasi pembayaran kas Paguyuban.</p>
@@ -238,7 +259,7 @@
                         <div class="mb-4 flex flex-col md:flex-row md:items-end gap-3 border-t pt-4 border-gray-100">
                             <div class="flex-1">
                                 <label class="block text-xs font-bold text-gray-700 mb-2 uppercase">Pembayaran Untuk Tahun</label>
-                                <select id="input-tahun-iuran" onchange="cekStatusBulanWargaByTahun()" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 bg-white text-sm font-bold shadow-sm text-indigo-700" required>
+                                <select id="input-tahun-iuran" onchange="cekStatusWarga('iuran')" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 bg-white text-sm font-bold shadow-sm text-indigo-700" required>
                                     <option value="2024">Tahun 2024</option>
                                     <option value="2025">Tahun 2025</option>
                                     <option value="2026" selected>Tahun 2026</option>
@@ -326,7 +347,7 @@
                 <div id="profil-rekap-container" class="w-full bg-white p-5 rounded-2xl shadow-sm border border-gray-100 text-left mb-5">
                     <div class="flex justify-between items-center mb-4 border-b pb-2">
                         <h3 class="font-bold text-gray-800 uppercase text-sm"><i class="fas fa-calendar-check mr-2 text-emerald-500"></i> Rekap Kas</h3>
-                        <select id="profil-rekap-tahun" onchange="cekStatusWarga()" class="p-1 border border-gray-200 rounded bg-gray-50 text-xs font-bold text-indigo-700 outline-none">
+                        <select id="profil-rekap-tahun" onchange="cekStatusWarga('profil')" class="p-1 border border-gray-200 rounded bg-gray-50 text-xs font-bold text-indigo-700 outline-none">
                             <option value="2024">2024</option>
                             <option value="2025">2025</option>
                             <option value="2026" selected>2026</option>
@@ -339,7 +360,7 @@
                     <div class="mt-4 pt-3 border-t border-gray-50 flex justify-center gap-4">
                         <div class="flex items-center text-[9px] font-bold text-gray-500"><span class="w-2.5 h-2.5 rounded-full bg-green-500 mr-1.5 shadow-sm border border-green-600"></span>Lunas</div>
                         <div class="flex items-center text-[9px] font-bold text-gray-500"><span class="w-2.5 h-2.5 rounded-full bg-red-500 mr-1.5 shadow-sm border border-red-600"></span>Nunggak</div>
-                        <div class="flex items-center text-[9px] font-bold text-gray-500"><span class="w-2.5 h-2.5 rounded-full bg-gray-200 mr-1.5 shadow-sm border border-gray-300"></span>Belum Ditagih</div>
+                        <div class="flex items-center text-[9px] font-bold text-gray-500"><span class="w-2.5 h-2.5 rounded-full bg-gray-200 mr-1.5 shadow-sm border border-gray-300"></span>Belum Waktunya</div>
                     </div>
                 </div>
 
@@ -544,7 +565,7 @@
         </div> <!-- Penutup content-area -->
 
         <!-- BOTTOM NAVIGATIONS -->
-        <!-- Warga Nav (Tombol Iuran & Surat digeser) -->
+        <!-- Warga Nav -->
         <div id="nav-warga" class="bottom-nav-container fixed bottom-0 w-full bg-white border-t flex justify-around py-2 pb-4 z-20 hidden shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
             <button onclick="switchTab('beranda')" class="nav-btn-warga flex-1 flex flex-col items-center text-indigo-600 transition" data-target="beranda"><i class="fas fa-home text-xl mb-1"></i><span class="text-[9px] font-bold uppercase">Beranda</span></button>
             <button onclick="switchTab('iuran')" class="nav-btn-warga flex-1 flex flex-col items-center text-gray-400 transition" data-target="iuran"><i class="fas fa-wallet text-xl mb-1"></i><span class="text-[9px] font-bold uppercase">Iuran</span></button>
@@ -553,7 +574,7 @@
             <button onclick="switchTab('profil')" class="nav-btn-warga flex-1 flex flex-col items-center text-gray-400 transition" data-target="profil"><i class="fas fa-user text-xl mb-1"></i><span class="text-[9px] font-bold uppercase">Profil</span></button>
         </div>
 
-        <div id="nav-admin" class="bottom-nav-container fixed bottom-0 w-full bg-gray-900 border-t border-gray-800 flex justify-around py-2 pb-4 z-20 hidden shadow-[0_-5px_20px_rgba(0,0,0,0.3)]">
+        <div id="nav-admin" class="bottom-nav-container fixed bottom-0 w-full bg-gray-900 border-t border-gray-800 flex justify-around py-2 pb-4 z-20 hidden">
             <button onclick="switchTab('admin-home')" class="nav-btn-admin flex-1 flex flex-col items-center text-indigo-400 transition" data-target="admin-home"><i class="fas fa-chart-pie text-xl mb-1"></i><span class="text-[9px] font-bold uppercase text-gray-300">Dasbor</span></button>
             <button onclick="switchTab('admin-verifikasi')" class="nav-btn-admin flex-1 flex flex-col items-center text-gray-500 transition" data-target="admin-verifikasi"><i class="fas fa-check-double text-xl mb-1"></i><span class="text-[9px] font-bold uppercase text-gray-300">Validasi</span></button>
             <button onclick="switchTab('admin-pengumuman')" class="nav-btn-admin flex-1 flex flex-col items-center text-gray-500 transition" data-target="admin-pengumuman"><i class="fas fa-bullhorn text-xl mb-1"></i><span class="text-[9px] font-bold uppercase text-gray-300">Siaran</span></button>
@@ -609,7 +630,7 @@
         </div>
     </div>
 
-    <!-- MODAL PREVIEW KUITANSI JPG -->
+    <!-- MODAL PREVIEW KUITANSI JPG (BARU) -->
     <div id="struk-preview-modal" class="fixed inset-0 bg-black bg-opacity-90 z-[250] hidden items-center justify-center p-4 md:p-6 transition-opacity flex-col">
         <div class="w-full max-w-2xl flex justify-between items-center mb-4 mt-2">
             <h3 class="text-white font-black text-lg md:text-xl tracking-wide uppercase"><i class="fas fa-file-invoice mr-2 text-indigo-400"></i> Preview Bukti Lunas</h3>
@@ -642,15 +663,15 @@
             <div class="mb-4">
                 <label class="block text-xs font-bold text-gray-700 mb-2 uppercase">Pilih Bulan Nunggak</label>
                 <div class="grid grid-cols-4 gap-2" id="grid-wa-bulan">
-                    <label class="cursor-pointer"><input type="checkbox" value="Januari" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border border-gray-200 py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">JAN</div></label>
-                    <label class="cursor-pointer"><input type="checkbox" value="Februari" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border border-gray-200 py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">FEB</div></label>
-                    <label class="cursor-pointer"><input type="checkbox" value="Maret" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border border-gray-200 py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">MAR</div></label>
-                    <label class="cursor-pointer"><input type="checkbox" value="April" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border border-gray-200 py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">APR</div></label>
-                    <label class="cursor-pointer"><input type="checkbox" value="Mei" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border border-gray-200 py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">MEI</div></label>
-                    <label class="cursor-pointer"><input type="checkbox" value="Juni" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border border-gray-200 py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">JUN</div></label>
-                    <label class="cursor-pointer"><input type="checkbox" value="Juli" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border border-gray-200 py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">JUL</div></label>
-                    <label class="cursor-pointer"><input type="checkbox" value="Agustus" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border border-gray-200 py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">AGS</div></label>
-                    <label class="cursor-pointer"><input type="checkbox" value="September" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border border-gray-200 py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">SEP</div></label>
+                    <label class="cursor-pointer"><input type="checkbox" value="Januari" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">JAN</div></label>
+                    <label class="cursor-pointer"><input type="checkbox" value="Februari" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">FEB</div></label>
+                    <label class="cursor-pointer"><input type="checkbox" value="Maret" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">MAR</div></label>
+                    <label class="cursor-pointer"><input type="checkbox" value="April" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">APR</div></label>
+                    <label class="cursor-pointer"><input type="checkbox" value="Mei" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">MEI</div></label>
+                    <label class="cursor-pointer"><input type="checkbox" value="Juni" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">JUN</div></label>
+                    <label class="cursor-pointer"><input type="checkbox" value="Juli" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">JUL</div></label>
+                    <label class="cursor-pointer"><input type="checkbox" value="Agustus" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">AGS</div></label>
+                    <label class="cursor-pointer"><input type="checkbox" value="September" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">SEP</div></label>
                     <label class="cursor-pointer"><input type="checkbox" value="Oktober" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">OKT</div></label>
                     <label class="cursor-pointer"><input type="checkbox" value="November" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">NOV</div></label>
                     <label class="cursor-pointer"><input type="checkbox" value="Desember" class="peer hidden" onchange="hitungTotalWa()"><div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white transition shadow-sm uppercase">DES</div></label>
@@ -950,11 +971,24 @@
             document.getElementById('tempat-pengumuman').innerHTML = `<p>${res.data || 'Tidak ada pengumuman'}</p>`;
         }
 
-        // FUNGSI CEK STATUS NUNGGAK/LUNAS WARGA (BERDASARKAN TAHUN)
-        async function cekStatusWarga() {
+        // ================== CEK STATUS IURAN WARGA (DIPERBARUI DGN TAHUN & DAFTAR BULAN LUNAS) ==================
+        async function cekStatusWarga(source = 'auto') {
             const container = document.getElementById('beranda-status-iuran');
-            const dropTahun = document.getElementById('profil-rekap-tahun');
-            let tahunDipilih = dropTahun ? dropTahun.value : new Date().getFullYear();
+            
+            // Sinkronisasi tahun antara tab Iuran dan Profil agar tidak bentrok
+            const dropIuran = document.getElementById('input-tahun-iuran');
+            const dropProfil = document.getElementById('profil-rekap-tahun');
+            let tahunDipilih = new Date().getFullYear();
+
+            if (source === 'iuran' && dropIuran) {
+                tahunDipilih = dropIuran.value;
+                if (dropProfil) dropProfil.value = tahunDipilih; 
+            } else if (source === 'profil' && dropProfil) {
+                tahunDipilih = dropProfil.value;
+                if (dropIuran) dropIuran.value = tahunDipilih; 
+            } else {
+                tahunDipilih = dropIuran ? dropIuran.value : new Date().getFullYear();
+            }
 
             if(container) {
                 container.classList.add('shimmer');
@@ -988,7 +1022,7 @@
                     if(res.data.status === 'Lunas') {
                         container.innerHTML = `
                             <div>
-                                <p class="text-[10px] font-bold text-gray-500 uppercase">Status Iuran Kas Anda</p>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase">Status Iuran Kas</p>
                                 <h4 class="text-sm md:text-base font-black text-green-600 mt-0.5 tracking-wide"><i class="fas fa-check-circle mr-1"></i> LUNAS</h4>
                                 <p class="text-[9px] md:text-[10px] text-gray-400 mt-1">Terima kasih telah membayar tepat waktu.</p>
                             </div>
@@ -998,7 +1032,7 @@
                     } else {
                         container.innerHTML = `
                             <div class="pr-2">
-                                <p class="text-[10px] font-bold text-red-400 uppercase">Status Iuran Kas Anda</p>
+                                <p class="text-[10px] font-bold text-red-400 uppercase">Status Iuran Kas</p>
                                 <h4 class="text-sm md:text-base font-black text-red-600 mt-0.5 tracking-wide"><i class="fas fa-exclamation-circle mr-1"></i> NUNGGAK</h4>
                                 <p class="text-[9px] md:text-[10px] text-red-500 font-bold mt-1 line-clamp-1">Tunggakan: ${res.data.bulan}</p>
                             </div>
@@ -1008,6 +1042,20 @@
                     }
                 }
                 
+                // UPDATE KETERANGAN DI DASBOR IURAN
+                const alertNunggak = document.getElementById('iuran-alert-nunggak');
+                const alertLunas = document.getElementById('iuran-alert-lunas');
+                const textNunggak = document.getElementById('iuran-text-nunggak');
+                
+                if (res.data.status === 'Lunas') {
+                    if (alertNunggak) alertNunggak.classList.add('hidden');
+                    if (alertLunas) alertLunas.classList.remove('hidden');
+                } else {
+                    if (alertLunas) alertLunas.classList.add('hidden');
+                    if (alertNunggak) alertNunggak.classList.remove('hidden');
+                    if (textNunggak) textNunggak.innerText = res.data.bulan;
+                }
+
                 // Update UI Pilihan Bulan Pembayaran & Profil (LOCK YANG LUNAS)
                 renderOpsiPembayaranBulanIuran(globalIuranLunasWarga);
                 renderRekapProfil(res.data.bulan, globalIuranLunasWarga, tahunDipilih);
@@ -1061,11 +1109,6 @@
                 }
             }
             grid.innerHTML = html;
-        }
-
-        // FUNGSI GANTI TAHUN DARI DROPDOWN
-        function cekStatusBulanWargaByTahun() {
-            cekStatusWarga();
         }
 
         // FUNGSI RENDER REKAP PROFIL (12 BULAN BERDASARKAN TAHUN)
@@ -1137,14 +1180,6 @@
             if(elMasukWarga) elMasukWarga.innerText = formatRupiah(data.totalMasuk || 0);
             if(elKeluarWarga) elKeluarWarga.innerText = formatRupiah(data.totalKeluar || 0);
 
-            const elTotalAdmin = document.getElementById('admin-total-kas');
-            const elMasukAdmin = document.getElementById('admin-total-masuk');
-            const elKeluarAdmin = document.getElementById('admin-total-keluar');
-            
-            if(elTotalAdmin) elTotalAdmin.innerText = formatRupiah(data.saldoAkhir || 0);
-            if(elMasukAdmin) elMasukAdmin.innerText = formatRupiah(data.totalMasuk || 0);
-            if(elKeluarAdmin) elKeluarAdmin.innerText = formatRupiah(data.totalKeluar || 0);
-
             const containerWarga = document.getElementById('rekap-iuran-list');
             if(containerWarga) containerWarga.innerHTML = '';
             
@@ -1211,12 +1246,26 @@
             const btn = document.getElementById('btn-submit-surat'); btn.innerHTML = 'Mengajukan...'; btn.disabled = true;
             
             let jenisSurat = document.getElementById('input-jenis-surat').value;
-            if (jenisSurat === 'Lain-lain') jenisSurat = document.getElementById('input-jenis-surat-lainnya').value;
+            if (jenisSurat === 'Lain-lain') {
+                jenisSurat = document.getElementById('input-jenis-surat-lainnya').value;
+            }
+
+            let res = await fetchAPI("simpanSurat", { 
+                jenis: jenisSurat, 
+                keperluan: document.getElementById('input-keperluan-surat').value, 
+                pemohon: getUserUsername() 
+            });
             
-            await fetchAPI("simpanSurat", { jenis: jenisSurat, keperluan: document.getElementById('input-keperluan-surat').value, pemohon: getUserUsername() });
-            tampilkanModal('Berhasil', 'Terkirim', 'sukses'); tarikDataSurat(); btn.innerHTML = 'Ajukan Surat'; btn.disabled = false;
-            document.getElementById('form-surat').reset();
-            toggleJenisSuratLainnya();
+            if(res && res.data === "Sukses") {
+                tampilkanModal('Berhasil', 'Terkirim', 'sukses'); 
+                tarikDataSurat(); 
+                document.getElementById('form-surat').reset();
+                toggleJenisSuratLainnya(); 
+            } else {
+                tampilkanModal('Gagal', res.data || res.message || 'Gagal mengirim ke database', 'gagal');
+            }
+            btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Ajukan Surat'; 
+            btn.disabled = false;
         }
 
         async function tarikDataLaporan() {
@@ -1277,7 +1326,7 @@
                     nominalPerBulan = parseInt(opsiInput.value) || 0;
                 }
             } else {
-                // Default fallback jika tidak ada radio button yang tercentang (seharusnya tidak terjadi)
+                // Default fallback
                 const jenisIuran = document.getElementById('input-jenis-iuran').value;
                 nominalPerBulan = (jenisIuran === 'IuranBlok9') ? 5000 : 20000;
             }
@@ -1300,25 +1349,7 @@
             }
         }
         
-        async function tarikDataIuran() {
-            let [resPaguyuban, resBlok9] = await Promise.all([
-                fetchAPI("getIuran"),
-                fetchAPI("getIuranBlok9")
-            ]);
-            
-            let gabunganData = [];
-            if(resPaguyuban && resPaguyuban.data) {
-                gabunganData = gabunganData.concat(resPaguyuban.data.map(d => ({...d, tipeIuran: 'PAGUYUBAN'})));
-            }
-            if(resBlok9 && resBlok9.data) {
-                gabunganData = gabunganData.concat(resBlok9.data.map(d => ({...d, tipeIuran: 'BLOK 9'})));
-            }
-            
-            gabunganData.sort((a,b) => new Date(b.waktu) - new Date(a.waktu));
-            tampilkanDataIuranUI(gabunganData);
-        }
-
-        // FUNGSI RENDER KUITANSI BUKTI (JS PDF ke IMG)
+        // --- CETAK STRUK PDF (HANYA MENGGUNAKAN CANVAS HTML5 UNTUK JPG) ---
         function cetakStrukIuran(namaWarga, tanggalLunas, bulanDibayar, nominal, tipeIuranStr) {
             const canvas = document.createElement('canvas');
             canvas.width = 1200;
@@ -1403,7 +1434,7 @@
             startY += lineH;
             ctx.fillStyle = '#6B7280';
             ctx.font = '35px Arial';
-            ctx.fillText('Pembayaran Bulan', startX, startY);
+            ctx.fillText('Pembayaran Untuk', startX, startY);
             ctx.fillStyle = '#111827';
             ctx.font = 'bold 35px Arial';
             
@@ -1516,6 +1547,23 @@
             modal.style.display = 'none';
         }
 
+        async function tarikDataIuran() {
+            let [resPaguyuban, resBlok9] = await Promise.all([
+                fetchAPI("getIuran"),
+                fetchAPI("getIuranBlok9")
+            ]);
+            
+            let gabunganData = [];
+            if(resPaguyuban && resPaguyuban.data) {
+                gabunganData = gabunganData.concat(resPaguyuban.data.map(d => ({...d, tipeIuran: 'PAGUYUBAN'})));
+            }
+            if(resBlok9 && resBlok9.data) {
+                gabunganData = gabunganData.concat(resBlok9.data.map(d => ({...d, tipeIuran: 'BLOK 9'})));
+            }
+            
+            gabunganData.sort((a,b) => new Date(b.waktu) - new Date(a.waktu));
+            tampilkanDataIuranUI(gabunganData);
+        }
 
         function tampilkanDataIuranUI(data) {
             const list = document.getElementById('iuran-list'); list.innerHTML = '';
@@ -1559,7 +1607,15 @@
                     let safeNama = namaLengkapWarga.replace(/'/g, "\\'");
                     let safeBulan = item.bulan.replace(/'/g, "\\'");
                     let safeTipe = item.tipeIuran.replace(/'/g, "\\'");
-                    btnCetak = `<button onclick="cetakStrukIuran('${safeNama}', '${dateStr}', '${safeBulan}', ${item.nominal}, '${safeTipe}')" class="mt-3 w-full bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 font-bold py-2.5 rounded-xl text-xs transition shadow-sm flex items-center justify-center"><i class="fas fa-print mr-2"></i> Cetak / Download Bukti Lunas</button>`;
+                    
+                    // Untuk menghindari bug ketika "Tahun XXXX" ikut ke render
+                    let displayBulanForStruk = safeBulan;
+                    if(item.catatan && item.catatan.match(/\(\d{4}\)/)) {
+                        let thn = item.catatan.match(/\((\d{4})\)/)[1];
+                        displayBulanForStruk += ` (${thn})`;
+                    }
+
+                    btnCetak = `<button onclick="cetakStrukIuran('${safeNama}', '${dateStr}', '${displayBulanForStruk}', ${item.nominal}, '${safeTipe}')" class="mt-3 w-full bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 font-bold py-2.5 rounded-xl text-xs transition shadow-sm flex items-center justify-center"><i class="fas fa-print mr-2"></i> Cetak / Download Bukti Lunas</button>`;
                 }
 
                 list.innerHTML += `
@@ -1802,6 +1858,8 @@
                 return;
             }
             pending.forEach(item => {
+                let safeWaktu = item.waktu.replace(/\W/g, ''); // Hapus spasi/karakter untuk id
+
                 container.innerHTML += `
                     <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-3 flex flex-col gap-3 relative transition-all duration-300">
                         <div class="flex justify-between items-start border-b border-gray-50 pb-3">
@@ -1811,13 +1869,65 @@
                                 <p class="text-[10px] text-gray-400 mt-1">Keperluan: ${item.keperluan}</p>
                             </div>
                         </div>
+                        
+                        <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
+                            <label class="block text-[10px] font-bold text-blue-800 uppercase mb-2">Upload Surat Balasan (PDF/JPG)</label>
+                            <input type="file" id="upload-surat-admin-${safeWaktu}" accept=".pdf,image/*" class="w-full text-xs focus:outline-none">
+                        </div>
+
                         <div class="flex gap-2">
-                            <button onclick="verifikasiSurat(this, '${item.waktu}', 'Selesai')" class="flex-1 bg-blue-600 text-white text-xs font-bold py-2.5 rounded-xl uppercase tracking-wide transition shadow-sm"><i class="fas fa-signature mr-1"></i> TTD & Setujui</button>
+                            <button onclick="verifikasiSuratAdminDenganFile(this, '${item.waktu}', 'Selesai', '${safeWaktu}')" class="flex-1 bg-blue-600 text-white text-xs font-bold py-2.5 rounded-xl uppercase tracking-wide transition shadow-sm"><i class="fas fa-signature mr-1"></i> Setujui & Kirim File</button>
                             <button onclick="verifikasiSurat(this, '${item.waktu}', 'Ditolak')" class="w-1/3 bg-gray-100 text-gray-600 text-xs font-bold py-2.5 rounded-xl uppercase tracking-wide transition shadow-sm">Tolak</button>
                         </div>
                     </div>`;
             });
         }
+        
+        async function verifikasiSuratAdminDenganFile(btn, waktu, status, safeWaktu) {
+            const fileInput = document.getElementById(`upload-surat-admin-${safeWaktu}`);
+            
+            if (!fileInput || !fileInput.files[0]) {
+                tampilkanModal('Peringatan', 'Mohon upload file surat balasan sebelum menyetujui.', 'gagal');
+                return;
+            }
+
+            const card = btn.closest('.bg-white.rounded-2xl');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; 
+            btn.disabled = true;
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = async function() {
+                let payload = {
+                    waktu: waktu,
+                    status: status,
+                    fileBase64: reader.result.split(',')[1],
+                    fileName: file.name,
+                    mimeType: file.type
+                };
+
+                let res = await fetchAPI("updateSurat", payload);
+                if (res && (res.data === "Sukses" || res.success !== false)) {
+                    tampilkanModal('Sukses', 'Surat disetujui & file terkirim!', 'sukses');
+                    card.style.opacity = '0'; card.style.transform = 'scale(0.9)';
+                    setTimeout(() => { 
+                        card.remove(); 
+                        if(document.getElementById('admin-verifikasi-surat-list').children.length === 0) {
+                            document.getElementById('admin-verifikasi-surat-list').innerHTML = `<p class="text-center text-xs text-gray-500 font-bold uppercase mt-4">Tidak ada surat yang menunggu.</p>`;
+                        }
+                        loadAdminDashboardStats(); 
+                    }, 300);
+                } else {
+                    tampilkanModal('Gagal', res.message || 'Gagal upload surat', 'gagal');
+                    btn.innerHTML = originalText; 
+                    btn.disabled = false;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
         async function verifikasiSurat(btn, waktu, status) {
             const card = btn.closest('.bg-white.rounded-2xl');
             const originalText = btn.innerHTML;
@@ -1862,6 +1972,8 @@
                 return;
             }
             pending.forEach(item => {
+                let safeWaktu = item.waktu.replace(/\W/g, ''); 
+                
                 container.innerHTML += `
                     <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-3 flex flex-col gap-3 relative transition-all duration-300">
                         <div class="flex justify-between items-start border-b border-gray-50 pb-3">
@@ -1871,12 +1983,26 @@
                                 <p class="text-[10px] text-gray-400 mt-1">Pelapor: ${item.pelapor || 'Warga'} | Ket: ${item.deskripsi}</p>
                             </div>
                         </div>
-                        <div class="flex gap-2">
-                            <button onclick="verifikasiLaporan(this, '${item.waktu}', 'Selesai')" class="w-full bg-emerald-500 text-white text-xs font-bold py-2.5 rounded-xl uppercase tracking-wide transition shadow-sm"><i class="fas fa-check-circle mr-1"></i> Tandai Selesai Ditangani</button>
+                        <div class="flex flex-col gap-2 mt-2 border-t border-gray-100 pt-2">
+                            <textarea id="tanggapan-admin-${safeWaktu}" rows="2" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none focus:border-emerald-400 transition" placeholder="Tanggapan pengurus (opsional)..."></textarea>
+                            <div class="flex gap-2">
+                                <button onclick="verifikasiLaporanDenganTanggapan(this, '${item.waktu}')" class="flex-1 bg-emerald-500 text-white text-xs font-bold py-2.5 rounded-xl uppercase tracking-wide transition shadow-sm"><i class="fas fa-check-circle mr-1"></i> Selesai Ditangani</button>
+                                <button onclick="verifikasiLaporan(this, '${item.waktu}', 'Ditolak')" class="w-1/3 bg-gray-100 text-gray-600 text-xs font-bold py-2.5 rounded-xl uppercase tracking-wide transition shadow-sm"><i class="fas fa-times"></i> Tolak</button>
+                            </div>
                         </div>
                     </div>`;
             });
         }
+
+        async function verifikasiLaporanDenganTanggapan(btn, waktu) {
+            let safeWaktu = waktu.replace(/\W/g, '');
+            const tanggapanInput = document.getElementById(`tanggapan-admin-${safeWaktu}`);
+            let tanggapan = tanggapanInput ? tanggapanInput.value.trim() : "";
+            
+            let finalStatus = tanggapan ? `Selesai|${tanggapan}` : "Selesai";
+            await verifikasiLaporan(btn, waktu, finalStatus);
+        }
+
         async function verifikasiLaporan(btn, waktu, status) {
             const card = btn.closest('.bg-white.rounded-2xl');
             const originalText = btn.innerHTML;
@@ -1898,7 +2024,6 @@
             }
         }
 
-        // FUNGSI SHORTCUT FILTER DARI DASBOR ADMIN KE DAFTAR WARGA
         function bukaDaftarWargaFilter(status) {
             switchTab('admin-warga'); 
             
@@ -1915,34 +2040,47 @@
         async function tarikDataWargaAdmin() {
             const container = document.getElementById('admin-warga-list');
             if(!container) return;
-            container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20"></div>`;
+            container.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 shimmer h-20 col-span-full"></div>`;
             document.getElementById('input-cari-warga').value = ''; 
             
-            const filterSelect = document.getElementById('filter-status-warga');
-            if(filterSelect) filterSelect.value = 'Semua';
+            let resWarga = await fetchAPI("getWarga");
             
-            let res = await fetchAPI("getWarga");
-            if(res && res.data) {
-                globalWargaData = res.data; 
+            if(resWarga && resWarga.data) {
+                globalWargaData = resWarga.data; 
+                
+                const selectFilter = document.getElementById('filter-status-warga');
+                if(selectFilter) selectFilter.value = 'Semua';
+                
                 tampilkanDataWargaAdminUI(globalWargaData);
             } else {
-                container.innerHTML = `<p class="text-center text-xs text-red-500 font-bold mt-4">Gagal memuat data warga.</p>`;
+                container.innerHTML = `<p class="text-center text-xs text-red-500 font-bold mt-4 col-span-full">Gagal memuat data warga.</p>`;
             }
         }
         
         function tampilkanDataWargaAdminUI(data) {
+            if (globalWargaData && globalWargaData.length > 0) {
+                const countNunggak = globalWargaData.filter(w => w.status_bulan_ini === 'Nunggak').length;
+                const countLunas = globalWargaData.filter(w => w.status_bulan_ini === 'Lunas').length;
+                
+                const elNunggak = document.getElementById('stat-nunggak');
+                const elLunas = document.getElementById('stat-lunas');
+                
+                if (elNunggak) elNunggak.innerText = countNunggak;
+                if (elLunas) elLunas.innerText = countLunas;
+            }
+
             const container = document.getElementById('admin-warga-list');
             container.innerHTML = '';
             
             if(!data || data.length === 0) {
-                container.innerHTML = `<p class="text-center text-xs text-gray-500 font-bold uppercase mt-4">Data warga tidak ditemukan.</p>`;
+                container.innerHTML = `<div class="col-span-full"><p class="text-center text-sm text-gray-500 font-bold uppercase mt-4">Data warga tidak ditemukan.</p></div>`;
                 return;
             }
 
             data.forEach(item => {
                 let badgeWa = item.no_wa && item.no_wa !== "-" && item.no_wa !== "" 
-                    ? `<span class="bg-emerald-100 text-emerald-700 text-[9px] font-black px-2 py-1 rounded tracking-widest">TERSEDIA</span>` 
-                    : `<span class="bg-red-100 text-red-500 text-[9px] font-black px-2 py-1 rounded tracking-widest">KOSONG</span>`;
+                    ? `<span class="bg-emerald-100 text-emerald-700 text-[10px] md:text-xs font-black px-3 py-1 rounded-lg tracking-widest border border-emerald-200">TERSEDIA</span>` 
+                    : `<span class="bg-red-100 text-red-500 text-[10px] md:text-xs font-black px-3 py-1 rounded-lg tracking-widest border border-red-200">KOSONG</span>`;
                 
                 let statusHunianStr = item.status_hunian || 'Tetap';
                 let wifiStr = item.wifi && item.wifi !== '-' ? item.wifi : 'Tidak Pakai';
@@ -1953,19 +2091,33 @@
                     
                 let badgeWifi = `<span class="bg-purple-100 text-purple-700 text-[9px] font-black px-1.5 py-0.5 rounded tracking-wide border border-purple-200"><i class="fas fa-wifi mr-1"></i> ${wifiStr}</span>`;
 
+                let displayBulanNunggak = item.unpaid_months && item.unpaid_months.length > 2 
+                    ? item.unpaid_months.slice(0, 2).join(', ').toUpperCase() + ', ...' 
+                    : item.nama_bulan_ini.toUpperCase();
+
+                let statusIuranBadge = item.status_bulan_ini === 'Lunas'
+                    ? `<span class="bg-green-100 text-green-700 text-[10px] md:text-xs font-black px-3 py-1 rounded-lg tracking-widest border border-green-200 mt-2 inline-block"><i class="fas fa-check-circle mr-1"></i> LUNAS HINGGA SAAT INI</span>`
+                    : `<span class="bg-red-100 text-red-600 text-[10px] md:text-xs font-black px-3 py-1 rounded-lg tracking-widest border border-red-200 mt-2 inline-block max-w-full truncate"><i class="fas fa-exclamation-circle mr-1"></i> NUNGGAK: ${displayBulanNunggak}</span>`;
+                
+                let defaultBulan = item.status_bulan_ini === 'Nunggak' ? item.nama_bulan_ini : '';
+
                 container.innerHTML += `
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-3 relative transition-all duration-300 animate-slide-down">
-                        <div class="flex justify-between items-center mb-1">
-                            <h4 class="font-bold text-gray-800 text-sm uppercase">${item.nama}</h4>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 relative transition-transform transform hover:-translate-y-1 hover:shadow-md animate-slide-down">
+                        <div class="flex justify-between items-start mb-1">
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-sm md:text-base uppercase">${item.nama}</h4>
+                                <p class="text-xs font-medium text-indigo-600 mt-1">Blok/No: ${item.no_rumah}</p>
+                            </div>
                             ${badgeWa}
                         </div>
-                        <p class="text-[10px] font-bold text-gray-400 mb-2">No. Rumah: ${item.no_rumah} | Akun: ${item.username}</p>
-                        <div class="flex flex-wrap gap-1.5 mb-4">
+                        ${statusIuranBadge}
+                        <p class="text-[11px] text-gray-400 mt-3 mb-2">Username: ${item.username}</p>
+                        <div class="flex flex-wrap gap-1.5 mb-4 border-t border-gray-50 pt-3">
                             ${badgeHunian}
                             ${badgeWifi}
                         </div>
-                        <button onclick="bukaModalWA('${item.nama}', '${item.no_wa}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl shadow-sm text-xs uppercase tracking-wide flex justify-center items-center transition">
-                            <i class="fab fa-whatsapp text-lg mr-2"></i> Kirim Peringatan
+                        <button onclick="bukaModalWA('${item.nama}', '${item.no_wa}', '${defaultBulan}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-sm text-xs md:text-sm uppercase tracking-wide flex justify-center items-center transition">
+                            <i class="fab fa-whatsapp text-lg mr-2"></i> Peringatan Iuran
                         </button>
                     </div>`;
             });
@@ -1973,19 +2125,31 @@
 
         // FUNGSI CARI & FILTER WARGA
         function cariWargaAdmin() {
-            const keyword = document.getElementById('input-cari-warga').value.toLowerCase();
+            const keyword = document.getElementById('input-cari-warga').value.toLowerCase().trim();
             const filterStatus = document.getElementById('filter-status-warga').value;
             
             if(!globalWargaData || globalWargaData.length === 0) return;
 
             const filteredData = globalWargaData.filter(item => {
-                let matchKeyword = (item.nama && item.nama.toLowerCase().includes(keyword)) || 
-                                   (item.no_rumah && item.no_rumah.toLowerCase().includes(keyword)) ||
-                                   (item.username && item.username.toLowerCase().includes(keyword));
+                let matchKeyword = false;
+                if (keyword === "") {
+                    matchKeyword = true;
+                } else {
+                    const matchNama = item.nama && item.nama.toLowerCase().includes(keyword);
+                    const mengandungAngka = /\d/.test(keyword);
+                    
+                    const exactUsername = item.username && item.username.toLowerCase() === keyword;
+                    const partialUsername = item.username && item.username.toLowerCase().includes(keyword) && !mengandungAngka;
+                    
+                    const exactNoRumah = item.no_rumah && item.no_rumah.toLowerCase() === keyword;
+                    const partialNoRumah = item.no_rumah && item.no_rumah.toLowerCase().includes(keyword) && !mengandungAngka;
+                    
+                    matchKeyword = matchNama || exactUsername || partialUsername || exactNoRumah || partialNoRumah;
+                }
                 
                 let matchStatus = true;
-                if(filterStatus === 'Lunas') matchStatus = item.status_bulan_ini === 'Lunas';
                 if(filterStatus === 'Nunggak') matchStatus = item.status_bulan_ini === 'Nunggak';
+                if(filterStatus === 'Lunas') matchStatus = item.status_bulan_ini === 'Lunas';
                 
                 return matchKeyword && matchStatus;
             });
@@ -1993,213 +2157,6 @@
             tampilkanDataWargaAdminUI(filteredData);
         }
 
-        // --- UTILS ---
-        function muatProfilData(userObj) {
-            const nama = userObj.nama ? userObj.nama.toUpperCase() : 'WARGA';
-            document.getElementById(userObj.role === 'admin' ? 'sapaan-admin' : 'sapaan-beranda').innerText = 'HALO, ' + nama + '!';
-            document.getElementById('header-role').innerText = userObj.role === 'admin' ? 'Mode Administrator' : 'Portal Layanan Warga';
-            document.getElementById('display-nama-profil').innerText = nama;
-            document.getElementById('display-role-profil').innerText = userObj.role.toUpperCase();
-            document.getElementById('header-avatar').innerText = nama.charAt(0);
-
-            const containerRekap = document.getElementById('profil-rekap-container');
-            const containerKontak = document.getElementById('profil-kontak-admin-container');
-            const containerDataTambahan = document.getElementById('profil-data-tambahan-container');
-            
-            if (userObj.role === 'admin') {
-                if(containerRekap) containerRekap.classList.add('hidden');
-                if(containerDataTambahan) containerDataTambahan.classList.add('hidden');
-                if(containerKontak) {
-                    containerKontak.classList.remove('hidden');
-                    renderKontakPengurus(); 
-                }
-            } else {
-                if(containerRekap) containerRekap.classList.remove('hidden');
-                if(containerDataTambahan) containerDataTambahan.classList.remove('hidden');
-                if(containerKontak) containerKontak.classList.add('hidden');
-                
-                let hunian = userObj.status_hunian || 'Milik Sendiri';
-                let elHunian = document.getElementById('input-status-hunian');
-                if(elHunian) elHunian.value = hunian;
-
-                let wifi = userObj.wifi || 'Tidak Pakai';
-                let elWifi = document.getElementById('input-wifi');
-                let elWifiLainnya = document.getElementById('input-wifi-lainnya');
-                
-                let validOptions = ['Tidak Pakai', 'Netf', 'Lancar', 'Indosat', 'Eka', 'Sneis'];
-                
-                if(elWifi) {
-                    if(validOptions.includes(wifi)) {
-                        elWifi.value = wifi;
-                        toggleWifiLainnya();
-                    } else {
-                        elWifi.value = 'Lainnya';
-                        toggleWifiLainnya();
-                        if(elWifiLainnya) elWifiLainnya.value = wifi;
-                    }
-                }
-            }
-        }
-
-        function getUserFullName() { try { return JSON.parse(localStorage.getItem('wargaSessionAktif')).nama.toUpperCase(); } catch(e) { return 'WARGA'; } }
-        function getUserUsername() { try { return JSON.parse(localStorage.getItem('wargaSessionAktif')).username.toUpperCase(); } catch(e) { return 'WARGA'; } }
-        
-        function switchTab(tabId) {
-            ['section-beranda','section-surat','section-iuran','section-lapor','section-profil','section-admin-home','section-admin-verifikasi','section-admin-pengumuman','section-admin-warga'].forEach(s => { const el = document.getElementById(s); if(el) el.classList.add('hidden'); });
-            document.getElementById('section-' + tabId).classList.remove('hidden');
-            document.querySelectorAll('.nav-btn-warga, .nav-btn-admin').forEach(b => { b.classList.remove('text-indigo-600', 'text-indigo-400'); b.classList.add('text-gray-400', 'text-gray-500'); });
-            
-            const btnW = document.querySelector(`.nav-btn-warga[data-target="${tabId}"]`); if(btnW) { btnW.classList.remove('text-gray-400'); btnW.classList.add('text-indigo-600'); }
-            const btnA = document.querySelector(`.nav-btn-admin[data-target="${tabId}"]`); if(btnA) { btnA.classList.remove('text-gray-500'); btnA.classList.add('text-indigo-400'); }
-            
-            if(tabId === 'beranda' || tabId === 'profil' || tabId === 'iuran') {
-                cekStatusWarga(); 
-            }
-            if(tabId === 'beranda') {
-                tarikDataPengumuman();
-                tarikDataKeuangan(); 
-            } 
-            if(tabId === 'lapor') tarikDataLaporan(); 
-            if(tabId === 'iuran') {
-                tarikDataIuran(); 
-                // Refresh checkbox list jika masuk ke menu iuran kembali
-                document.querySelectorAll('#grid-bulan input[type="checkbox"]:not(:disabled)').forEach(c => c.checked = false);
-                hitungTotalIuran();
-            }
-            if(tabId === 'surat') tarikDataSurat();
-            
-            if(tabId === 'admin-verifikasi') { 
-                tarikDataIuranAdmin(); 
-                tarikDataSuratAdmin(); 
-                tarikDataLaporanAdmin(); 
-            }
-            if(tabId === 'admin-home') {
-                loadAdminDashboardStats();
-                tarikDataKeuangan(); 
-            }
-            if(tabId === 'admin-warga') tarikDataWargaAdmin(); 
-        }
-        
-        function salinTeks(teks) {
-            try {
-                const tempInput = document.createElement("textarea");
-                tempInput.value = teks;
-                tempInput.style.position = "absolute";
-                tempInput.style.left = "-9999px";
-                document.body.appendChild(tempInput);
-                
-                tempInput.select();
-                document.execCommand("copy");
-                
-                document.body.removeChild(tempInput);
-                
-                tampilkanModal('Tersalin!', 'Nomor rekening ' + teks + ' berhasil disalin.', 'sukses');
-            } catch (err) {
-                tampilkanModal('Gagal!', 'Nomor rekening gagal disalin.', 'gagal');
-            }
-        }
-
-        // Modals Functions
-        function tampilkanModal(judul, pesan, tipe) {
-            document.getElementById('modal-title').innerText = judul; 
-            document.getElementById('modal-message').innerText = pesan;
-            document.getElementById('custom-modal').classList.remove('hidden'); 
-            document.getElementById('custom-modal').style.display = 'flex';
-            
-            const box = document.getElementById('custom-modal-box');
-            if(box) {
-                box.style.transform = 'scale(0.8)';
-                setTimeout(() => { box.style.transform = 'scale(1)'; }, 50);
-            }
-        }
-        function tutupModal() { 
-            document.getElementById('custom-modal').classList.add('hidden'); 
-            document.getElementById('custom-modal').style.display = 'none'; 
-        }
-        
-        // ADMIN BUKTI MODAL
-        function bukaModalBukti(urlGambar) {
-            document.getElementById('img-bukti-transfer').src = urlGambar;
-            document.getElementById('link-bukti-transfer').href = urlGambar;
-            const modal = document.getElementById('bukti-modal');
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-        }
-        function tutupModalBukti() {
-            const modal = document.getElementById('bukti-modal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
-        }
-
-        // --- TAMBAHAN MODAL QRIS KHUSUS WARGA ---
-        function bukaModalQRIS() {
-            const modal = document.getElementById('qris-modal');
-            if(modal) {
-                modal.classList.remove('hidden');
-                modal.style.display = 'flex';
-            }
-        }
-        function tutupModalQRIS() {
-            const modal = document.getElementById('qris-modal');
-            if(modal) {
-                modal.classList.add('hidden');
-                modal.style.display = 'none';
-            }
-        }
-
-        // CHAT WA ADMIN MODAL
-        function hitungTotalWa() {
-            document.getElementById('wa-nominal').value = document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]:checked').length * 20000;
-        }
-
-        function bukaModalWA(nama, noWa) {
-            if(!noWa || noWa === "-" || noWa.trim() === "") {
-                tampilkanModal('Peringatan', 'Warga ini tidak memiliki data nomor WhatsApp di Database Excel.', 'gagal');
-                return;
-            }
-            document.getElementById('wa-nama-warga').innerText = nama;
-            document.getElementById('wa-no-hp').value = noWa;
-            document.getElementById('wa-nama').value = nama;
-            
-            document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]').forEach(c => c.checked = false);
-            document.getElementById('wa-nominal').value = '0';
-            
-            const modal = document.getElementById('wa-modal');
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-        }
-
-        function tutupModalWA() {
-            const modal = document.getElementById('wa-modal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
-        }
-
-        function prosesKirimWA() {
-            const nama = document.getElementById('wa-nama').value;
-            const noWa = document.getElementById('wa-no-hp').value;
-            
-            const cb = document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]:checked');
-            if (cb.length === 0) {
-                tampilkanModal('Peringatan', 'Pilih minimal 1 bulan nunggak.', 'gagal');
-                return;
-            }
-            
-            const bulan = Array.from(cb).map(c => c.value).join(', ');
-            let nominalStr = document.getElementById('wa-nominal').value;
-            const nominal = 'Rp ' + parseInt(nominalStr).toLocaleString('id-ID');
-
-            let waClean = noWa.replace(/[^0-9]/g, '');
-            if (waClean.startsWith('0')) {
-                waClean = '62' + waClean.substring(1);
-            }
-            
-            const teks = `Halo Bpk/Ibu *${nama}*,\n\nKami dari Pengurus Paguyuban BLOK 9 BSR ingin menginformasikan bahwa tagihan iuran kas Anda untuk bulan *${bulan}* dengan total *${nominal}* belum terbayar/terkonfirmasi.\n\nMohon untuk segera melakukan konfirmasi pembayaran di Aplikasi. Terima kasih 🙏`;
-            
-            const url = `https://wa.me/${waClean}?text=${encodeURIComponent(teks)}`;
-            window.open(url, '_blank');
-            tutupModalWA();
-        }
     </script>
 </body>
 </html>
