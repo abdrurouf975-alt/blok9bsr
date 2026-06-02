@@ -2125,31 +2125,19 @@
 
         // FUNGSI CARI & FILTER WARGA
         function cariWargaAdmin() {
-            const keyword = document.getElementById('input-cari-warga').value.toLowerCase().trim();
+            const keyword = document.getElementById('input-cari-warga').value.toLowerCase();
             const filterStatus = document.getElementById('filter-status-warga').value;
             
             if(!globalWargaData || globalWargaData.length === 0) return;
 
             const filteredData = globalWargaData.filter(item => {
-                let matchKeyword = false;
-                if (keyword === "") {
-                    matchKeyword = true;
-                } else {
-                    const matchNama = item.nama && item.nama.toLowerCase().includes(keyword);
-                    const mengandungAngka = /\d/.test(keyword);
-                    
-                    const exactUsername = item.username && item.username.toLowerCase() === keyword;
-                    const partialUsername = item.username && item.username.toLowerCase().includes(keyword) && !mengandungAngka;
-                    
-                    const exactNoRumah = item.no_rumah && item.no_rumah.toLowerCase() === keyword;
-                    const partialNoRumah = item.no_rumah && item.no_rumah.toLowerCase().includes(keyword) && !mengandungAngka;
-                    
-                    matchKeyword = matchNama || exactUsername || partialUsername || exactNoRumah || partialNoRumah;
-                }
+                let matchKeyword = (item.nama && item.nama.toLowerCase().includes(keyword)) || 
+                                   (item.no_rumah && item.no_rumah.toLowerCase().includes(keyword)) ||
+                                   (item.username && item.username.toLowerCase().includes(keyword));
                 
                 let matchStatus = true;
-                if(filterStatus === 'Nunggak') matchStatus = item.status_bulan_ini === 'Nunggak';
                 if(filterStatus === 'Lunas') matchStatus = item.status_bulan_ini === 'Lunas';
+                if(filterStatus === 'Nunggak') matchStatus = item.status_bulan_ini === 'Nunggak';
                 
                 return matchKeyword && matchStatus;
             });
@@ -2157,6 +2145,478 @@
             tampilkanDataWargaAdminUI(filteredData);
         }
 
+        // --- UTILS & FUNGSI PENDUKUNG YANG SEMPAT TERPOTONG ---
+        function muatProfilData(userObj) {
+            const nama = userObj.nama ? userObj.nama.toUpperCase() : 'WARGA';
+            document.getElementById(userObj.role === 'admin' ? 'sapaan-admin' : 'sapaan-beranda').innerText = 'HALO, ' + nama + '!';
+            document.getElementById('header-role').innerText = userObj.role === 'admin' ? 'Mode Administrator' : 'Portal Layanan Warga';
+            document.getElementById('display-nama-profil').innerText = nama;
+            document.getElementById('display-role-profil').innerText = userObj.role.toUpperCase();
+            document.getElementById('header-avatar').innerText = nama.charAt(0);
+
+            const containerRekap = document.getElementById('profil-rekap-container');
+            const containerKontak = document.getElementById('profil-kontak-admin-container');
+            const containerDataTambahan = document.getElementById('profil-data-tambahan-container');
+            
+            if (userObj.role === 'admin') {
+                if(containerRekap) containerRekap.classList.add('hidden');
+                if(containerDataTambahan) containerDataTambahan.classList.add('hidden');
+                if(containerKontak) {
+                    containerKontak.classList.remove('hidden');
+                    renderKontakPengurus(); 
+                }
+            } else {
+                if(containerRekap) containerRekap.classList.remove('hidden');
+                if(containerDataTambahan) containerDataTambahan.classList.remove('hidden');
+                if(containerKontak) containerKontak.classList.add('hidden');
+                
+                let hunian = userObj.status_hunian || 'Milik Sendiri';
+                let elHunian = document.getElementById('input-status-hunian');
+                if(elHunian) elHunian.value = hunian;
+
+                let wifi = userObj.wifi || 'Tidak Pakai';
+                let elWifi = document.getElementById('input-wifi');
+                let elWifiLainnya = document.getElementById('input-wifi-lainnya');
+                
+                let validOptions = ['Tidak Pakai', 'Netf', 'Lancar', 'Indosat', 'Eka', 'Sneis'];
+                if(elWifi) {
+                    if(validOptions.includes(wifi)) {
+                        elWifi.value = wifi;
+                        toggleWifiLainnya();
+                    } else {
+                        elWifi.value = 'Lainnya';
+                        toggleWifiLainnya();
+                        if(elWifiLainnya) elWifiLainnya.value = wifi;
+                    }
+                }
+            }
+        }
+
+        function getUserFullName() { try { return JSON.parse(localStorage.getItem('wargaSessionAktif')).nama.toUpperCase(); } catch(e) { return 'WARGA'; } }
+        function getUserUsername() { try { return JSON.parse(localStorage.getItem('wargaSessionAktif')).username.toUpperCase(); } catch(e) { return 'WARGA'; } }
+        
+        function switchTab(tabId) {
+            ['section-beranda','section-surat','section-iuran','section-lapor','section-profil','section-admin-home','section-admin-verifikasi','section-admin-pengumuman','section-admin-warga','section-admin-saldo'].forEach(s => { const el = document.getElementById(s); if(el) el.classList.add('hidden'); });
+            
+            const targetSection = document.getElementById('section-' + tabId);
+            if(targetSection) {
+                targetSection.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            document.querySelectorAll('.nav-btn-warga, .nav-btn-admin').forEach(b => { b.classList.remove('text-indigo-600', 'text-indigo-400'); b.classList.add('text-gray-400', 'text-gray-500'); });
+            
+            const btnW = document.querySelector(`.nav-btn-warga[data-target="${tabId}"]`); if(btnW) { btnW.classList.remove('text-gray-400'); btnW.classList.add('text-indigo-600'); }
+            const btnA = document.querySelector(`.nav-btn-admin[data-target="${tabId}"]`); if(btnA) { btnA.classList.remove('text-gray-500'); btnA.classList.add('text-indigo-400'); }
+            
+            if(tabId === 'beranda' || tabId === 'profil') {
+                cekStatusWarga(); 
+            }
+            if(tabId === 'beranda') {
+                tarikDataPengumuman();
+                tarikDataKeuangan(); 
+            } 
+            if(tabId === 'lapor') tarikDataLaporan(); 
+            if(tabId === 'iuran') tarikDataIuran(); 
+            if(tabId === 'surat') tarikDataSurat();
+            
+            if(tabId === 'admin-verifikasi') { 
+                tarikDataIuranAdmin(); 
+                tarikDataSuratAdmin(); 
+                tarikDataLaporanAdmin(); 
+            }
+            if(tabId === 'admin-home') {
+                loadAdminDashboardStats();
+                tarikDataKeuangan(); 
+            }
+            if(tabId === 'admin-saldo') tarikDataKeuangan();
+            if(tabId === 'admin-warga') tarikDataWargaAdmin(); 
+        }
+        
+        function salinTeks(teks) {
+            try {
+                const tempInput = document.createElement("textarea");
+                tempInput.value = teks;
+                tempInput.style.position = "absolute";
+                tempInput.style.left = "-9999px";
+                document.body.appendChild(tempInput);
+                
+                tempInput.select();
+                document.execCommand("copy");
+                
+                document.body.removeChild(tempInput);
+                
+                tampilkanModal('Tersalin!', 'Nomor rekening ' + teks + ' berhasil disalin.', 'sukses');
+            } catch (err) {
+                tampilkanModal('Gagal!', 'Nomor rekening gagal disalin.', 'gagal');
+            }
+        }
+
+        function tampilkanModal(judul, pesan, tipe) {
+            document.getElementById('modal-title').innerText = judul; 
+            document.getElementById('modal-message').innerText = pesan;
+            document.getElementById('custom-modal').classList.remove('hidden'); 
+            document.getElementById('custom-modal').style.display = 'flex';
+            
+            const box = document.getElementById('custom-modal-box');
+            if(box) {
+                box.style.transform = 'scale(0.8)';
+                setTimeout(() => { box.style.transform = 'scale(1)'; }, 50);
+            }
+        }
+        
+        function tutupModal() { 
+            document.getElementById('custom-modal').classList.add('hidden'); 
+            document.getElementById('custom-modal').style.display = 'none'; 
+        }
+        
+        function bukaModalBukti(urlGambar) {
+            document.getElementById('img-bukti-transfer').src = urlGambar;
+            document.getElementById('link-bukti-transfer').href = urlGambar;
+            const modal = document.getElementById('bukti-modal');
+            if(modal) {
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+            }
+        }
+        
+        function tutupModalBukti() {
+            const modal = document.getElementById('bukti-modal');
+            if(modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+            }
+        }
+
+        function cetakStrukIuran(namaWarga, tanggalLunas, bulanDibayar, nominal) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1200;
+            canvas.height = 1700;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#F3F4F6'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#FFFFFF';
+            ctx.shadowColor = "rgba(0,0,0,0.15)";
+            ctx.shadowBlur = 40;
+            ctx.shadowOffsetY = 10;
+            
+            const x = 80; const y = 80; const w = 1040; const h = 1540; const r = 30;
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.shadowColor = "transparent";
+
+            ctx.fillStyle = '#4F46E5'; 
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + 40);
+            ctx.lineTo(x, y + 40);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = '#111827';
+            ctx.font = 'bold 50px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('BUKTI PEMBAYARAN KAS', 150, 210);
+
+            ctx.fillStyle = '#6B7280';
+            ctx.font = 'bold 30px Arial';
+            ctx.fillText('PAGUYUBAN BLOK 9 BSR', 150, 260);
+
+            ctx.strokeStyle = '#E5E7EB';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(150, 360);
+            ctx.lineTo(1050, 360);
+            ctx.stroke();
+
+            ctx.textAlign = 'left';
+            const startX = 150;
+            const valueX = 480; 
+            let startY = 460;
+            const lineH = 90;
+
+            ctx.fillStyle = '#6B7280';
+            ctx.font = '35px Arial';
+            ctx.fillText('Diterima Dari', startX, startY);
+            ctx.fillStyle = '#111827';
+            ctx.font = 'bold 35px Arial';
+            ctx.fillText(':   ' + namaWarga.toUpperCase(), valueX, startY);
+
+            startY += lineH;
+            ctx.fillStyle = '#6B7280';
+            ctx.font = '35px Arial';
+            ctx.fillText('Tanggal Bayar', startX, startY);
+            ctx.fillStyle = '#111827';
+            ctx.font = 'bold 35px Arial';
+            ctx.fillText(':   ' + tanggalLunas, valueX, startY);
+
+            startY += lineH;
+            ctx.fillStyle = '#6B7280';
+            ctx.font = '35px Arial';
+            ctx.fillText('Pembayaran Bulan', startX, startY);
+            ctx.fillStyle = '#111827';
+            ctx.font = 'bold 35px Arial';
+            
+            let textBulan = ':   ' + bulanDibayar.toUpperCase();
+            let words = textBulan.split(', ');
+            let lineStr = '';
+            for(let n = 0; n < words.length; n++) {
+                let testLine = lineStr + words[n] + (n < words.length - 1 ? ', ' : '');
+                let metrics = ctx.measureText(testLine);
+                if (metrics.width > 550 && n > 0) {
+                    ctx.fillText(lineStr, valueX, startY);
+                    lineStr = '    ' + words[n] + (n < words.length - 1 ? ', ' : '');
+                    startY += 50; 
+                } else {
+                    lineStr = testLine;
+                }
+            }
+            ctx.fillText(lineStr, valueX, startY);
+
+            startY += 150;
+            const boxY = startY;
+            
+            ctx.fillStyle = '#EEF2FF'; 
+            ctx.strokeStyle = '#C7D2FE'; 
+            ctx.lineWidth = 3;
+            
+            ctx.beginPath();
+            ctx.moveTo(150 + 20, boxY);
+            ctx.lineTo(600 - 20, boxY);
+            ctx.quadraticCurveTo(600, boxY, 600, boxY + 20);
+            ctx.lineTo(600, boxY + 120 - 20);
+            ctx.quadraticCurveTo(600, boxY + 120, 600 - 20, boxY + 120);
+            ctx.lineTo(150 + 20, boxY + 120);
+            ctx.quadraticCurveTo(150, boxY + 120, 150, boxY + 120 - 20);
+            ctx.lineTo(150, boxY + 20);
+            ctx.quadraticCurveTo(150, boxY, 150 + 20, boxY);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#4F46E5'; 
+            ctx.font = 'bold 55px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Rp ' + parseInt(nominal).toLocaleString('id-ID'), 375, boxY + 80);
+
+            ctx.save();
+            ctx.translate(850, boxY + 50); 
+            ctx.rotate(-0.35); 
+            
+            ctx.strokeStyle = '#10B981'; 
+            ctx.lineWidth = 10;
+            ctx.beginPath();
+            ctx.roundRect ? ctx.roundRect(-220, -70, 440, 140, 20) : ctx.strokeRect(-220, -70, 440, 140);
+            ctx.stroke();
+            
+            ctx.fillStyle = '#10B981';
+            ctx.font = 'italic black 80px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('L U N A S', 0, 30);
+            ctx.restore();
+
+            const waktuSekarang = new Date();
+            const opsiWaktu = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const stringWaktuCetak = waktuSekarang.toLocaleDateString('id-ID', opsiWaktu) + ' WIB';
+
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#9CA3AF';
+            ctx.font = '22px Arial';
+            ctx.fillText('Waktu Cetak Dokumen: ' + stringWaktuCetak, 150, 1480);
+
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#9CA3AF';
+            ctx.font = 'italic 25px Arial';
+            ctx.fillText('Dokumen ini sah sebagai tanda terima pembayaran tercatat di database Aplikasi.', canvas.width / 2, 1530);
+
+            const dataUrl = canvas.toDataURL('image/jpeg', 1.0);
+            bukaModalPreviewStruk(dataUrl, namaWarga, bulanDibayar);
+        }
+
+        function bukaModalPreviewStruk(dataUrl, namaWarga, bulanDibayar) {
+            const imgEl = document.getElementById('struk-preview-img');
+            if(imgEl) imgEl.src = dataUrl;
+            
+            const btnDownload = document.getElementById('btn-download-struk');
+            if(btnDownload) {
+                btnDownload.onclick = function() {
+                    const safeNama = namaWarga.replace(/\s+/g, '_');
+                    const safeBulan = bulanDibayar.replace(/,\s*/g, '-');
+                    
+                    const link = document.createElement('a');
+                    link.download = `Kuitansi_Lunas_${safeNama}_${safeBulan}.jpg`;
+                    link.href = dataUrl;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    setTimeout(() => {
+                        tampilkanModal('Berhasil Diunduh!', 'File Kuitansi JPG telah disimpan ke HP Anda.', 'sukses');
+                    }, 1000);
+                };
+            }
+
+            const modal = document.getElementById('struk-preview-modal');
+            if(modal) {
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+            }
+        }
+
+        function tutupModalPreviewStruk() {
+            const modal = document.getElementById('struk-preview-modal');
+            if(modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+            }
+        }
+
+        function bukaModalTagihanMasal() {
+            const modal = document.getElementById('tagihan-masal-modal');
+            if(modal) {
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+            }
+        }
+
+        function tutupModalTagihanMasal() {
+            const modal = document.getElementById('tagihan-masal-modal');
+            if(modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+            }
+        }
+
+        function tagihSemuaWarga() {
+            tutupModalTagihanMasal();
+
+            let teks = `PENGUMUMAN IURAN KAS BLOK 9 BSR\n\nYth. Bapak/Ibu Warga Blok 9 BSR,\n\nBerdasarkan catatan kas Paguyuban Blok 9 BSR, masih terdapat beberapa warga yang belum melakukan pembayaran iuran kas dan telah melewati batas waktu yang ditentukan.\n\nUntuk itu, kami mohon kerja samanya agar Bapak/Ibu segera melakukan konfirmasi. Terima kasih.`;
+            
+            let daftarNomor = [];
+            let wargaTanpaWa = 0;
+
+            if(globalWargaData && globalWargaData.length > 0) {
+                const wargaNunggak = globalWargaData.filter(w => w.status_bulan_ini === 'Nunggak');
+
+                wargaNunggak.forEach(w => {
+                    if(w.no_wa && w.no_wa !== "-" && w.no_wa.trim() !== "") {
+                        let waClean = w.no_wa.replace(/[^0-9]/g, '');
+                        if (waClean.startsWith('0')) {
+                            waClean = '62' + waClean.substring(1);
+                        }
+                        if(!daftarNomor.includes(waClean)) {
+                            daftarNomor.push(waClean);
+                        }
+                    } else {
+                        wargaTanpaWa++;
+                    }
+                });
+            }
+
+            if(daftarNomor.length > 0) {
+                navigator.clipboard.writeText(daftarNomor.join(', ')).then(() => {
+                    let pesanModal = `${daftarNomor.length} nomor WA tersalin ke clipboard.`;
+                    tampilkanModal('Daftar Nomor Tersalin!', pesanModal, 'sukses');
+                }).catch(err => console.error('Gagal salin nomor', err));
+                
+                setTimeout(() => {
+                    const url = `https://wa.me/?text=${encodeURIComponent(teks)}`;
+                    window.open(url, '_blank');
+                }, 4000);
+            } else {
+                tampilkanModal('Informasi', 'Tidak ada warga menunggak yang memiliki nomor WA di database.', 'sukses');
+            }
+        }
+
+        function filterWargaNunggak() {
+            tutupModalTagihanMasal();
+            switchTab('admin-warga');
+            setTimeout(() => {
+                const selectFilter = document.getElementById('filter-status-warga');
+                if(selectFilter) {
+                    selectFilter.value = 'Nunggak';
+                    cariWargaAdmin();
+                }
+            }, 100);
+        }
+
+        function hitungTotalWa() {
+            const cbCount = document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]:checked').length;
+            const waNominal = document.getElementById('wa-nominal');
+            if(waNominal) waNominal.value = cbCount * 20000;
+        }
+
+        function bukaModalWA(nama, noWa) {
+            if(!noWa || noWa === "-" || noWa.trim() === "") {
+                tampilkanModal('Peringatan', 'Warga ini tidak memiliki data nomor WhatsApp di Database Excel.', 'gagal');
+                return;
+            }
+            document.getElementById('wa-nama-warga').innerText = nama;
+            document.getElementById('wa-no-hp').value = noWa;
+            document.getElementById('wa-nama').value = nama;
+            
+            document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]').forEach(c => c.checked = false);
+            
+            const waNominal = document.getElementById('wa-nominal');
+            if(waNominal) waNominal.value = '0';
+            
+            const modal = document.getElementById('wa-modal');
+            if(modal) {
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+            }
+        }
+
+        function tutupModalWA() {
+            const modal = document.getElementById('wa-modal');
+            if(modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+            }
+        }
+
+        function prosesKirimWA() {
+            const nama = document.getElementById('wa-nama').value;
+            const noWa = document.getElementById('wa-no-hp').value;
+            
+            const cb = document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]:checked');
+            if (cb.length === 0) {
+                tampilkanModal('Peringatan', 'Pilih minimal 1 bulan nunggak.', 'gagal');
+                return;
+            }
+            
+            const bulan = Array.from(cb).map(c => c.value).join(', ');
+            let nominalStr = document.getElementById('wa-nominal').value;
+            const nominal = 'Rp ' + parseInt(nominalStr).toLocaleString('id-ID');
+
+            let waClean = noWa.replace(/[^0-9]/g, '');
+            if (waClean.startsWith('0')) {
+                waClean = '62' + waClean.substring(1);
+            }
+            
+            const teks = `Halo Bpk/Ibu *${nama}*,\n\nKami dari Pengurus Paguyuban BLOK 9 BSR menginformasikan bahwa tagihan iuran kas Anda untuk bulan *${bulan}* dengan total *${nominal}* belum terbayar.\n\nMohon segera konfirmasi. Terima kasih 🙏`;
+            
+            const url = `https://wa.me/${waClean}?text=${encodeURIComponent(teks)}`;
+            window.open(url, '_blank');
+            tutupModalWA();
+        }
     </script>
 </body>
 </html>
