@@ -947,21 +947,28 @@
             const dropNama = document.getElementById('dropdown-nama');
             const dropNorumah = document.getElementById('dropdown-norumah');
             
-            let namaPendek = userObj.nama ? userObj.nama.split(' ')[0].toUpperCase() : 'WARGA';
-            let noRumahText = userObj.no_rumah && userObj.no_rumah !== '-' ? userObj.no_rumah : 'Belum Diisi';
+            // Menggunakan Nama Lengkap Warga
+            let namaLengkap = userObj.nama ? userObj.nama.toUpperCase() : 'WARGA';
+            
+            // Cek otomatis agar kata "NO" tidak menjadi dobel
+            let noRumahAsli = userObj.no_rumah && userObj.no_rumah !== '-' ? userObj.no_rumah.toString() : '';
+            let noRumahText = 'Belum Diisi';
+            if (noRumahAsli) {
+                noRumahText = noRumahAsli.toUpperCase().startsWith('NO') ? noRumahAsli.toUpperCase() : ('NO ' + noRumahAsli.toUpperCase());
+            }
             
             if(elNama) elNama.innerText = userObj.nama || 'WARGA';
             if(elRole) elRole.innerText = userObj.role === 'admin' ? 'PENGURUS' : 'WARGA';
             if(headerAvatar) headerAvatar.innerText = (userObj.nama || 'W').charAt(0).toUpperCase();
             
-            if(headerRole) headerRole.innerText = userObj.role === 'admin' ? 'Mode Administrator' : ('NO ' + noRumahText);
+            if(headerRole) headerRole.innerText = userObj.role === 'admin' ? 'Mode Administrator' : noRumahText;
             
             if(dropNama) dropNama.innerText = userObj.nama || 'WARGA';
-            if(dropNorumah) dropNorumah.innerText = userObj.role === 'admin' ? 'Administrator' : ('NO ' + noRumahText);
+            if(dropNorumah) dropNorumah.innerText = userObj.role === 'admin' ? 'Administrator' : noRumahText;
 
-            if(elSapaan) elSapaan.innerText = `HALO, ${namaPendek}!`;
+            if(elSapaan) elSapaan.innerText = `HALO, ${namaLengkap}!`;
             if(elSapaanSub) elSapaanSub.innerHTML = `Selamat datang di portal BLOK 9 BSR.`;
-            if(elSapaanAdmin) elSapaanAdmin.innerText = `HALO, ${namaPendek}!`;
+            if(elSapaanAdmin) elSapaanAdmin.innerText = `HALO, ${namaLengkap}!`;
 
             const selectHunian = document.getElementById('input-status-hunian');
             const selectWifi = document.getElementById('input-wifi');
