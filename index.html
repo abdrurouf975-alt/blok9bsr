@@ -774,6 +774,153 @@
             return 'Rp ' + new Intl.NumberFormat('id-ID').format(angka);
         }
 
+        // =======================================================
+        // FUNGSI HELPER UI & MODAL YANG TERHAPUS (DIKEMBALIKAN)
+        // =======================================================
+        function getUserUsername() {
+            const sessionStr = localStorage.getItem('wargaSessionAktif');
+            if(!sessionStr) return "";
+            try { return JSON.parse(sessionStr).username || ""; } catch(e) { return ""; }
+        }
+
+        function muatProfilData(userObj) {
+            const elNama = document.getElementById('display-nama-profil');
+            const elRole = document.getElementById('display-role-profil');
+            const headerAvatar = document.getElementById('header-avatar');
+            const headerRole = document.getElementById('header-role');
+            
+            if(elNama) elNama.innerText = userObj.nama || 'WARGA';
+            if(elRole) elRole.innerText = userObj.role === 'admin' ? 'PENGURUS' : 'WARGA';
+            if(headerAvatar) headerAvatar.innerText = (userObj.nama || 'W').charAt(0).toUpperCase();
+            if(headerRole) headerRole.innerText = userObj.role === 'admin' ? 'Administrator' : userObj.no_rumah || 'Warga';
+
+            const selectHunian = document.getElementById('input-status-hunian');
+            const selectWifi = document.getElementById('input-wifi');
+            const inputWifiLainnya = document.getElementById('input-wifi-lainnya');
+            const containerWifiLainnya = document.getElementById('container-wifi-lainnya');
+
+            if(selectHunian) selectHunian.value = userObj.status_hunian || 'Milik Sendiri';
+            if(selectWifi) {
+                const wifiOpts = Array.from(selectWifi.options).map(o => o.value);
+                if(wifiOpts.includes(userObj.wifi)) {
+                    selectWifi.value = userObj.wifi;
+                    if(containerWifiLainnya) containerWifiLainnya.classList.add('hidden');
+                } else if(userObj.wifi && userObj.wifi !== '-') {
+                    selectWifi.value = 'Lainnya';
+                    if(containerWifiLainnya) containerWifiLainnya.classList.remove('hidden');
+                    if(inputWifiLainnya) inputWifiLainnya.value = userObj.wifi;
+                } else {
+                    selectWifi.value = 'Tidak Pakai';
+                }
+            }
+
+            renderKontakPengurus();
+            
+            if (userObj.role !== 'admin') {
+                const elProfilData = document.getElementById('profil-data-tambahan-container');
+                const elProfilKontak = document.getElementById('profil-kontak-admin-container');
+                if(elProfilData) elProfilData.classList.remove('hidden');
+                if(elProfilKontak) elProfilKontak.classList.remove('hidden');
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.section-warga, .section-admin, #section-profil').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById('section-' + tabId);
+            if(target) target.classList.remove('hidden');
+            else if(tabId === 'profil') document.getElementById('section-profil').classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn-warga, .nav-btn-admin').forEach(btn => {
+                btn.classList.remove('text-indigo-600', 'text-indigo-400', 'bg-gray-50', 'bg-gray-800');
+                if(btn.classList.contains('nav-btn-warga')) btn.classList.add('text-gray-400');
+                else btn.classList.add('text-gray-500');
+            });
+
+            const activeBtn = document.querySelector(`[data-target="${tabId}"]`);
+            if(activeBtn) {
+                if(activeBtn.classList.contains('nav-btn-warga')) activeBtn.classList.add('text-indigo-600', 'bg-gray-50');
+                else activeBtn.classList.add('text-indigo-400', 'bg-gray-800');
+            }
+
+            if(tabId === 'beranda' || tabId === 'iuran' || tabId === 'profil') {
+                cekStatusWarga(tabId);
+            }
+            if(tabId === 'admin-home') {
+                loadAdminDashboardStats();
+                tarikDataKeuangan(); 
+            }
+            if(tabId === 'admin-warga') tarikDataWargaAdmin(); 
+        }
+
+        function salinTeks(teks) {
+            try {
+                const tempInput = document.createElement("textarea");
+                tempInput.value = teks;
+                tempInput.style.position = "absolute";
+                tempInput.style.left = "-9999px";
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand("copy");
+                document.body.removeChild(tempInput);
+                tampilkanModal('Tersalin!', 'Nomor rekening ' + teks + ' berhasil disalin.', 'sukses');
+            } catch (err) {
+                tampilkanModal('Gagal!', 'Nomor rekening gagal disalin.', 'gagal');
+            }
+        }
+
+        function tampilkanModal(judul, pesan, tipe) {
+            const modal = document.getElementById('custom-modal');
+            const iconContainer = document.getElementById('modal-icon-container');
+            const icon = document.getElementById('modal-icon');
+            
+            document.getElementById('modal-title').innerText = judul; 
+            document.getElementById('modal-message').innerText = pesan;
+
+            if (tipe === 'sukses') {
+                iconContainer.className = "mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-green-100 mb-4 border-4 border-white shadow-sm";
+                icon.className = "fas fa-check text-green-600 text-4xl";
+            } else {
+                iconContainer.className = "mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-red-100 mb-4 border-4 border-white shadow-sm";
+                icon.className = "fas fa-times text-red-600 text-4xl";
+            }
+            
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+        }
+
+        function tutupModal() {
+            const modal = document.getElementById('custom-modal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
+
+        function bukaModalBukti(url) {
+            const modal = document.getElementById('bukti-modal');
+            document.getElementById('img-bukti-transfer').src = url;
+            document.getElementById('link-bukti-transfer').href = url;
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+        }
+
+        function tutupModalBukti() {
+            const modal = document.getElementById('bukti-modal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
+
+        function bukaModalQRIS() {
+            const modal = document.getElementById('qris-modal');
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+        }
+
+        function tutupModalQRIS() {
+            const modal = document.getElementById('qris-modal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
+        // =======================================================
+
         function inisialisasiAplikasi() {
             updateClock(); 
             const sessionStr = localStorage.getItem('wargaSessionAktif');
@@ -1917,7 +2064,7 @@
             }
             
             // PESAN WHATSAPP YANG DIKIRIM (Sudah termasuk Nama & Nomor Rumah)
-            const teks = `Halo Bpk/Ibu *${nama}* (Nomor: *${noRumah}*),\n\nKami dari Pengurus BLOK 9 BSR ingin menginformasikan bahwa *${jenisTeks}* Anda untuk tahun *${tahun}* pada bulan *${bulan}* dengan total *${nominal}* belum terbayar/terkonfirmasi.\n\nMohon untuk segera melakukan konfirmasi pembayaran melalui Aplikasi BLOK 9 BSR. Terima kasih 🙏`;
+            const teks = `Halo Bpk/Ibu *${nama}* (Blok/No: *${noRumah}*),\n\nKami dari Pengurus BLOK 9 BSR ingin menginformasikan bahwa *${jenisTeks}* Anda untuk tahun *${tahun}* pada bulan *${bulan}* dengan total *${nominal}* belum terbayar/terkonfirmasi.\n\nMohon untuk segera melakukan konfirmasi pembayaran melalui Aplikasi BLOK 9 BSR. Terima kasih 🙏`;
             
             const url = `https://wa.me/${waClean}?text=${encodeURIComponent(teks)}`;
             window.open(url, '_blank');
