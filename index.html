@@ -6,6 +6,7 @@
     <title>Aplikasi BLOK 9 BSR</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         /* Desain Scrollbar Khusus */
         ::-webkit-scrollbar { width: 0px; background: transparent; }
@@ -20,7 +21,7 @@
         .shimmer { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmerEffect 1.5s infinite; }
         @keyframes shimmerEffect { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         
-        /* Layout Modern Desktop/Mobile - DIPERBARUI UNTUK WARGA & ADMIN */
+        /* Layout Modern Desktop/Mobile */
         body, html { height: 100%; margin: 0; display: flex; flex-direction: column; background-color: #1e1b4b; }
         
         .app-wrapper {
@@ -98,22 +99,36 @@
             <div class="bg-indigo-600 text-white p-4 md:px-6 sticky top-0 z-30 shadow-md flex justify-between items-center w-full">
                 <div>
                     <h1 class="text-xl md:text-2xl font-bold tracking-wide">BLOK 9 BSR</h1>
-                    <p class="text-xs md:text-sm text-indigo-200" id="header-role">Portal Layanan</p>
+                    <p class="text-xs md:text-sm text-indigo-200 font-medium tracking-wide mt-0.5" id="header-role">Portal Layanan</p>
                 </div>
-                <div id="header-avatar" class="w-10 h-10 md:w-12 md:h-12 bg-white text-indigo-600 rounded-full flex items-center justify-center font-bold shadow-sm uppercase md:text-lg">W</div>
+                
+                <!-- AVATAR & DROPDOWN PROFIL -->
+                <div class="relative">
+                    <div id="header-avatar" onclick="toggleDropdownProfil()" class="w-10 h-10 md:w-12 md:h-12 bg-white text-indigo-600 rounded-full flex items-center justify-center font-bold shadow-sm uppercase md:text-lg cursor-pointer hover:bg-indigo-50 transition transform hover:scale-105 active:scale-95 border-2 border-indigo-300">W</div>
+                    
+                    <!-- Dropdown Content -->
+                    <div id="dropdown-profil" class="hidden absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden origin-top-right transition-all transform opacity-0 scale-95">
+                        <div class="px-4 py-3.5 border-b border-gray-100 bg-gray-50">
+                            <p class="text-sm font-black text-gray-800 truncate uppercase tracking-wide" id="dropdown-nama">Nama</p>
+                            <p class="text-[10px] text-indigo-600 font-bold mt-0.5 tracking-wider uppercase bg-indigo-100 inline-block px-2 py-0.5 rounded-md" id="dropdown-norumah">No Rumah</p>
+                        </div>
+                        <button onclick="switchTab('profil'); toggleDropdownProfil();" class="w-full text-left px-4 py-3.5 text-xs md:text-sm font-bold text-gray-700 hover:bg-indigo-50 transition flex items-center"><i class="fas fa-user-circle mr-3 text-indigo-500 text-lg"></i> Buka Profil</button>
+                        <button onclick="prosesLogout()" class="w-full text-left px-4 py-3.5 text-xs md:text-sm font-bold text-red-600 hover:bg-red-50 transition flex items-center"><i class="fas fa-power-off mr-3 text-red-500 text-lg"></i> Keluar / Logout</button>
+                    </div>
+                </div>
             </div>
 
-            <div id="content-area" class="flex-1 overflow-y-auto w-full relative">
+            <div id="content-area" class="flex-1 overflow-y-auto w-full relative bg-gray-50/30">
                 <!-- ======================= WARGA ======================= -->
                 <div id="section-beranda" class="p-5 section-warga hidden pb-20">
                     <div class="max-w-5xl mx-auto w-full">
-                        <div class="flex justify-between items-end mb-5 border-b border-gray-100 pb-4">
+                        <div class="flex justify-between items-end mb-5 border-b border-gray-200 pb-4">
                             <div>
-                                <h2 class="text-2xl font-black text-gray-800 uppercase tracking-tight" id="sapaan-beranda">HALO, WARGA!</h2>
-                                <p class="text-gray-500 mb-1 font-medium text-sm">Selamat datang di portal BLOK 9 BSR.</p>
+                                <h2 class="text-2xl md:text-3xl font-black text-gray-800 uppercase tracking-tight" id="sapaan-beranda">HALO, WARGA!</h2>
+                                <p class="text-gray-500 mb-1 font-medium text-xs md:text-sm mt-1" id="sapaan-sub">Selamat datang di portal BLOK 9 BSR.</p>
                             </div>
                             <div class="text-right hidden md:block">
-                                <p id="live-clock-warga" class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-2 rounded-lg border border-indigo-100 shadow-sm leading-tight text-right"></p>
+                                <p id="live-clock-warga" class="text-[10px] md:text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-2 rounded-lg border border-indigo-100 shadow-sm leading-tight text-right"></p>
                             </div>
                         </div>
                         
@@ -125,12 +140,12 @@
                                 </div>
 
                                 <div class="grid grid-cols-2 gap-4">
-                                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center cursor-pointer hover:bg-green-50 transition transform hover:-translate-y-1" onclick="switchTab('iuran')">
-                                        <div class="w-14 h-14 bg-green-50 text-green-600 rounded-full flex items-center justify-center text-2xl mb-3 shadow-inner"><i class="fas fa-wallet"></i></div>
+                                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center cursor-pointer hover:bg-green-50 transition transform hover:-translate-y-1 group" onclick="switchTab('iuran')">
+                                        <div class="w-14 h-14 bg-green-50 text-green-600 rounded-full flex items-center justify-center text-2xl mb-3 shadow-inner group-hover:bg-green-100 transition"><i class="fas fa-wallet"></i></div>
                                         <span class="text-sm font-bold text-gray-700">Iuran Warga</span>
                                     </div>
-                                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 transition transform hover:-translate-y-1" onclick="switchTab('surat')">
-                                        <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl mb-3 shadow-inner"><i class="fas fa-file-alt"></i></div>
+                                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 transition transform hover:-translate-y-1 group" onclick="switchTab('surat')">
+                                        <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl mb-3 shadow-inner group-hover:bg-blue-100 transition"><i class="fas fa-file-alt"></i></div>
                                         <span class="text-sm font-bold text-gray-700">Surat RT</span>
                                     </div>
                                 </div>
@@ -139,7 +154,7 @@
                                     <div class="w-10 h-10 bg-indigo-200 text-indigo-600 rounded-full flex justify-center items-center mr-3 shrink-0"><i class="fas fa-bullhorn text-lg"></i></div>
                                     <div class="w-full">
                                         <h4 class="font-bold text-indigo-900 text-sm mb-1 uppercase tracking-wider">Pengumuman Terbaru</h4>
-                                        <div id="tempat-pengumuman" class="text-sm text-indigo-700 font-medium leading-relaxed"></div>
+                                        <div id="tempat-pengumuman" class="text-xs md:text-sm text-indigo-700 font-medium leading-relaxed"></div>
                                     </div>
                                 </div>
                             </div>
@@ -169,7 +184,7 @@
                                         </div>
                                     </div>
                                     
-                                    <h4 class="font-bold text-gray-800 text-[11px] md:text-xs mb-2 uppercase border-b pb-2">Riwayat Mutasi Terbaru</h4>
+                                    <h4 class="font-bold text-gray-800 text-[11px] md:text-xs mb-2 uppercase border-b border-gray-100 pb-2">Riwayat Mutasi Terbaru</h4>
                                     <div id="rekap-iuran-list" class="flex flex-col gap-2 flex-1 max-h-[250px] overflow-y-auto pr-2"></div>
                                 </div>
                             </div>
@@ -180,28 +195,28 @@
                 <div id="section-surat" class="p-4 hidden section-warga pb-20">
                     <div class="max-w-5xl mx-auto w-full grid md:grid-cols-2 gap-6">
                         <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
-                            <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-1 uppercase border-b pb-3">Layanan Surat</h2>
-                            <p class="text-sm text-gray-500 mb-5 mt-2">Ajukan surat pengantar RT/RW secara online.</p>
+                            <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-1 uppercase border-b border-gray-100 pb-3">Layanan Surat</h2>
+                            <p class="text-xs md:text-sm text-gray-500 mb-5 mt-2">Ajukan surat pengantar RT/RW secara online.</p>
                             <form onsubmit="kirimSuratKeSpreadsheet(event)" id="form-surat">
                                 <div class="mb-4">
-                                    <label class="block text-xs font-bold text-gray-700 mb-1.5">JENIS SURAT</label>
-                                    <select id="input-jenis-surat" class="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-indigo-200 outline-none" required>
+                                    <label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">JENIS SURAT</label>
+                                    <select id="input-jenis-surat" class="w-full p-3.5 md:p-4 border border-gray-200 rounded-xl bg-gray-50 text-xs md:text-sm font-bold focus:ring-2 focus:ring-indigo-200 outline-none" required>
                                         <option value="" disabled selected>Pilih Jenis Surat</option>
                                         <option value="Pengantar KTP/KK">Pengantar KTP / KK</option>
                                         <option value="Keterangan Domisili">Keterangan Domisili</option>
                                     </select>
                                 </div>
                                 <div class="mb-6">
-                                    <label class="block text-xs font-bold text-gray-700 mb-1.5">KEPERLUAN</label>
-                                    <textarea id="input-keperluan-surat" rows="4" placeholder="Jelaskan keperluan Anda..." class="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-indigo-200 outline-none" required></textarea>
+                                    <label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">KEPERLUAN</label>
+                                    <textarea id="input-keperluan-surat" rows="4" placeholder="Jelaskan keperluan Anda..." class="w-full p-3.5 md:p-4 border border-gray-200 rounded-xl bg-gray-50 text-xs md:text-sm focus:ring-2 focus:ring-indigo-200 outline-none" required></textarea>
                                 </div>
-                                <button type="submit" id="btn-submit-surat" class="w-full bg-blue-600 hover:bg-blue-700 transition text-white font-bold py-3.5 px-4 rounded-xl uppercase text-sm tracking-wide shadow-md"><i class="fas fa-paper-plane mr-2"></i> Ajukan Surat</button>
+                                <button type="submit" id="btn-submit-surat" class="w-full bg-blue-600 hover:bg-blue-700 transition text-white font-bold py-3.5 md:py-4 rounded-xl uppercase text-xs md:text-sm tracking-wide shadow-md"><i class="fas fa-paper-plane mr-2"></i> Ajukan Surat</button>
                             </form>
                         </div>
                         <div>
                             <div class="flex justify-between items-center mb-4 px-1 border-b border-gray-200 pb-3">
                                 <h3 class="font-bold text-gray-800 uppercase tracking-wide text-sm md:text-base"><i class="fas fa-history mr-2 text-indigo-500"></i>Riwayat Pengajuan</h3>
-                                <button onclick="tarikDataSurat()" class="text-xs text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-full transition shadow-sm"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
+                                <button onclick="tarikDataSurat()" class="text-[10px] md:text-xs text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-full transition shadow-sm"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
                             </div>
                             <div id="surat-list" class="flex flex-col gap-3"></div>
                         </div>
@@ -214,39 +229,39 @@
                         
                         <!-- KOLOM KIRI (Info & History) -->
                         <div class="flex flex-col gap-6">
-                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                            <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100">
                                 <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-1 uppercase">Informasi Iuran</h2>
-                                <p class="text-xs md:text-sm text-gray-500 mb-4 border-b pb-3">Pilih rekening tujuan atau QRIS di bawah ini.</p>
+                                <p class="text-[11px] md:text-sm text-gray-500 mb-4 border-b border-gray-100 pb-3">Pilih rekening tujuan atau QRIS di bawah ini.</p>
                                 
                                 <div class="grid grid-cols-1 gap-4">
-                                    <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100 relative overflow-hidden">
-                                        <i class="fas fa-university absolute right-[-10px] bottom-[-10px] text-6xl text-blue-100 opacity-50"></i>
+                                    <div class="bg-blue-50 p-4 md:p-5 rounded-2xl border border-blue-100 relative overflow-hidden shadow-sm">
+                                        <i class="fas fa-university absolute right-[-10px] bottom-[-10px] text-6xl md:text-7xl text-blue-100 opacity-50"></i>
                                         <p class="text-[10px] md:text-xs text-blue-800 font-bold mb-3 uppercase tracking-wide">Transfer Rekening:</p>
                                         
-                                        <div class="bg-white p-3 rounded-xl border border-blue-50 mb-2 shadow-sm relative z-10 flex justify-between items-center hover:shadow-md transition">
+                                        <div class="bg-white p-3 md:p-4 rounded-xl border border-blue-50 mb-3 shadow-sm relative z-10 flex justify-between items-center hover:shadow-md transition">
                                             <div>
                                                 <p class="text-[10px] text-gray-500 font-bold uppercase mb-0.5">Bank BCA</p>
-                                                <p class="text-base md:text-lg font-black text-blue-900 tracking-widest">3301144677</p>
+                                                <p class="text-base md:text-xl font-black text-blue-900 tracking-widest">3301144677</p>
                                                 <p class="text-[9px] md:text-[10px] text-gray-600 font-bold uppercase">A/N ABDUR ROUF</p>
                                             </div>
-                                            <button type="button" onclick="salinTeks('3301144677')" class="w-10 h-10 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full flex justify-center items-center transition transform active:scale-95"><i class="fas fa-copy"></i></button>
+                                            <button type="button" onclick="salinTeks('3301144677')" class="w-10 h-10 md:w-12 md:h-12 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full flex justify-center items-center transition transform active:scale-95"><i class="fas fa-copy text-lg"></i></button>
                                         </div>
                                         
-                                        <div class="bg-white p-3 rounded-xl border border-blue-50 shadow-sm relative z-10 flex justify-between items-center hover:shadow-md transition">
+                                        <div class="bg-white p-3 md:p-4 rounded-xl border border-blue-50 shadow-sm relative z-10 flex justify-between items-center hover:shadow-md transition">
                                             <div>
                                                 <p class="text-[10px] text-gray-500 font-bold uppercase mb-0.5">Bank BRI</p>
-                                                <p class="text-base md:text-lg font-black text-blue-900 tracking-widest">628801016232530</p>
+                                                <p class="text-base md:text-xl font-black text-blue-900 tracking-widest">628801016232530</p>
                                                 <p class="text-[9px] md:text-[10px] text-gray-600 font-bold uppercase">A/N ABDUR ROUF</p>
                                             </div>
-                                            <button type="button" onclick="salinTeks('628801016232530')" class="w-10 h-10 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full flex justify-center items-center transition transform active:scale-95"><i class="fas fa-copy"></i></button>
+                                            <button type="button" onclick="salinTeks('628801016232530')" class="w-10 h-10 md:w-12 md:h-12 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full flex justify-center items-center transition transform active:scale-95"><i class="fas fa-copy text-lg"></i></button>
                                         </div>
                                     </div>
 
-                                    <div class="bg-white p-4 rounded-2xl border border-blue-50 shadow-sm flex flex-col items-center justify-center hover:shadow-md transition">
-                                        <p class="text-[10px] md:text-[11px] text-gray-500 font-bold uppercase mb-2"><i class="fas fa-qrcode mr-1"></i> Scan QRIS Pembayaran</p>
-                                        <img src="https://cdn.phototourl.com/free/2026-05-11-8900fd55-13c7-42f8-880c-f064db4aac0e.jpg" alt="QR Code QRIS" onclick="bukaModalQRIS()" class="w-full max-w-[160px] md:max-w-[200px] rounded-xl border border-gray-100 mb-2 cursor-pointer hover:opacity-80 transition transform hover:scale-105 shadow-sm">
-                                        <p class="text-[9px] md:text-[10px] text-gray-600 font-black uppercase tracking-widest mb-3">A/N ARUNIKA CREATIVE</p>
-                                        <button type="button" onclick="bukaModalQRIS()" class="text-[10px] md:text-xs bg-blue-600 text-white px-4 md:px-5 py-2 md:py-2.5 rounded-full font-bold hover:bg-blue-700 transition flex items-center shadow-md active:scale-95">
+                                    <div class="bg-white p-4 md:p-5 rounded-2xl border border-blue-50 shadow-sm flex flex-col items-center justify-center hover:shadow-md transition">
+                                        <p class="text-[10px] md:text-[11px] text-gray-500 font-bold uppercase mb-3"><i class="fas fa-qrcode mr-1"></i> Scan QRIS Pembayaran</p>
+                                        <img src="https://cdn.phototourl.com/free/2026-05-11-8900fd55-13c7-42f8-880c-f064db4aac0e.jpg" alt="QR Code QRIS" onclick="bukaModalQRIS()" class="w-full max-w-[160px] md:max-w-[200px] rounded-xl border border-gray-100 mb-3 cursor-pointer hover:opacity-80 transition transform hover:scale-105 shadow-sm">
+                                        <p class="text-[9px] md:text-[11px] text-gray-600 font-black uppercase tracking-widest mb-4">A/N ARUNIKA CREATIVE</p>
+                                        <button type="button" onclick="bukaModalQRIS()" class="text-[10px] md:text-xs bg-blue-600 text-white px-5 py-2.5 md:py-3 rounded-full font-bold hover:bg-blue-700 transition flex items-center shadow-md active:scale-95">
                                             <i class="fas fa-search-plus mr-1.5"></i> Perbesar / Download
                                         </button>
                                     </div>
@@ -255,33 +270,33 @@
                         </div>
 
                         <!-- KOLOM KANAN (Formulir Pembayaran) -->
-                        <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
                             <!-- BANNER PERINGATAN NUNGGAK -->
                             <div id="iuran-alert-nunggak" class="hidden bg-red-50 border border-red-200 p-4 rounded-xl mb-5 flex items-start animate-slide-down shadow-sm">
                                 <i class="fas fa-exclamation-triangle text-red-500 mt-1 mr-3 text-lg md:text-xl"></i>
                                 <div>
                                     <h4 class="font-bold text-red-700 text-sm md:text-base uppercase">Perhatian: Ada Tunggakan!</h4>
-                                    <p class="text-[11px] md:text-xs text-red-600 mt-1">Anda tercatat belum membayar iuran untuk bulan: <strong id="iuran-text-nunggak" class="uppercase bg-red-100 px-1 rounded"></strong>. Mohon diselesaikan.</p>
+                                    <p class="text-[11px] md:text-xs text-red-600 mt-1 leading-relaxed">Anda tercatat belum membayar untuk bulan: <strong id="iuran-text-nunggak" class="uppercase bg-red-100 px-1 rounded border border-red-200"></strong>. Mohon diselesaikan.</p>
                                 </div>
                             </div>
-                            <div id="iuran-alert-lunas" class="hidden bg-green-50 border border-green-200 p-4 rounded-xl mb-5 flex items-center justify-center animate-slide-down shadow-sm">
-                                <i class="fas fa-check-circle text-green-500 mr-2 text-lg md:text-xl"></i>
-                                <span class="font-bold text-green-700 text-sm md:text-base uppercase tracking-wide">Semua Iuran Anda Lunas!</span>
+                            <div id="iuran-alert-lunas" class="hidden bg-green-50 border border-green-200 p-4 md:p-5 rounded-xl mb-5 flex items-center justify-center animate-slide-down shadow-sm">
+                                <i class="fas fa-check-circle text-green-500 mr-2 text-xl md:text-2xl"></i>
+                                <span class="font-black text-green-700 text-sm md:text-base uppercase tracking-wide">Semua Iuran Anda Lunas!</span>
                             </div>
 
                             <form id="form-iuran" onsubmit="kirimIuranKeSpreadsheet(event)">
                                 <div class="mb-4">
                                     <label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">Jenis Iuran / Tagihan</label>
-                                    <select id="input-jenis-iuran" onchange="cekStatusWarga('iuran')" class="w-full p-3.5 border border-indigo-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-indigo-50 text-indigo-700 text-sm font-bold shadow-sm" required>
+                                    <select id="input-jenis-iuran" onchange="cekStatusWarga('iuran')" class="w-full p-3.5 md:p-4 border border-indigo-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-indigo-50 text-indigo-700 text-xs md:text-sm font-bold shadow-sm cursor-pointer transition" required>
                                         <option value="IuranPaguyuban">Iuran Kas Paguyuban (Blok 9)</option>
                                         <option value="IuranBlok9">Iuran Khusus Blok 9 Saja</option>
                                     </select>
                                 </div>
 
-                                <div class="mb-4 grid grid-cols-2 gap-3">
+                                <div class="mb-4 grid grid-cols-2 gap-3 md:gap-4">
                                     <div>
                                         <label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">Pilih Tahun</label>
-                                        <select id="input-tahun-iuran" onchange="cekStatusWarga('iuran')" class="w-full p-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-gray-50 text-sm font-bold shadow-sm cursor-pointer" required>
+                                        <select id="input-tahun-iuran" onchange="cekStatusWarga('iuran')" class="w-full p-3.5 md:p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-gray-50 text-xs md:text-sm font-bold shadow-sm cursor-pointer transition" required>
                                             <option value="2024">Tahun 2024</option>
                                             <option value="2025">Tahun 2025</option>
                                             <option value="2026" selected>Tahun 2026</option>
@@ -290,7 +305,7 @@
                                     </div>
                                     <div>
                                         <label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">Nominal / Bln</label>
-                                        <select id="input-nominal-pilihan" onchange="toggleNominalLainnya()" class="w-full p-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-gray-50 text-sm font-bold shadow-sm" required>
+                                        <select id="input-nominal-pilihan" onchange="toggleNominalLainnya()" class="w-full p-3.5 md:p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-gray-50 text-xs md:text-sm font-bold shadow-sm cursor-pointer transition" required>
                                             <option value="20000">Rp 20.000</option>
                                             <option value="10000">Rp 10.000</option>
                                             <option value="Lainnya">Lainnya</option>
@@ -298,25 +313,25 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-5 relative border-t border-gray-100 pt-4">
+                                <div class="mb-5 relative border-t border-gray-100 pt-5 mt-5">
                                     <label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-3 uppercase flex justify-between items-center">
                                         Pilih Bulan Pembayaran
-                                        <span id="loading-tahun-indicator" class="text-[9px] md:text-[10px] text-indigo-500 font-bold bg-indigo-50 px-2 py-1 rounded" style="display:none;"><i class="fas fa-spinner fa-spin mr-1"></i>Sinkronisasi...</span>
+                                        <span id="loading-tahun-indicator" class="text-[9px] md:text-[10px] text-indigo-500 font-bold bg-indigo-50 px-2 py-1 rounded shadow-sm border border-indigo-100" style="display:none;"><i class="fas fa-spinner fa-spin mr-1"></i>Mengecek...</span>
                                     </label>
                                     <div class="grid grid-cols-4 md:grid-cols-4 gap-2.5" id="grid-bulan">
                                         <!-- Bulan dirender oleh JS -->
                                     </div>
                                 </div>
                                 
-                                <div class="mb-4">
+                                <div class="mb-5">
                                     <label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase flex justify-between"><span>Total Transfer (Rp)</span> <span class="text-gray-400 font-normal">Otomatis Dihitung</span></label>
-                                    <input type="number" id="input-nominal" value="0" class="w-full p-3.5 md:p-4 border border-indigo-200 rounded-xl bg-indigo-50 text-xl font-black text-indigo-700 focus:outline-none shadow-sm" readonly>
+                                    <input type="number" id="input-nominal" value="0" class="w-full p-3.5 md:p-4 border border-indigo-200 rounded-xl bg-indigo-50 text-xl font-black text-indigo-700 focus:outline-none shadow-sm transition" readonly>
                                 </div>
                                 
-                                <div class="mb-4 grid grid-cols-1 gap-3">
+                                <div class="mb-5 grid grid-cols-1 gap-4 border-t border-gray-100 pt-5">
                                     <div>
                                         <label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">Metode Pembayaran</label>
-                                        <select id="input-metode" onchange="toggleUploadBukti()" class="w-full p-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-gray-50 text-sm font-bold" required>
+                                        <select id="input-metode" onchange="toggleUploadBukti()" class="w-full p-3.5 md:p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-200 bg-gray-50 text-xs md:text-sm font-bold cursor-pointer transition" required>
                                             <option value="BCA">Transfer BCA</option>
                                             <option value="BRI">Transfer BRI</option>
                                             <option value="QRIS">QRIS</option>
@@ -325,11 +340,11 @@
                                     </div>
                                     <div id="container-bukti">
                                         <label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">Upload Bukti Transfer</label>
-                                        <input type="file" id="input-bukti" accept="image/*" class="w-full p-2.5 border border-gray-200 rounded-xl bg-white text-sm focus:outline-none" required>
+                                        <input type="file" id="input-bukti" accept="image/*" class="w-full p-2.5 md:p-3 border border-gray-200 rounded-xl bg-white text-xs md:text-sm focus:outline-none cursor-pointer transition" required>
                                     </div>
                                 </div>
 
-                                <button type="submit" id="btn-submit-iuran" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl uppercase tracking-widest text-sm transition shadow-md mt-2 flex justify-center items-center transform active:scale-95"><i class="fas fa-check-circle mr-2 text-lg"></i> Konfirmasi Bayar</button>
+                                <button type="submit" id="btn-submit-iuran" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl uppercase tracking-widest text-xs md:text-sm transition shadow-md mt-2 flex justify-center items-center transform active:scale-95"><i class="fas fa-check-circle mr-2 text-lg"></i> Konfirmasi Bayar</button>
                             </form>
                         </div>
                     </div>
@@ -337,7 +352,7 @@
                     <!-- RIWAYAT IURAN FULL WIDTH -->
                     <div class="max-w-5xl mx-auto w-full mt-6">
                         <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100">
-                            <div class="flex justify-between items-center mb-4 border-b border-gray-200 pb-3">
+                            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
                                 <h3 class="font-bold text-gray-800 uppercase tracking-wide text-sm md:text-base"><i class="fas fa-history mr-2 text-indigo-500"></i>Riwayat Pembayaran Anda</h3>
                                 <button onclick="tarikDataIuran()" class="text-[10px] md:text-xs text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-full transition shadow-sm"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
                             </div>
@@ -350,13 +365,13 @@
                 <div id="section-lapor" class="p-4 hidden section-warga pb-20">
                     <div class="max-w-5xl mx-auto w-full grid md:grid-cols-2 gap-6">
                         <div class="mb-6 bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
-                            <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-1 uppercase border-b pb-3">Lapor Warga</h2>
-                            <p class="text-sm text-gray-500 mb-5 mt-2">Laporkan masalah fasilitas atau keamanan lingkungan.</p>
+                            <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-1 uppercase border-b border-gray-100 pb-3">Lapor Warga</h2>
+                            <p class="text-[11px] md:text-sm text-gray-500 mb-5 mt-2">Laporkan masalah fasilitas atau keamanan lingkungan.</p>
                             <form onsubmit="kirimLaporanKeSpreadsheet(event)" id="form-lapor">
-                                <div class="mb-4"><label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">JUDUL MASALAH</label><input type="text" id="input-judul" class="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-50 text-sm font-bold uppercase focus:ring-2 focus:ring-red-200 outline-none" required></div>
-                                <div class="mb-4"><label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">LOKASI KEJADIAN</label><input type="text" id="input-lokasi" class="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-50 text-sm font-bold uppercase focus:ring-2 focus:ring-red-200 outline-none" required></div>
-                                <div class="mb-6"><label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">DESKRIPSI DETAIL</label><textarea id="input-deskripsi" rows="4" class="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-red-200 outline-none" required></textarea></div>
-                                <button type="submit" id="btn-submit-lapor" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3.5 md:py-4 rounded-xl text-sm uppercase tracking-widest transition shadow-md flex justify-center items-center"><i class="fas fa-paper-plane mr-2"></i> Kirim Laporan</button>
+                                <div class="mb-4"><label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">JUDUL MASALAH</label><input type="text" id="input-judul" class="w-full p-3.5 md:p-4 border border-gray-200 rounded-xl bg-gray-50 text-xs md:text-sm font-bold uppercase focus:ring-2 focus:ring-red-200 outline-none transition" required></div>
+                                <div class="mb-4"><label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">LOKASI KEJADIAN</label><input type="text" id="input-lokasi" class="w-full p-3.5 md:p-4 border border-gray-200 rounded-xl bg-gray-50 text-xs md:text-sm font-bold uppercase focus:ring-2 focus:ring-red-200 outline-none transition" required></div>
+                                <div class="mb-6"><label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">DESKRIPSI DETAIL</label><textarea id="input-deskripsi" rows="4" class="w-full p-3.5 md:p-4 border border-gray-200 rounded-xl bg-gray-50 text-xs md:text-sm focus:ring-2 focus:ring-red-200 outline-none transition" required></textarea></div>
+                                <button type="submit" id="btn-submit-lapor" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3.5 md:py-4 rounded-xl text-xs md:text-sm uppercase tracking-widest transition shadow-md flex justify-center items-center transform active:scale-95"><i class="fas fa-paper-plane mr-2"></i> Kirim Laporan</button>
                             </form>
                         </div>
                         <div>
@@ -372,16 +387,16 @@
                 <!-- PROFIL -->
                 <div id="section-profil" class="p-5 hidden section-warga section-admin pb-20 flex flex-col items-center justify-start text-center">
                     <div class="max-w-5xl mx-auto w-full flex flex-col items-center">
-                        <div class="w-24 h-24 md:w-32 md:h-32 bg-gradient-to-tr from-indigo-500 to-purple-500 text-white rounded-full flex items-center justify-center text-4xl md:text-6xl mb-3 mt-4 shadow-lg border-4 border-white"><i class="fas fa-user-astronaut"></i></div>
-                        <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-0.5 uppercase tracking-wide" id="display-nama-profil">NAMA AKUN</h2>
-                        <span class="text-[10px] md:text-xs bg-indigo-100 text-indigo-700 font-bold px-4 py-1.5 rounded-full border border-indigo-200 uppercase mb-8 tracking-widest" id="display-role-profil">WARGA</span>
+                        <div class="w-24 h-24 md:w-32 md:h-32 bg-gradient-to-tr from-indigo-500 to-purple-600 text-white rounded-full flex items-center justify-center text-4xl md:text-6xl mb-3 mt-4 shadow-lg border-4 border-white"><i class="fas fa-user-astronaut"></i></div>
+                        <h2 class="text-2xl md:text-3xl font-black text-gray-800 mb-0.5 uppercase tracking-wide" id="display-nama-profil">NAMA AKUN</h2>
+                        <span class="text-[10px] md:text-xs bg-indigo-100 text-indigo-700 font-bold px-4 py-1.5 rounded-full border border-indigo-200 uppercase mb-8 tracking-widest shadow-sm" id="display-role-profil">WARGA</span>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
                             <!-- REKAP PEMBAYARAN DI PROFIL (Disembunyikan otomatis jika Admin) -->
                             <div id="profil-rekap-container" class="w-full bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 text-left h-fit">
                                 <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-4">
                                     <h3 class="font-bold text-gray-800 uppercase text-sm md:text-base tracking-wide"><i class="fas fa-calendar-check mr-2 text-emerald-500"></i> Rekap Kas</h3>
-                                    <select id="profil-rekap-tahun" onchange="cekStatusWarga('profil')" class="text-xs md:text-sm border border-indigo-200 rounded-lg p-1.5 text-indigo-700 font-bold outline-none cursor-pointer bg-indigo-50">
+                                    <select id="profil-rekap-tahun" onchange="cekStatusWarga('profil')" class="text-[10px] md:text-sm border border-indigo-200 rounded-lg p-1.5 text-indigo-700 font-bold outline-none cursor-pointer bg-indigo-50 transition">
                                         <option value="2024">2024</option>
                                         <option value="2025">2025</option>
                                         <option value="2026" selected>2026</option>
@@ -389,12 +404,12 @@
                                     </select>
                                 </div>
                                 <div id="profil-rekap-bulan" class="grid grid-cols-4 gap-3">
-                                    <div class="col-span-4 text-center text-xs text-gray-400 py-4 shimmer rounded-lg border border-gray-100">Memuat data...</div>
+                                    <div class="col-span-4 text-center text-xs md:text-sm text-gray-400 py-4 shimmer rounded-lg border border-gray-100 font-bold uppercase">Memuat data...</div>
                                 </div>
-                                <div class="mt-5 pt-3 border-t border-gray-50 flex justify-center gap-4">
-                                    <div class="flex items-center text-[10px] font-bold text-gray-500"><span class="w-3 h-3 rounded-full bg-green-500 mr-1.5 shadow-sm border border-green-600"></span>Lunas</div>
-                                    <div class="flex items-center text-[10px] font-bold text-gray-500"><span class="w-3 h-3 rounded-full bg-red-500 mr-1.5 shadow-sm border border-red-600"></span>Nunggak</div>
-                                    <div class="flex items-center text-[10px] font-bold text-gray-500"><span class="w-3 h-3 rounded-full bg-gray-200 mr-1.5 shadow-sm border border-gray-300"></span>Belum</div>
+                                <div class="mt-5 pt-4 border-t border-gray-50 flex justify-center gap-4">
+                                    <div class="flex items-center text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wide"><span class="w-3 h-3 rounded-full bg-green-500 mr-1.5 shadow-sm border border-green-600"></span>Lunas</div>
+                                    <div class="flex items-center text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wide"><span class="w-3 h-3 rounded-full bg-red-500 mr-1.5 shadow-sm border border-red-600"></span>Nunggak</div>
+                                    <div class="flex items-center text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wide"><span class="w-3 h-3 rounded-full bg-gray-200 mr-1.5 shadow-sm border border-gray-300"></span>Belum</div>
                                 </div>
                             </div>
 
@@ -404,14 +419,14 @@
                                     <form onsubmit="prosesUpdateDataWarga(event)" id="form-data-warga">
                                         <div class="mb-4">
                                             <label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">Status Hunian</label>
-                                            <select id="input-status-hunian" class="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-indigo-200 outline-none transition">
+                                            <select id="input-status-hunian" class="w-full p-3.5 md:p-4 border border-gray-200 rounded-xl bg-gray-50 text-xs md:text-sm font-bold focus:ring-2 focus:ring-indigo-200 outline-none transition cursor-pointer">
                                                 <option value="Milik Sendiri">Milik Sendiri / Tetap</option>
                                                 <option value="Kontrak">Kontrak / Sewa</option>
                                             </select>
                                         </div>
                                         <div class="mb-4">
                                             <label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">Provider WiFi</label>
-                                            <select id="input-wifi" onchange="toggleWifiLainnya()" class="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-indigo-200 outline-none transition">
+                                            <select id="input-wifi" onchange="toggleWifiLainnya()" class="w-full p-3.5 md:p-4 border border-gray-200 rounded-xl bg-gray-50 text-xs md:text-sm font-bold focus:ring-2 focus:ring-indigo-200 outline-none transition cursor-pointer">
                                                 <option value="Tidak Pakai">Tidak Pasang WiFi</option>
                                                 <option value="Netf">Netf</option>
                                                 <option value="Lancar">Lancar</option>
@@ -431,233 +446,243 @@
 
                                 <div id="profil-kontak-admin-container" class="w-full bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 text-left hidden">
                                     <h3 class="font-bold text-gray-800 mb-2 border-b border-gray-100 pb-3 uppercase text-sm md:text-base tracking-wide"><i class="fas fa-address-book mr-2 text-emerald-500"></i> Kontak Pengurus</h3>
-                                    <p class="text-[10px] md:text-xs text-gray-500 mb-4">Daftar nomor pengurus yang dapat dihubungi.</p>
+                                    <p class="text-[10px] md:text-xs text-gray-500 mb-4 font-bold">Daftar nomor pengurus yang dapat dihubungi.</p>
                                     <div id="list-kontak-pengurus" class="flex flex-col gap-3"></div>
                                 </div>
 
                                 <div class="w-full bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 text-left">
                                     <h3 class="font-bold text-gray-800 mb-4 border-b border-gray-100 pb-3 uppercase text-sm md:text-base tracking-wide"><i class="fas fa-lock mr-2 text-gray-400"></i> Ganti Password</h3>
                                     <form onsubmit="prosesGantiPassword(event)" id="form-ganti-password">
-                                        <div class="mb-4"><input type="password" id="input-pass-lama" placeholder="Password Lama" class="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-indigo-200 outline-none" required></div>
-                                        <div class="mb-5"><input type="password" id="input-pass-baru" placeholder="Password Baru (Min. 4)" class="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-indigo-200 outline-none" required minlength="4"></div>
+                                        <div class="mb-4"><input type="password" id="input-pass-lama" placeholder="Password Lama" class="w-full p-3.5 md:p-4 border border-gray-200 rounded-xl bg-gray-50 text-xs md:text-sm focus:ring-2 focus:ring-indigo-200 outline-none transition" required></div>
+                                        <div class="mb-5"><input type="password" id="input-pass-baru" placeholder="Password Baru (Min. 4)" class="w-full p-3.5 md:p-4 border border-gray-200 rounded-xl bg-gray-50 text-xs md:text-sm focus:ring-2 focus:ring-indigo-200 outline-none transition" required minlength="4"></div>
                                         <button type="submit" id="btn-submit-password" class="w-full bg-indigo-600 text-white font-bold py-3.5 md:py-4 rounded-xl uppercase text-xs md:text-sm tracking-widest transition hover:bg-indigo-700 shadow-md transform active:scale-95">Simpan Password Baru</button>
                                     </form>
                                 </div>
                             </div>
                         </div>
                         
-                        <button type="button" onclick="prosesLogout()" class="w-full md:max-w-md bg-red-50 hover:bg-red-100 text-red-600 font-bold py-4 rounded-xl border border-red-200 flex justify-center items-center text-sm uppercase tracking-widest transition shadow-sm mt-8 transform active:scale-95"><i class="fas fa-power-off mr-2"></i> Keluar / Logout</button>
+                        <button type="button" onclick="prosesLogout()" class="w-full md:max-w-md bg-red-50 hover:bg-red-100 text-red-600 font-bold py-4 rounded-xl border border-red-200 flex justify-center items-center text-xs md:text-sm uppercase tracking-widest transition shadow-sm mt-8 transform active:scale-95"><i class="fas fa-power-off mr-2 text-lg"></i> Keluar / Logout</button>
                     </div>
                 </div>
 
                 <!-- ======================= ADMIN ======================= -->
                 <div id="section-admin-home" class="p-5 md:p-8 section-admin hidden pb-20">
-                    <div class="mb-6 bg-gradient-to-r from-gray-800 to-indigo-900 p-6 md:p-8 rounded-3xl shadow-xl text-white relative overflow-hidden">
-                        <i class="fas fa-shield-alt absolute right-[-20px] bottom-[-20px] text-8xl md:text-9xl opacity-10"></i>
-                        <div class="flex justify-between items-start relative z-10 mb-6 border-b border-white/10 pb-5">
-                            <div>
-                                <h2 class="text-2xl md:text-3xl font-black mb-1 uppercase tracking-wider" id="sapaan-admin">HALO, ADMIN!</h2>
-                                <p class="text-[10px] md:text-xs text-indigo-200 font-medium tracking-wide">Pusat Kendali Pengurus Paguyuban</p>
+                    <div class="max-w-6xl mx-auto w-full">
+                        <div class="mb-6 bg-gradient-to-r from-gray-800 to-indigo-900 p-6 md:p-8 rounded-3xl shadow-xl text-white relative overflow-hidden">
+                            <i class="fas fa-shield-alt absolute right-[-20px] bottom-[-20px] text-8xl md:text-9xl opacity-10"></i>
+                            <div class="flex flex-col md:flex-row md:justify-between md:items-center relative z-10 mb-6 border-b border-white/10 pb-5 gap-3">
+                                <div>
+                                    <h2 class="text-2xl md:text-3xl font-black mb-1 uppercase tracking-wider" id="sapaan-admin">HALO, ADMIN!</h2>
+                                    <p class="text-[10px] md:text-xs text-indigo-200 font-medium tracking-wide">Pusat Kendali Pengurus Paguyuban</p>
+                                </div>
+                                <p id="live-clock-admin" class="text-[9px] md:text-xs bg-white/10 px-3 py-2 md:py-2.5 rounded-lg border border-white/20 backdrop-blur-sm text-right font-bold w-fit shadow-sm"></p>
                             </div>
-                            <p id="live-clock-admin" class="text-[9px] md:text-xs bg-white/10 px-3 py-2 rounded-lg border border-white/20 backdrop-blur-sm text-right font-bold"></p>
+                            
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5 mt-2 relative z-10">
+                                <div onclick="bukaDaftarWargaFilter('Lunas')" class="bg-white/10 p-5 rounded-2xl border border-white/20 cursor-pointer hover:bg-white/20 transition transform hover:scale-105 active:scale-95 shadow-sm backdrop-blur-sm">
+                                    <h3 id="count-warga-lunas" class="text-3xl md:text-4xl font-black text-emerald-400 drop-shadow-md">-</h3>
+                                    <p class="text-[9px] md:text-[11px] font-bold uppercase mt-2 text-emerald-100 tracking-wider">Warga Lunas</p>
+                                </div>
+                                <div onclick="bukaDaftarWargaFilter('Nunggak')" class="bg-white/10 p-5 rounded-2xl border border-white/20 cursor-pointer hover:bg-white/20 transition transform hover:scale-105 active:scale-95 shadow-sm backdrop-blur-sm">
+                                    <h3 id="count-warga-nunggak" class="text-3xl md:text-4xl font-black text-red-400 drop-shadow-md">-</h3>
+                                    <p class="text-[9px] md:text-[11px] font-bold uppercase mt-2 text-red-100 tracking-wider">Warga Nunggak</p>
+                                </div>
+                                <div onclick="switchTab('admin-verifikasi')" class="bg-white/10 p-5 rounded-2xl border border-white/20 cursor-pointer hover:bg-white/20 transition transform hover:scale-105 active:scale-95 shadow-sm backdrop-blur-sm">
+                                    <h3 id="count-iuran-menunggu" class="text-3xl md:text-4xl font-black text-amber-400 drop-shadow-md">-</h3>
+                                    <p class="text-[9px] md:text-[11px] font-bold uppercase mt-2 text-amber-100 tracking-wider">Iuran Menunggu</p>
+                                </div>
+                                <div onclick="switchTab('admin-verifikasi')" class="bg-white/10 p-5 rounded-2xl border border-white/20 cursor-pointer hover:bg-white/20 transition transform hover:scale-105 active:scale-95 shadow-sm backdrop-blur-sm">
+                                    <h3 id="count-surat-laporan" class="text-3xl md:text-4xl font-black text-blue-400 drop-shadow-md">-</h3>
+                                    <p class="text-[9px] md:text-[11px] font-bold uppercase mt-2 text-blue-100 tracking-wider">Surat & Lapor</p>
+                                </div>
+                            </div>
                         </div>
-                        
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5 mt-2 relative z-10">
-                            <div onclick="bukaDaftarWargaFilter('Lunas')" class="bg-white/10 p-5 rounded-2xl border border-white/20 cursor-pointer hover:bg-white/20 transition transform hover:scale-105 active:scale-95 shadow-sm backdrop-blur-sm">
-                                <h3 id="count-warga-lunas" class="text-3xl md:text-4xl font-black text-emerald-400 drop-shadow-md">-</h3>
-                                <p class="text-[9px] md:text-[11px] font-bold uppercase mt-2 text-emerald-100 tracking-wider">Warga Lunas</p>
-                            </div>
-                            <div onclick="bukaDaftarWargaFilter('Nunggak')" class="bg-white/10 p-5 rounded-2xl border border-white/20 cursor-pointer hover:bg-white/20 transition transform hover:scale-105 active:scale-95 shadow-sm backdrop-blur-sm">
-                                <h3 id="count-warga-nunggak" class="text-3xl md:text-4xl font-black text-red-400 drop-shadow-md">-</h3>
-                                <p class="text-[9px] md:text-[11px] font-bold uppercase mt-2 text-red-100 tracking-wider">Warga Nunggak</p>
-                            </div>
-                            <div onclick="switchTab('admin-verifikasi')" class="bg-white/10 p-5 rounded-2xl border border-white/20 cursor-pointer hover:bg-white/20 transition transform hover:scale-105 active:scale-95 shadow-sm backdrop-blur-sm">
-                                <h3 id="count-iuran-menunggu" class="text-3xl md:text-4xl font-black text-amber-400 drop-shadow-md">-</h3>
-                                <p class="text-[9px] md:text-[11px] font-bold uppercase mt-2 text-amber-100 tracking-wider">Iuran Menunggu</p>
-                            </div>
-                            <div onclick="switchTab('admin-verifikasi')" class="bg-white/10 p-5 rounded-2xl border border-white/20 cursor-pointer hover:bg-white/20 transition transform hover:scale-105 active:scale-95 shadow-sm backdrop-blur-sm">
-                                <h3 id="count-surat-laporan" class="text-3xl md:text-4xl font-black text-blue-400 drop-shadow-md">-</h3>
-                                <p class="text-[9px] md:text-[11px] font-bold uppercase mt-2 text-blue-100 tracking-wider">Surat & Lapor</p>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- LAPORAN KEUANGAN SINGKAT DASBOR ADMIN -->
-                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-5 md:p-6 mb-6 relative overflow-hidden">
-                        <h3 class="font-black text-gray-800 uppercase text-sm md:text-base mb-4 border-b border-gray-100 pb-3 flex justify-between items-center">
-                            <span><i class="fas fa-wallet text-indigo-500 mr-2"></i> Ringkasan Kas</span>
-                            <button onclick="tarikDataKeuangan(); loadAdminDashboardStats();" class="text-[10px] md:text-xs text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-full transition"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
-                        </h3>
-                        
-                        <p class="text-[10px] md:text-[11px] font-bold text-gray-500 uppercase mb-1 tracking-widest">Total Saldo Aktif</p>
-                        <h3 class="text-3xl md:text-4xl font-black text-indigo-600 tracking-wide mb-5" id="admin-home-saldo">Rp 0</h3>
-                        
-                        <div class="grid grid-cols-2 gap-3 md:gap-4 mb-5">
-                            <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 shadow-sm flex flex-col justify-center">
-                                <p class="text-[9px] md:text-[11px] font-bold text-emerald-600 uppercase mb-1 tracking-wider"><i class="fas fa-arrow-down mr-1"></i>Pemasukan</p>
-                                <h4 class="text-sm md:text-lg font-black text-emerald-700" id="admin-home-masuk">Rp 0</h4>
+                        <!-- LAPORAN KEUANGAN SINGKAT DASBOR ADMIN -->
+                        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-5 md:p-6 mb-6 relative overflow-hidden">
+                            <h3 class="font-black text-gray-800 uppercase text-sm md:text-base mb-4 border-b border-gray-100 pb-3 flex justify-between items-center">
+                                <span><i class="fas fa-wallet text-indigo-500 mr-2"></i> Ringkasan Kas</span>
+                                <button onclick="tarikDataKeuangan(); loadAdminDashboardStats();" class="text-[10px] md:text-xs text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-full transition shadow-sm"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
+                            </h3>
+                            
+                            <p class="text-[10px] md:text-[11px] font-bold text-gray-500 uppercase mb-1 tracking-widest">Total Saldo Aktif</p>
+                            <h3 class="text-3xl md:text-4xl font-black text-indigo-600 tracking-wide mb-5" id="admin-home-saldo">Rp 0</h3>
+                            
+                            <div class="grid grid-cols-2 gap-3 md:gap-5 mb-5">
+                                <div class="bg-emerald-50 p-4 md:p-5 rounded-xl border border-emerald-100 shadow-sm flex flex-col justify-center">
+                                    <p class="text-[9px] md:text-[11px] font-bold text-emerald-600 uppercase mb-1 tracking-wider"><i class="fas fa-arrow-down mr-1"></i> Pemasukan</p>
+                                    <h4 class="text-sm md:text-xl font-black text-emerald-700" id="admin-home-masuk">Rp 0</h4>
+                                </div>
+                                <div class="bg-red-50 p-4 md:p-5 rounded-xl border border-red-100 shadow-sm flex flex-col justify-center">
+                                    <p class="text-[9px] md:text-[11px] font-bold text-red-600 uppercase mb-1 tracking-wider"><i class="fas fa-arrow-up mr-1"></i> Pengeluaran</p>
+                                    <h4 class="text-sm md:text-xl font-black text-red-700" id="admin-home-keluar">Rp 0</h4>
+                                </div>
                             </div>
-                            <div class="bg-red-50 p-4 rounded-xl border border-red-100 shadow-sm flex flex-col justify-center">
-                                <p class="text-[9px] md:text-[11px] font-bold text-red-600 uppercase mb-1 tracking-wider"><i class="fas fa-arrow-up mr-1"></i>Pengeluaran</p>
-                                <h4 class="text-sm md:text-lg font-black text-red-700" id="admin-home-keluar">Rp 0</h4>
+                            
+                            <div class="bg-amber-50 border border-amber-100 p-4 md:p-5 rounded-xl flex justify-between items-center shadow-sm">
+                                <div>
+                                    <p class="text-[10px] md:text-xs font-bold text-amber-700 uppercase tracking-widest">Status Pending</p>
+                                    <p class="text-[9px] md:text-[10px] font-medium text-amber-600 mt-1">Uang masuk menunggu validasi Anda</p>
+                                </div>
+                                <h4 class="text-base md:text-xl font-black text-amber-600 tracking-wider" id="admin-home-pending">Rp 0</h4>
                             </div>
                         </div>
-                        
-                        <div class="bg-amber-50 border border-amber-100 p-4 rounded-xl flex justify-between items-center shadow-sm">
-                            <div>
-                                <p class="text-[10px] md:text-xs font-bold text-amber-700 uppercase tracking-widest">Status Pending</p>
-                                <p class="text-[9px] md:text-[10px] font-medium text-amber-600 mt-1">Uang masuk menunggu validasi Anda</p>
-                            </div>
-                            <h4 class="text-base md:text-xl font-black text-amber-600 tracking-wider" id="admin-home-pending">Rp 0</h4>
-                        </div>
-                    </div>
 
-                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-5 md:p-6 mb-2">
-                        <h3 class="font-black text-gray-800 uppercase text-sm md:text-base mb-5 border-b border-gray-100 pb-3">Akses Cepat Pengurus</h3>
-                        <div class="grid grid-cols-4 md:grid-cols-4 gap-3 md:gap-6">
-                            <button onclick="switchTab('admin-verifikasi')" class="bg-indigo-50 text-indigo-700 p-4 md:p-6 rounded-2xl font-bold flex flex-col items-center hover:bg-indigo-100 transition shadow-sm hover:shadow-md transform hover:-translate-y-1"><i class="fas fa-check-double text-2xl md:text-3xl mb-2 md:mb-3"></i><span class="text-[9px] md:text-xs uppercase mt-1 text-center tracking-wider">Verifikasi</span></button>
-                            <button onclick="switchTab('admin-pengumuman')" class="bg-amber-50 text-amber-700 p-4 md:p-6 rounded-2xl font-bold flex flex-col items-center hover:bg-amber-100 transition shadow-sm hover:shadow-md transform hover:-translate-y-1"><i class="fas fa-bullhorn text-2xl md:text-3xl mb-2 md:mb-3"></i><span class="text-[9px] md:text-xs uppercase mt-1 text-center tracking-wider">Buat Siaran</span></button>
-                            <button onclick="switchTab('admin-warga')" class="bg-emerald-50 text-emerald-700 p-4 md:p-6 rounded-2xl font-bold flex flex-col items-center hover:bg-emerald-100 transition shadow-sm hover:shadow-md transform hover:-translate-y-1"><i class="fas fa-users text-2xl md:text-3xl mb-2 md:mb-3"></i><span class="text-[9px] md:text-xs uppercase mt-1 text-center tracking-wider">Daftar Warga</span></button>
-                            <button onclick="switchTab('admin-keuangan')" class="bg-blue-50 text-blue-700 p-4 md:p-6 rounded-2xl font-bold flex flex-col items-center hover:bg-blue-100 transition shadow-sm hover:shadow-md transform hover:-translate-y-1"><i class="fas fa-book-open text-2xl md:text-3xl mb-2 md:mb-3"></i><span class="text-[9px] md:text-xs uppercase mt-1 text-center tracking-wider">Pembukuan</span></button>
+                        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-5 md:p-6 mb-2">
+                            <h3 class="font-black text-gray-800 uppercase text-sm md:text-base mb-5 border-b border-gray-100 pb-3">Akses Cepat Pengurus</h3>
+                            <div class="grid grid-cols-4 md:grid-cols-4 gap-3 md:gap-6">
+                                <button onclick="switchTab('admin-verifikasi')" class="bg-indigo-50 text-indigo-700 p-4 md:p-6 rounded-2xl font-bold flex flex-col items-center hover:bg-indigo-100 transition shadow-sm hover:shadow-md transform hover:-translate-y-1"><i class="fas fa-check-double text-2xl md:text-3xl mb-2 md:mb-3"></i><span class="text-[9px] md:text-xs uppercase mt-1 text-center tracking-wider">Verifikasi</span></button>
+                                <button onclick="switchTab('admin-pengumuman')" class="bg-amber-50 text-amber-700 p-4 md:p-6 rounded-2xl font-bold flex flex-col items-center hover:bg-amber-100 transition shadow-sm hover:shadow-md transform hover:-translate-y-1"><i class="fas fa-bullhorn text-2xl md:text-3xl mb-2 md:mb-3"></i><span class="text-[9px] md:text-xs uppercase mt-1 text-center tracking-wider">Buat Siaran</span></button>
+                                <button onclick="switchTab('admin-warga')" class="bg-emerald-50 text-emerald-700 p-4 md:p-6 rounded-2xl font-bold flex flex-col items-center hover:bg-emerald-100 transition shadow-sm hover:shadow-md transform hover:-translate-y-1"><i class="fas fa-users text-2xl md:text-3xl mb-2 md:mb-3"></i><span class="text-[9px] md:text-xs uppercase mt-1 text-center tracking-wider">Daftar Warga</span></button>
+                                <button onclick="switchTab('admin-keuangan')" class="bg-blue-50 text-blue-700 p-4 md:p-6 rounded-2xl font-bold flex flex-col items-center hover:bg-blue-100 transition shadow-sm hover:shadow-md transform hover:-translate-y-1"><i class="fas fa-book-open text-2xl md:text-3xl mb-2 md:mb-3"></i><span class="text-[9px] md:text-xs uppercase mt-1 text-center tracking-wider">Pembukuan</span></button>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- LAPORAN & KONTROL KEUANGAN (ADMIN) -->
                 <div id="section-admin-keuangan" class="p-5 md:p-8 section-admin hidden pb-20">
-                    <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-5 uppercase tracking-wide border-b border-gray-200 pb-4">Kelola Keuangan</h2>
+                    <div class="max-w-6xl mx-auto w-full">
+                        <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-5 uppercase tracking-wide border-b border-gray-200 pb-4">Kelola Keuangan</h2>
 
-                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-5 md:p-6 mb-6">
-                        <div class="flex justify-between items-center mb-5 border-b border-gray-100 pb-3">
-                            <h3 class="font-black text-gray-800 uppercase text-sm md:text-base"><i class="fas fa-coins text-emerald-500 mr-2"></i> Laporan Keuangan Terpadu</h3>
-                            <button onclick="tarikDataKeuangan()" class="text-[10px] md:text-xs text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-full transition shadow-sm"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
-                        </div>
-                        
-                        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-6 shadow-md text-white mb-5 relative overflow-hidden">
-                            <i class="fas fa-wallet absolute right-[-10px] bottom-[-20px] text-6xl md:text-8xl opacity-20 pointer-events-none"></i>
-                            <p class="text-[10px] md:text-xs font-bold uppercase opacity-80 mb-1 relative z-10 tracking-widest">Saldo Kas Saat Ini</p>
-                            <h3 class="text-3xl md:text-4xl font-black relative z-10 tracking-wider" id="admin-total-kas">Rp 0</h3>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-3 md:gap-5">
-                            <div class="bg-emerald-50 p-4 md:p-5 rounded-xl text-center border border-emerald-100 shadow-sm">
-                                <p class="text-[9px] md:text-xs font-bold text-emerald-600 uppercase mb-1 tracking-wider"><i class="fas fa-arrow-down mr-1"></i> Total Masuk</p>
-                                <h4 class="text-base md:text-xl font-black text-emerald-700" id="admin-total-masuk">Rp 0</h4>
+                        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-5 md:p-6 mb-6">
+                            <div class="flex justify-between items-center mb-5 border-b border-gray-100 pb-3">
+                                <h3 class="font-black text-gray-800 uppercase text-sm md:text-base"><i class="fas fa-coins text-emerald-500 mr-2"></i> Laporan Keuangan Terpadu</h3>
+                                <button onclick="tarikDataKeuangan()" class="text-[10px] md:text-xs text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-full transition shadow-sm"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
                             </div>
-                            <div class="bg-red-50 p-4 md:p-5 rounded-xl text-center border border-red-100 shadow-sm">
-                                <p class="text-[9px] md:text-xs font-bold text-red-600 uppercase mb-1 tracking-wider"><i class="fas fa-arrow-up mr-1"></i> Total Keluar</p>
-                                <h4 class="text-base md:text-xl font-black text-red-700" id="admin-total-keluar">Rp 0</h4>
+                            
+                            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-6 md:p-8 shadow-md text-white mb-5 relative overflow-hidden">
+                                <i class="fas fa-wallet absolute right-[-10px] bottom-[-20px] text-6xl md:text-8xl opacity-20 pointer-events-none"></i>
+                                <p class="text-[10px] md:text-xs font-bold uppercase opacity-80 mb-1 relative z-10 tracking-widest">Saldo Kas Saat Ini</p>
+                                <h3 class="text-3xl md:text-5xl font-black relative z-10 tracking-wider" id="admin-total-kas">Rp 0</h3>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="grid md:grid-cols-2 gap-5 md:gap-6 mb-5">
-                        <div class="bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-gray-100 h-fit">
-                            <h3 class="font-bold text-gray-800 mb-4 border-b border-gray-100 pb-3 text-sm md:text-base uppercase tracking-wide"><i class="fas fa-minus-circle text-red-500 mr-2"></i> Catat Pengeluaran Kas</h3>
-                            <form onsubmit="kirimPengeluaranAdmin(event)" id="form-admin-pengeluaran">
-                                <div class="mb-4">
-                                    <label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">Nominal Pengeluaran (Rp)</label>
-                                    <input type="number" id="input-pengeluaran-nominal" class="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-red-200 outline-none transition" required>
+                            
+                            <div class="grid grid-cols-2 gap-3 md:gap-5">
+                                <div class="bg-emerald-50 p-4 md:p-6 rounded-xl text-center border border-emerald-100 shadow-sm hover:shadow-md transition">
+                                    <p class="text-[9px] md:text-xs font-bold text-emerald-600 uppercase mb-1 tracking-wider"><i class="fas fa-arrow-down mr-1"></i> Total Masuk</p>
+                                    <h4 class="text-base md:text-2xl font-black text-emerald-700" id="admin-total-masuk">Rp 0</h4>
                                 </div>
-                                <div class="mb-5">
-                                    <label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">Keterangan / Keperluan</label>
-                                    <textarea id="input-pengeluaran-ket" rows="4" class="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-red-200 outline-none transition" placeholder="Cth: Beli lampu jalan, konsumsi rapat..." required></textarea>
+                                <div class="bg-red-50 p-4 md:p-6 rounded-xl text-center border border-red-100 shadow-sm hover:shadow-md transition">
+                                    <p class="text-[9px] md:text-xs font-bold text-red-600 uppercase mb-1 tracking-wider"><i class="fas fa-arrow-up mr-1"></i> Total Keluar</p>
+                                    <h4 class="text-base md:text-2xl font-black text-red-700" id="admin-total-keluar">Rp 0</h4>
                                 </div>
-                                <button type="submit" id="btn-submit-pengeluaran" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3.5 md:py-4 rounded-xl uppercase tracking-widest text-xs md:text-sm transition shadow-md flex items-center justify-center transform active:scale-95">
-                                    <i class="fas fa-save mr-2 text-lg"></i> Simpan Pengeluaran
-                                </button>
-                            </form>
+                            </div>
                         </div>
 
-                        <div class="bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-gray-100 h-full flex flex-col">
-                            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
-                                <h3 class="font-bold text-gray-800 uppercase tracking-wide text-sm md:text-base"><i class="fas fa-history text-indigo-500 mr-2"></i> Riwayat Kas Terpadu</h3>
+                        <div class="grid md:grid-cols-2 gap-5 md:gap-6 mb-5">
+                            <div class="bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-gray-100 h-fit">
+                                <h3 class="font-bold text-gray-800 mb-4 border-b border-gray-100 pb-3 text-sm md:text-base uppercase tracking-wide"><i class="fas fa-minus-circle text-red-500 mr-2"></i> Catat Pengeluaran Kas</h3>
+                                <form onsubmit="kirimPengeluaranAdmin(event)" id="form-admin-pengeluaran">
+                                    <div class="mb-4">
+                                        <label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">Nominal Pengeluaran (Rp)</label>
+                                        <input type="number" id="input-pengeluaran-nominal" class="w-full p-3.5 md:p-4 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-red-200 outline-none transition" required>
+                                    </div>
+                                    <div class="mb-5">
+                                        <label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">Keterangan / Keperluan</label>
+                                        <textarea id="input-pengeluaran-ket" rows="4" class="w-full p-3.5 md:p-4 border border-gray-200 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-red-200 outline-none transition" placeholder="Cth: Beli lampu jalan, konsumsi rapat..." required></textarea>
+                                    </div>
+                                    <button type="submit" id="btn-submit-pengeluaran" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3.5 md:py-4 rounded-xl uppercase tracking-widest text-xs md:text-sm transition shadow-md flex items-center justify-center transform active:scale-95">
+                                        <i class="fas fa-save mr-2 text-lg"></i> Simpan Pengeluaran
+                                    </button>
+                                </form>
                             </div>
-                            <div id="admin-riwayat-keuangan-list" class="flex flex-col gap-3 flex-1 max-h-[450px] overflow-y-auto pr-2"></div>
+
+                            <div class="bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-gray-100 h-full flex flex-col">
+                                <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
+                                    <h3 class="font-bold text-gray-800 uppercase tracking-wide text-sm md:text-base"><i class="fas fa-history text-indigo-500 mr-2"></i> Riwayat Kas Terpadu</h3>
+                                </div>
+                                <div id="admin-riwayat-keuangan-list" class="flex flex-col gap-3 flex-1 max-h-[450px] overflow-y-auto pr-2"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- HALAMAN VERIFIKASI (ADMIN) -->
                 <div id="section-admin-verifikasi" class="p-5 md:p-8 section-admin hidden pb-20">
-                    <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-5 uppercase tracking-wide border-b border-gray-200 pb-4">Pusat Validasi</h2>
-                    
-                    <div class="mb-8 bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-gray-100">
-                        <h3 class="font-bold text-sm md:text-base text-gray-800 uppercase mb-5 border-b border-gray-100 pb-3 flex justify-between items-center">
-                            <span><i class="fas fa-wallet text-emerald-500 mr-2"></i> Validasi Iuran Warga</span>
-                            <button onclick="tarikDataIuranAdmin()" class="text-[10px] md:text-xs text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-full transition shadow-sm font-bold"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
-                        </h3>
-                        <div id="admin-verifikasi-iuran-list" class="grid md:grid-cols-2 gap-5"></div>
-                    </div>
+                    <div class="max-w-6xl mx-auto w-full">
+                        <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-5 uppercase tracking-wide border-b border-gray-200 pb-4">Pusat Validasi</h2>
+                        
+                        <div class="mb-8 bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-gray-100">
+                            <h3 class="font-bold text-sm md:text-base text-gray-800 uppercase mb-5 border-b border-gray-100 pb-3 flex justify-between items-center">
+                                <span><i class="fas fa-wallet text-emerald-500 mr-2"></i> Validasi Iuran Warga</span>
+                                <button onclick="tarikDataIuranAdmin()" class="text-[10px] md:text-xs text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-full transition shadow-sm font-bold"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
+                            </h3>
+                            <div id="admin-verifikasi-iuran-list" class="grid md:grid-cols-2 gap-5"></div>
+                        </div>
 
-                    <div class="mb-8 bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-gray-100">
-                        <h3 class="font-bold text-sm md:text-base text-gray-800 uppercase mb-5 border-b border-gray-100 pb-3 flex justify-between items-center">
-                            <span><i class="fas fa-envelope-open-text text-blue-500 mr-2"></i> Validasi Surat Masuk</span>
-                            <button onclick="tarikDataSuratAdmin()" class="text-[10px] md:text-xs text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-full transition shadow-sm font-bold"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
-                        </h3>
-                        <div id="admin-verifikasi-surat-list" class="grid md:grid-cols-2 gap-5"></div>
-                    </div>
+                        <div class="mb-8 bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-gray-100">
+                            <h3 class="font-bold text-sm md:text-base text-gray-800 uppercase mb-5 border-b border-gray-100 pb-3 flex justify-between items-center">
+                                <span><i class="fas fa-envelope-open-text text-blue-500 mr-2"></i> Validasi Surat Masuk</span>
+                                <button onclick="tarikDataSuratAdmin()" class="text-[10px] md:text-xs text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-full transition shadow-sm font-bold"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
+                            </h3>
+                            <div id="admin-verifikasi-surat-list" class="grid md:grid-cols-2 gap-5"></div>
+                        </div>
 
-                    <div class="mb-6 bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-gray-100">
-                        <h3 class="font-bold text-sm md:text-base text-gray-800 uppercase mb-5 border-b border-gray-100 pb-3 flex justify-between items-center">
-                            <span><i class="fas fa-bullhorn text-red-500 mr-2"></i> Tindak Lanjut Laporan</span>
-                            <button onclick="tarikDataLaporanAdmin()" class="text-[10px] md:text-xs text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-full transition shadow-sm font-bold"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
-                        </h3>
-                        <div id="admin-verifikasi-laporan-list" class="grid md:grid-cols-2 gap-5"></div>
+                        <div class="mb-6 bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-gray-100">
+                            <h3 class="font-bold text-sm md:text-base text-gray-800 uppercase mb-5 border-b border-gray-100 pb-3 flex justify-between items-center">
+                                <span><i class="fas fa-bullhorn text-red-500 mr-2"></i> Tindak Lanjut Laporan</span>
+                                <button onclick="tarikDataLaporanAdmin()" class="text-[10px] md:text-xs text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-full transition shadow-sm font-bold"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
+                            </h3>
+                            <div id="admin-verifikasi-laporan-list" class="grid md:grid-cols-2 gap-5"></div>
+                        </div>
                     </div>
                 </div>
 
                 <div id="section-admin-pengumuman" class="p-5 md:p-8 section-admin hidden pb-20">
-                    <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-5 uppercase tracking-wide border-b border-gray-200 pb-4">Buat Siaran Baru</h2>
-                    <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 max-w-4xl mx-auto">
-                        <div class="flex items-center mb-6 border-b border-amber-100 pb-4">
-                            <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-full flex justify-center items-center text-xl mr-4"><i class="fas fa-broadcast-tower"></i></div>
-                            <div>
-                                <h3 class="font-bold text-gray-800 uppercase tracking-wide">Pengumuman Massal</h3>
-                                <p class="text-xs text-gray-500 mt-0.5">Teks yang Anda siarkan akan muncul di Beranda seluruh warga.</p>
+                    <div class="max-w-6xl mx-auto w-full">
+                        <h2 class="text-xl md:text-2xl font-black text-gray-800 mb-5 uppercase tracking-wide border-b border-gray-200 pb-4">Buat Siaran Baru</h2>
+                        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 max-w-4xl mx-auto mt-10">
+                            <div class="flex items-center mb-6 border-b border-amber-100 pb-4">
+                                <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-full flex justify-center items-center text-xl mr-4"><i class="fas fa-broadcast-tower"></i></div>
+                                <div>
+                                    <h3 class="font-bold text-gray-800 uppercase tracking-wide">Pengumuman Massal</h3>
+                                    <p class="text-xs md:text-sm text-gray-500 mt-0.5">Teks yang Anda siarkan akan muncul di Beranda seluruh warga.</p>
+                                </div>
                             </div>
+                            <form onsubmit="kirimPengumumanAdmin(event)" id="form-admin-pengumuman">
+                                <label class="block text-xs font-bold text-gray-700 mb-2 uppercase">Isi Pesan Pengumuman</label>
+                                <textarea id="input-admin-pengumuman" rows="7" class="w-full p-4 md:p-5 border border-gray-200 rounded-xl bg-gray-50 text-sm md:text-base focus:ring-2 focus:ring-amber-200 outline-none transition" required placeholder="Ketik pengumuman atau himbauan di sini..."></textarea>
+                                <button type="submit" id="btn-submit-pengumuman" class="mt-6 w-full bg-amber-500 hover:bg-amber-600 transition text-white font-bold py-4 md:py-5 rounded-xl uppercase text-sm md:text-base tracking-widest shadow-md flex justify-center items-center transform active:scale-95"><i class="fas fa-paper-plane mr-2 text-lg"></i> Siarkan ke Seluruh Warga</button>
+                            </form>
                         </div>
-                        <form onsubmit="kirimPengumumanAdmin(event)" id="form-admin-pengumuman">
-                            <label class="block text-xs font-bold text-gray-700 mb-2 uppercase">Isi Pesan Pengumuman</label>
-                            <textarea id="input-admin-pengumuman" rows="7" class="w-full p-4 border border-gray-200 rounded-xl bg-gray-50 text-sm md:text-base focus:ring-2 focus:ring-amber-200 outline-none transition" required placeholder="Ketik pengumuman atau himbauan di sini..."></textarea>
-                            <button type="submit" id="btn-submit-pengumuman" class="mt-6 w-full bg-amber-500 hover:bg-amber-600 transition text-white font-bold py-4 rounded-xl uppercase text-sm md:text-base tracking-widest shadow-md flex justify-center items-center transform active:scale-95"><i class="fas fa-paper-plane mr-2 text-lg"></i> Siarkan ke Seluruh Warga</button>
-                        </form>
                     </div>
                 </div>
 
                 <!-- SECTION ADMIN: DAFTAR WARGA -->
                 <div id="section-admin-warga" class="p-5 md:p-8 section-admin hidden pb-20">
-                    <div class="flex justify-between items-center mb-6 bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-gray-100">
-                        <div>
-                            <h2 class="text-xl md:text-2xl font-black text-gray-800 uppercase tracking-wide">Daftar Warga</h2>
-                            <p class="text-xs md:text-sm text-gray-500 mt-1">Cari warga dan kirim Peringatan WA otomatis.</p>
+                    <div class="max-w-6xl mx-auto w-full">
+                        <div class="flex justify-between items-center mb-6 bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-gray-100">
+                            <div>
+                                <h2 class="text-xl md:text-2xl font-black text-gray-800 uppercase tracking-wide">Daftar Warga</h2>
+                                <p class="text-xs md:text-sm text-gray-500 mt-1 font-medium">Cari warga dan kirim Peringatan WA otomatis.</p>
+                            </div>
+                            <button onclick="tarikDataWargaAdmin()" class="text-[10px] md:text-sm text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-4 py-2.5 rounded-full shadow-sm transition flex items-center"><i class="fas fa-sync-alt mr-1.5"></i> Refresh Data</button>
                         </div>
-                        <button onclick="tarikDataWargaAdmin()" class="text-[10px] md:text-sm text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-4 py-2.5 rounded-full shadow-sm transition flex items-center"><i class="fas fa-sync-alt mr-1.5"></i> Refresh Data</button>
-                    </div>
 
-                    <div class="mb-6 flex flex-col md:flex-row gap-4">
-                        <div class="relative w-full shadow-sm">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <i class="fas fa-search text-gray-400"></i>
+                        <div class="mb-6 flex flex-col md:flex-row gap-4">
+                            <div class="relative w-full shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
+                                <input type="text" id="input-cari-warga" onkeyup="cariWargaAdmin()" placeholder="Cari nama warga atau nomor rumah..." class="w-full pl-11 p-3.5 md:p-4 border border-gray-200 rounded-xl bg-white text-sm md:text-base focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition font-medium">
                             </div>
-                            <input type="text" id="input-cari-warga" onkeyup="cariWargaAdmin()" placeholder="Cari nama warga atau nomor rumah..." class="w-full pl-11 p-3.5 md:p-4 border border-gray-200 rounded-xl bg-white text-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition font-medium">
+                            <div class="relative w-full md:max-w-sm shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-filter text-gray-400"></i>
+                                </div>
+                                <select id="filter-status-warga" onchange="cariWargaAdmin()" class="w-full pl-11 p-3.5 md:p-4 border border-gray-200 rounded-xl bg-white text-sm font-bold text-gray-700 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition appearance-none cursor-pointer">
+                                    <option value="Semua">Tampilkan Semua Warga</option>
+                                    <option value="Lunas">Hanya Warga Lunas</option>
+                                    <option value="Nunggak">Hanya Warga Nunggak</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                                </div>
+                            </div>
                         </div>
-                        <div class="relative w-full md:max-w-sm shadow-sm">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <i class="fas fa-filter text-gray-400"></i>
-                            </div>
-                            <select id="filter-status-warga" onchange="cariWargaAdmin()" class="w-full pl-11 p-3.5 md:p-4 border border-gray-200 rounded-xl bg-white text-sm font-bold text-gray-700 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition appearance-none cursor-pointer">
-                                <option value="Semua">Tampilkan Semua Warga</option>
-                                <option value="Lunas">Hanya Warga Lunas</option>
-                                <option value="Nunggak">Hanya Warga Nunggak</option>
-                            </select>
-                            <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div id="admin-warga-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+                        <div id="admin-warga-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+                    </div>
                 </div>
 
             </div> 
@@ -735,14 +760,14 @@
             <div class="mb-4 grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-[10px] font-bold text-gray-700 mb-1.5 uppercase">Jenis Tagihan</label>
-                    <select id="wa-jenis" onchange="cekStatusWaWarga()" class="w-full p-2.5 border border-gray-200 rounded-xl bg-gray-50 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-200 transition">
+                    <select id="wa-jenis" onchange="cekStatusWaWarga()" class="w-full p-2.5 md:p-3 border border-gray-200 rounded-xl bg-gray-50 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-200 transition cursor-pointer">
                         <option value="IuranPaguyuban">Kas Paguyuban</option>
                         <option value="IuranBlok9">Khusus Blok 9</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold text-gray-700 mb-1.5 uppercase">Pilih Tahun</label>
-                    <select id="wa-tahun" onchange="cekStatusWaWarga()" class="w-full p-2.5 border border-indigo-200 rounded-xl bg-indigo-50 text-indigo-700 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-300 transition">
+                    <select id="wa-tahun" onchange="cekStatusWaWarga()" class="w-full p-2.5 md:p-3 border border-indigo-200 rounded-xl bg-indigo-50 text-indigo-700 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-300 transition cursor-pointer">
                         <option value="2024">Tahun 2024</option>
                         <option value="2025">Tahun 2025</option>
                         <option value="2026" selected>Tahun 2026</option>
@@ -786,11 +811,11 @@
                 <input type="hidden" id="edit-warga-username-input">
                 <div class="mb-4">
                     <label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">Nama Lengkap (Di Excel)</label>
-                    <input type="text" id="edit-warga-nama" class="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-50 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-200 transition" required>
+                    <input type="text" id="edit-warga-nama" class="w-full p-3.5 md:p-4 border border-gray-200 rounded-xl bg-gray-50 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-200 transition" required>
                 </div>
                 <div class="mb-6">
                     <label class="block text-[10px] md:text-xs font-bold text-gray-700 mb-1.5 uppercase">Nomor WhatsApp</label>
-                    <input type="text" id="edit-warga-nowa" placeholder="Cth: 6281234..." class="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-50 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-200 transition">
+                    <input type="text" id="edit-warga-nowa" placeholder="Cth: 6281234..." class="w-full p-3.5 md:p-4 border border-gray-200 rounded-xl bg-gray-50 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-200 transition">
                     <p class="text-[9px] md:text-[10px] text-gray-400 font-bold mt-1.5 uppercase leading-tight"><i class="fas fa-info-circle mr-1"></i> Mulai dengan angka 62 tanpa tanda '+' spasi atau simbol.</p>
                 </div>
                 
@@ -878,16 +903,65 @@
             try { return JSON.parse(sessionStr).username || ""; } catch(e) { return ""; }
         }
 
+        // FUNGSI UNTUK MENU DROPDOWN PROFIL
+        function toggleDropdownProfil() {
+            const dropdown = document.getElementById('dropdown-profil');
+            if (!dropdown) return;
+            
+            if (dropdown.classList.contains('hidden')) {
+                dropdown.classList.remove('hidden');
+                setTimeout(() => {
+                    dropdown.classList.remove('opacity-0', 'scale-95');
+                    dropdown.classList.add('opacity-100', 'scale-100');
+                }, 10);
+            } else {
+                dropdown.classList.remove('opacity-100', 'scale-100');
+                dropdown.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    dropdown.classList.add('hidden');
+                }, 200); 
+            }
+        }
+
+        // Menutup Dropdown jika diklik di luar area avatar
+        window.addEventListener('click', function(e) {
+            const avatar = document.getElementById('header-avatar');
+            const dropdown = document.getElementById('dropdown-profil');
+            if (avatar && dropdown && !avatar.contains(e.target) && !dropdown.contains(e.target)) {
+                if (!dropdown.classList.contains('hidden')) {
+                    toggleDropdownProfil();
+                }
+            }
+        });
+
         function muatProfilData(userObj) {
             const elNama = document.getElementById('display-nama-profil');
             const elRole = document.getElementById('display-role-profil');
             const headerAvatar = document.getElementById('header-avatar');
             const headerRole = document.getElementById('header-role');
             
+            const elSapaan = document.getElementById('sapaan-beranda');
+            const elSapaanSub = document.getElementById('sapaan-sub');
+            const elSapaanAdmin = document.getElementById('sapaan-admin');
+            
+            const dropNama = document.getElementById('dropdown-nama');
+            const dropNorumah = document.getElementById('dropdown-norumah');
+            
+            let namaPendek = userObj.nama ? userObj.nama.split(' ')[0].toUpperCase() : 'WARGA';
+            let noRumahText = userObj.no_rumah && userObj.no_rumah !== '-' ? userObj.no_rumah : 'Belum Diisi';
+            
             if(elNama) elNama.innerText = userObj.nama || 'WARGA';
             if(elRole) elRole.innerText = userObj.role === 'admin' ? 'PENGURUS' : 'WARGA';
             if(headerAvatar) headerAvatar.innerText = (userObj.nama || 'W').charAt(0).toUpperCase();
-            if(headerRole) headerRole.innerText = userObj.role === 'admin' ? 'Administrator' : (userObj.no_rumah || 'Warga');
+            
+            if(headerRole) headerRole.innerText = userObj.role === 'admin' ? 'Mode Administrator' : ('NO ' + noRumahText);
+            
+            if(dropNama) dropNama.innerText = userObj.nama || 'WARGA';
+            if(dropNorumah) dropNorumah.innerText = userObj.role === 'admin' ? 'Administrator' : ('NO ' + noRumahText);
+
+            if(elSapaan) elSapaan.innerText = `HALO, ${namaPendek}!`;
+            if(elSapaanSub) elSapaanSub.innerHTML = `Selamat datang di portal BLOK 9 BSR.`;
+            if(elSapaanAdmin) elSapaanAdmin.innerText = `HALO, ${namaPendek}!`;
 
             const selectHunian = document.getElementById('input-status-hunian');
             const selectWifi = document.getElementById('input-wifi');
@@ -911,7 +985,6 @@
 
             renderKontakPengurus();
             
-            // Logic Hapus Rekap Kas di sisi Admin
             if (userObj.role !== 'admin') {
                 const elProfilData = document.getElementById('profil-data-tambahan-container');
                 const elProfilKontak = document.getElementById('profil-kontak-admin-container');
@@ -1103,12 +1176,17 @@
         }
 
         function prosesLogout() {
-            if(confirm('Yakin ingin keluar?')) {
+            if(confirm('Yakin ingin keluar dari Aplikasi BSR?')) {
                 localStorage.removeItem('wargaSessionAktif');
                 document.getElementById('form-login').reset();
                 document.getElementById('main-app').classList.add('hidden');
                 document.body.classList.remove('is-admin');
                 document.getElementById('login-overlay').classList.remove('hidden');
+                
+                const dropdown = document.getElementById('dropdown-profil');
+                if (dropdown && !dropdown.classList.contains('hidden')) {
+                    toggleDropdownProfil();
+                }
             }
         }
 
@@ -1187,7 +1265,7 @@
                     pendingSuratLaporanCount += resLaporan.data.filter(item => item.status.toLowerCase().includes('menunggu') || item.status.toLowerCase().includes('diproses')).length;
                 }
                 
-                // Pastikan data Warga berhasil diambil untuk menghitung Lunas & Nunggak
+                // Menghitung Lunas & Nunggak
                 if(resWarga && resWarga.data && resWarga.data.length > 0) {
                     countLunas = resWarga.data.filter(w => w.status_bulan_ini === 'Lunas').length;
                     countNunggak = resWarga.data.filter(w => w.status_bulan_ini === 'Nunggak').length;
@@ -1247,7 +1325,7 @@
 
             await fetchAPI("simpanPengumuman", isi);
             tampilkanModal('Disiarkan!', 'Pengumuman berhasil diubah & disiarkan ke warga.', 'sukses');
-            btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Siarkan Sekarang'; btn.disabled = false; 
+            btn.innerHTML = '<i class="fas fa-paper-plane mr-2 text-lg"></i> Siarkan ke Seluruh Warga'; btn.disabled = false; 
             document.getElementById('form-admin-pengumuman').reset();
         }
 
@@ -1308,7 +1386,7 @@
             if(!container) return;
 
             if (nunggakStr === "ERROR") {
-                container.innerHTML = `<div class="col-span-4 text-center text-xs text-red-500 font-bold py-3">Gagal memuat rekap.</div>`;
+                container.innerHTML = `<div class="col-span-4 text-center text-xs md:text-sm text-red-500 font-bold py-4">Gagal memuat rekap.</div>`;
                 return;
             }
 
@@ -1348,8 +1426,8 @@
                 }
                 
                 html += `
-                    <div class="relative border rounded-xl py-2.5 text-center shadow-sm ${statusClass} flex items-center justify-center transition">
-                        <span class="text-[10px] font-black tracking-widest">${namaBulanSingkat[i]}</span>
+                    <div class="relative border rounded-xl py-2.5 md:py-3.5 text-center shadow-sm ${statusClass} flex items-center justify-center transition">
+                        <span class="text-[10px] md:text-[11px] font-black tracking-widest">${namaBulanSingkat[i]}</span>
                         ${icon}
                     </div>
                 `;
@@ -1395,16 +1473,13 @@
             hitungTotalIuran(); 
         }
 
-        // FUNGSI CEK STATUS NUNGGAK/LUNAS WARGA DI DASBOR (DIPERBARUI)
         async function cekStatusWarga(source = 'auto') {
             const container = document.getElementById('beranda-status-iuran');
             
-            // Sinkronisasi tahun antara tab Iuran dan Profil agar tidak bentrok
             const dropIuran = document.getElementById('input-tahun-iuran');
             const dropProfil = document.getElementById('profil-rekap-tahun');
             let tahunDipilih = new Date().getFullYear();
             
-            // AMBIL JENIS IURAN DARI DROPDOWN
             const dropJenis = document.getElementById('input-jenis-iuran');
             let jenisDipilih = dropJenis ? dropJenis.value : 'IuranPaguyuban';
 
@@ -1421,7 +1496,6 @@
 
             if(container) { container.classList.add('shimmer'); container.innerHTML = ''; }
             
-            // Tampilkan loading di UI Bulan Iuran saat mengecek status tahun baru
             const gridIuran = document.getElementById('grid-bulan');
             if (gridIuran) {
                 const els = gridIuran.querySelectorAll('input[type="checkbox"]');
@@ -1430,7 +1504,6 @@
             const loadingInd = document.getElementById('loading-tahun-indicator');
             if(loadingInd) loadingInd.style.display = 'block';
 
-            // MENGIRIM TAHUN DAN JENIS IURAN KE BACKEND
             let res = await fetchAPI("cekStatusBulanIni", { username: getUserUsername(), tahun: tahunDipilih, jenisIuran: jenisDipilih });
             
             if(container) container.classList.remove('shimmer');
@@ -1450,7 +1523,7 @@
                             </div>
                             <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-green-50 text-green-500 flex items-center justify-center text-2xl shadow-inner border border-green-100"><i class="fas fa-shield-alt"></i></div>
                         `;
-                        container.className = "bg-green-50/50 p-5 rounded-2xl shadow-sm border border-green-200 flex items-center justify-between transition transform hover:-translate-y-1 h-full";
+                        container.className = "bg-green-50/50 p-5 md:p-6 rounded-2xl shadow-sm border border-green-200 flex items-center justify-between transition transform hover:-translate-y-1 h-full";
                     } else {
                         container.innerHTML = `
                             <div class="pr-2 flex-1">
@@ -1460,7 +1533,7 @@
                             </div>
                             <button onclick="switchTab('iuran')" class="bg-red-500 text-white text-[10px] md:text-xs font-bold px-4 md:px-5 py-2.5 md:py-3 rounded-xl shadow-md hover:bg-red-600 transition flex items-center shrink-0 transform active:scale-95"><i class="fas fa-wallet mr-1.5"></i> Bayar</button>
                         `;
-                        container.className = "bg-red-50 p-5 rounded-2xl shadow-sm border border-red-200 flex items-center justify-between transition transform hover:-translate-y-1 h-full";
+                        container.className = "bg-red-50 p-5 md:p-6 rounded-2xl shadow-sm border border-red-200 flex items-center justify-between transition transform hover:-translate-y-1 h-full";
                     }
                 }
 
@@ -1487,7 +1560,6 @@
             }
         }
 
-        // FUNGSI TRANSPARANSI KAS / KEUANGAN (BERANDA)
         async function tarikDataKeuangan() {
             const containerWarga = document.getElementById('rekap-iuran-list');
             const containerAdmin = document.getElementById('admin-riwayat-keuangan-list'); 
@@ -1499,7 +1571,7 @@
             if(res && res.data) {
                 tampilkanKeuanganUI(res.data);
             } else {
-                const errMsg = `<p class="text-center text-xs text-red-500 font-bold p-3 border border-red-100 rounded-xl bg-red-50">Gagal memuat rekap kas.</p>`;
+                const errMsg = `<p class="text-center text-xs md:text-sm text-red-500 font-bold p-3 border border-red-100 rounded-xl bg-red-50">Gagal memuat rekap kas.</p>`;
                 if(containerWarga) containerWarga.innerHTML = errMsg;
                 if(containerAdmin) containerAdmin.innerHTML = errMsg;
             }
@@ -1577,7 +1649,7 @@
             const username = getUserUsername().toLowerCase();
             const myData = data.filter(d => (d.pemohon||'').toLowerCase() === username);
             
-            if(!myData || myData.length === 0) return list.innerHTML = `<div class="bg-white p-5 rounded-2xl text-center text-xs font-bold uppercase shadow-sm border border-gray-50 text-gray-400">Belum ada riwayat pengajuan surat.</div>`;
+            if(!myData || myData.length === 0) return list.innerHTML = `<div class="bg-white p-5 md:p-6 rounded-2xl text-center text-xs md:text-sm font-bold uppercase shadow-sm border border-gray-50 text-gray-400">Belum ada riwayat pengajuan surat.</div>`;
             myData.forEach(item => { 
                 let st = (item.status||"").toLowerCase();
                 let bClass = "bg-amber-100 text-amber-700 border border-amber-200";
@@ -1604,7 +1676,7 @@
             const username = getUserUsername().toLowerCase();
             const myData = data.filter(d => (d.pelapor||'').toLowerCase() === username);
             
-            if(!myData || myData.length === 0) return list.innerHTML = `<div class="bg-white p-5 rounded-2xl text-center text-xs font-bold uppercase shadow-sm border border-gray-50 text-gray-400">Belum ada laporan masalah.</div>`;
+            if(!myData || myData.length === 0) return list.innerHTML = `<div class="bg-white p-5 md:p-6 rounded-2xl text-center text-xs md:text-sm font-bold uppercase shadow-sm border border-gray-50 text-gray-400">Belum ada laporan masalah.</div>`;
             myData.forEach(item => { 
                 let st = (item.status||"").toLowerCase();
                 let bClass = "bg-amber-100 text-amber-700 border border-amber-200";
@@ -1622,7 +1694,6 @@
             document.getElementById('form-lapor').reset();
         }
 
-        // FUNGSI NOMINAL IURAN 
         function toggleNominalLainnya() {
             const selectNominal = document.getElementById('input-nominal-pilihan');
             const inputNominalManual = document.getElementById('input-nominal');
@@ -1682,7 +1753,7 @@
             const username = getUserUsername().toLowerCase();
             const myData = data.filter(d => d.warga.toLowerCase() === username);
 
-            if(!myData || myData.length === 0) return list.innerHTML = `<div class="bg-white p-5 rounded-2xl text-center text-xs font-bold uppercase shadow-sm border border-gray-50 text-gray-400">Belum ada riwayat pembayaran.</div>`;
+            if(!myData || myData.length === 0) return list.innerHTML = `<div class="bg-white p-5 md:p-6 rounded-2xl text-center text-xs md:text-sm font-bold uppercase shadow-sm border border-gray-50 text-gray-400">Belum ada riwayat pembayaran.</div>`;
             
             myData.forEach(item => { 
                 let bClass = "bg-amber-100 text-amber-700 border border-amber-200"; 
@@ -2181,7 +2252,7 @@
                     html += `
                         <label class="cursor-not-allowed opacity-50 relative">
                             <input type="checkbox" value="${nmFull}" class="peer hidden" disabled>
-                            <div class="rounded-xl border border-gray-200 bg-gray-100 py-2.5 text-center text-xs md:text-sm font-bold text-gray-400 uppercase flex flex-col items-center justify-center h-[46px] md:h-[50px] shadow-inner">
+                            <div class="rounded-xl border border-gray-200 bg-gray-100 py-2.5 md:py-3 text-center text-xs md:text-sm font-bold text-gray-400 uppercase flex flex-col items-center justify-center h-[46px] md:h-[50px] shadow-inner">
                                 <span class="text-[7px] md:text-[8px] text-green-500 mb-0.5 border border-green-200 bg-green-50 px-1 rounded absolute -top-1.5 shadow-sm font-black tracking-widest">LUNAS</span>
                                 ${nmSingkat}
                             </div>
@@ -2190,7 +2261,7 @@
                     html += `
                         <label class="cursor-pointer">
                             <input type="checkbox" value="${nmFull}" class="peer hidden" onchange="hitungTotalWa()">
-                            <div class="rounded-xl border border-emerald-200 bg-white py-2.5 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-emerald-500 peer-checked:border-emerald-600 peer-checked:text-white transition shadow-sm uppercase h-[46px] md:h-[50px] flex items-center justify-center hover:bg-emerald-50">
+                            <div class="rounded-xl border border-emerald-200 bg-white py-2.5 md:py-3 text-center text-xs md:text-sm font-bold text-gray-500 peer-checked:bg-emerald-500 peer-checked:border-emerald-600 peer-checked:text-white transition shadow-sm uppercase h-[46px] md:h-[50px] flex items-center justify-center hover:bg-emerald-50">
                                 ${nmSingkat}
                             </div>
                         </label>`;
