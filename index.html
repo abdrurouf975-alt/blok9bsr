@@ -2157,7 +2157,9 @@
 
         function hitungTotalWa() {
             let jumlahCeklis = document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]:checked').length;
-            document.getElementById('wa-nominal').value = jumlahCeklis * 20000;
+            let jenisTagihan = document.getElementById('wa-jenis').value;
+            let nominalPerBulan = jenisTagihan === 'IuranBlok9' ? 10000 : 20000;
+            document.getElementById('wa-nominal').value = jumlahCeklis * nominalPerBulan;
         }
 
         function tutupModalWA() {
