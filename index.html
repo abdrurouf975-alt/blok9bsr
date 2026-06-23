@@ -183,7 +183,7 @@
                             <button type="button" onclick="salinTeks('628801016232530')" class="w-10 h-10 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full flex justify-center items-center transition"><i class="fas fa-copy"></i></button>
                         </div>
 
-                        <!-- Gambar QR Code Tampil Langsung (BISA DIKLIK) -->
+                        <!-- Gambar QR Code -->
                         <div class="bg-white p-4 rounded-xl border border-blue-50 shadow-sm relative z-10 flex flex-col items-center">
                             <p class="text-[11px] text-gray-500 font-bold uppercase mb-2"><i class="fas fa-qrcode mr-1"></i> Scan QRIS Pembayaran</p>
                             <img src="https://cdn.phototourl.com/free/2026-05-11-8900fd55-13c7-42f8-880c-f064db4aac0e.jpg" alt="QR Code QRIS" onclick="bukaModalQRIS()" class="w-full max-w-[200px] rounded-lg border border-gray-100 mb-2 cursor-pointer hover:opacity-80 transition transform hover:scale-105 active:scale-95 shadow-sm">
@@ -194,7 +194,7 @@
                         </div>
                     </div>
 
-                    <!-- BANNER PERINGATAN NUNGGAK (Ditambahkan) -->
+                    <!-- BANNER PERINGATAN NUNGGAK -->
                     <div id="iuran-alert-nunggak" class="hidden bg-red-50 border border-red-200 p-4 rounded-2xl mb-5 flex items-start animate-slide-down">
                         <i class="fas fa-exclamation-triangle text-red-500 mt-1 mr-3 text-lg"></i>
                         <div>
@@ -249,7 +249,7 @@
                         </div>
                         <div class="mb-4">
                             <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Total Transfer (Rp)</label>
-                            <input type="number" id="input-nominal" value="0" class="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-50 text-lg font-black text-indigo-700" readonly>
+                            <input type="number" id="input-nominal" value="0" class="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-50 text-lg font-black text-indigo-700 focus:outline-none" readonly>
                         </div>
                         
                         <div class="mb-4">
@@ -322,7 +322,7 @@
                     </div>
                 </div>
 
-                <!-- UPDATE DATA TAMBAHAN WARGA (HUNIAN & WIFI) -->
+                <!-- UPDATE DATA TAMBAHAN WARGA -->
                 <div id="profil-data-tambahan-container" class="w-full bg-white p-5 rounded-2xl shadow-sm border border-gray-100 text-left mb-5 hidden">
                     <h3 class="font-bold text-gray-800 mb-4 border-b pb-2 uppercase text-sm"><i class="fas fa-address-card mr-2 text-blue-500"></i> Lengkapi Data Warga</h3>
                     <form onsubmit="prosesUpdateDataWarga(event)" id="form-data-warga">
@@ -402,6 +402,36 @@
                             <h3 id="count-surat-laporan" class="text-2xl font-black text-blue-400">-</h3>
                             <p class="text-[9px] font-bold uppercase mt-1">Surat & Laporan</p>
                         </div>
+                    </div>
+                </div>
+
+                <!-- LAPORAN KEUANGAN SINGKAT (DITAMBAHKAN) -->
+                <div class="bg-white rounded-2xl shadow-sm border p-5 mb-5 relative overflow-hidden">
+                    <h3 class="font-black text-gray-800 uppercase text-sm mb-3 border-b pb-2 flex justify-between items-center">
+                        <span><i class="fas fa-wallet text-indigo-500 mr-2"></i> Ringkasan Kas</span>
+                        <button onclick="tarikDataKeuangan()" class="text-[10px] text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded-full transition"><i class="fas fa-sync-alt"></i></button>
+                    </h3>
+                    
+                    <p class="text-[10px] font-bold text-gray-500 uppercase mb-0.5">Total Saldo Aktif</p>
+                    <h3 class="text-2xl font-black text-indigo-600 tracking-wide mb-3" id="admin-home-saldo">Rp 0</h3>
+                    
+                    <div class="grid grid-cols-2 gap-2 mb-3">
+                        <div class="bg-emerald-50 p-2.5 rounded-xl border border-emerald-100">
+                            <p class="text-[9px] font-bold text-emerald-600 uppercase mb-0.5"><i class="fas fa-arrow-down mr-1"></i>Pemasukan</p>
+                            <h4 class="text-xs font-black text-emerald-700" id="admin-home-masuk">Rp 0</h4>
+                        </div>
+                        <div class="bg-red-50 p-2.5 rounded-xl border border-red-100">
+                            <p class="text-[9px] font-bold text-red-600 uppercase mb-0.5"><i class="fas fa-arrow-up mr-1"></i>Pengeluaran</p>
+                            <h4 class="text-xs font-black text-red-700" id="admin-home-keluar">Rp 0</h4>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-amber-50 border border-amber-100 p-3 rounded-xl flex justify-between items-center">
+                        <div>
+                            <p class="text-[9px] font-bold text-amber-600 uppercase">Status Pending</p>
+                            <p class="text-[10px] font-medium text-amber-700 mt-0.5">Menunggu validasi Anda</p>
+                        </div>
+                        <h4 class="text-sm font-black text-amber-600" id="admin-home-pending">Rp 0</h4>
                     </div>
                 </div>
 
@@ -577,7 +607,7 @@
     </div> <!-- Penutup main-app -->
 
     <!-- MODALS -->
-    <!-- Modal Utama (Telah Diperbaiki Bug-nya dengan ID khusus) -->
+    <!-- Modal Utama -->
     <div id="custom-modal" class="fixed inset-0 bg-black bg-opacity-75 z-[200] hidden items-center justify-center p-4">
         <div id="custom-modal-box" class="bg-white rounded-3xl p-6 w-full max-w-sm text-center transform transition-transform duration-300">
             <div id="modal-icon-container" class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-green-100 mb-4 border-4 border-white shadow-sm"><i id="modal-icon" class="fas fa-check text-green-600 text-4xl"></i></div>
@@ -635,7 +665,6 @@
             <input type="hidden" id="wa-no-hp">
             <input type="hidden" id="wa-nama">
             
-            <!-- Menggunakan desain kotak centang 12 bulan -->
             <div class="mb-4">
                 <label class="block text-xs font-bold text-gray-700 mb-2 uppercase">Pilih Bulan Nunggak</label>
                 <div class="grid grid-cols-4 gap-2" id="grid-wa-bulan">
@@ -665,14 +694,13 @@
         </div>
     </div>
 
-    <!-- SCRIPT KONEKSI KE GOOGLE SCRIPT (VERCEL) -->
+    <!-- SCRIPT KONEKSI KE GOOGLE SCRIPT -->
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_koZ4yBOXDvk8hAsRaVWi-lnCJyXYkD5GBozgW45Ie6fxGYJr0gv-qftwntSuTzADaA/exec";
 
         let globalWargaData = [];
-        let globalIuranLunasWarga = []; // Menyimpan data lunas saat ini
+        let globalIuranLunasWarga = []; 
 
-        // --- DAFTAR KONTAK PENGURUS ---
         const kontakPengurus = [
             { nama: "ROUF", noWa: "6282230280004" },
             { nama: "BAGUS", noWa: "6285746058818" }
@@ -697,7 +725,6 @@
             });
         }
 
-        // FUNGSI JAM REAL-TIME
         function updateClock() {
             const now = new Date();
             const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -739,7 +766,6 @@
             return 'Rp ' + new Intl.NumberFormat('id-ID').format(angka);
         }
 
-        // --- SISTEM ---
         function inisialisasiAplikasi() {
             updateClock(); 
             const sessionStr = localStorage.getItem('wargaSessionAktif');
@@ -780,8 +806,6 @@
             setTimeout(() => { errDiv.classList.add('hidden'); }, 5000);
         }
 
-        function handleEnter(e) { if (e.key === 'Enter') { e.preventDefault(); prosesLogin(e); } }
-
         async function prosesLogin(e) {
             if (e) e.preventDefault();
             
@@ -802,7 +826,7 @@
             } else {
                 tampilkanErrorLogin(res.message || 'Username/Password salah!');
             }
-            btn.innerHTML = 'MASUK APLIKASI <i class="fas fa-sign-in-alt ml-2"></i>'; 
+            btn.innerHTML = 'Masuk Aplikasi <i class="fas fa-sign-in-alt ml-2"></i>'; 
             btn.disabled = false;
         }
 
@@ -835,47 +859,67 @@
             const elSuratLapor = document.getElementById('count-surat-laporan');
             const elLunas = document.getElementById('count-warga-lunas');
             const elNunggak = document.getElementById('count-warga-nunggak');
+            const elPending = document.getElementById('admin-home-pending');
             
             if(elIuran) elIuran.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i>';
             if(elSuratLapor) elSuratLapor.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i>';
             if(elLunas) elLunas.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i>';
             if(elNunggak) elNunggak.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i>';
+            if(elPending) elPending.innerText = 'Menghitung...';
 
             try {
-                const [resIuran, resSurat, resLaporan, resWarga] = await Promise.all([
+                const [resIuran, resIuranBlok9, resSurat, resLaporan, resWarga] = await Promise.all([
                     fetchAPI("getIuran"),
+                    fetchAPI("getIuranBlok9"),
                     fetchAPI("getSurat"),
                     fetchAPI("getLaporan"),
                     fetchAPI("getWarga")
                 ]);
 
-                let pendingIuran = 0;
-                let pendingSuratLaporan = 0;
+                let pendingIuranCount = 0;
+                let pendingNominal = 0;
+                let pendingSuratLaporanCount = 0;
                 let countLunas = 0;
                 let countNunggak = 0;
 
+                // Hitung dari Iuran Paguyuban
                 if(resIuran && resIuran.data) {
-                    pendingIuran = resIuran.data.filter(item => item.status.toLowerCase().includes('menunggu')).length;
-                }
-                if(resSurat && resSurat.data) {
-                    pendingSuratLaporan += resSurat.data.filter(item => item.status.toLowerCase().includes('menunggu') || item.status.toLowerCase().includes('diproses')).length;
-                }
-                if(resLaporan && resLaporan.data) {
-                    pendingSuratLaporan += resLaporan.data.filter(item => item.status.toLowerCase().includes('menunggu') || item.status.toLowerCase().includes('diproses')).length;
+                    resIuran.data.forEach(item => {
+                        if (item.status.toLowerCase().includes('menunggu')) {
+                            pendingIuranCount++;
+                            pendingNominal += parseInt(item.nominal) || 0;
+                        }
+                    });
                 }
                 
-                // Pastikan data Warga berhasil diambil untuk menghitung Lunas & Nunggak
+                // Hitung dari Iuran Blok 9
+                if(resIuranBlok9 && resIuranBlok9.data) {
+                    resIuranBlok9.data.forEach(item => {
+                        if (item.status.toLowerCase().includes('menunggu')) {
+                            pendingIuranCount++;
+                            pendingNominal += parseInt(item.nominal) || 0;
+                        }
+                    });
+                }
+
+                if(resSurat && resSurat.data) {
+                    pendingSuratLaporanCount += resSurat.data.filter(item => item.status.toLowerCase().includes('menunggu') || item.status.toLowerCase().includes('diproses')).length;
+                }
+                if(resLaporan && resLaporan.data) {
+                    pendingSuratLaporanCount += resLaporan.data.filter(item => item.status.toLowerCase().includes('menunggu') || item.status.toLowerCase().includes('diproses')).length;
+                }
+                
                 if(resWarga && resWarga.data && resWarga.data.length > 0) {
                     countLunas = resWarga.data.filter(w => w.status_bulan_ini === 'Lunas').length;
                     countNunggak = resWarga.data.filter(w => w.status_bulan_ini === 'Nunggak').length;
-                    // Simpan ke global untuk pencarian
                     globalWargaData = resWarga.data; 
                 }
 
-                if(elIuran) elIuran.innerText = pendingIuran;
-                if(elSuratLapor) elSuratLapor.innerText = pendingSuratLaporan;
+                if(elIuran) elIuran.innerText = pendingIuranCount;
+                if(elSuratLapor) elSuratLapor.innerText = pendingSuratLaporanCount;
                 if(elLunas) elLunas.innerText = countLunas;
                 if(elNunggak) elNunggak.innerText = countNunggak;
+                if(elPending) elPending.innerText = formatRupiah(pendingNominal);
 
             } catch (error) {
                 console.error("Gagal memuat statistik", error);
@@ -883,6 +927,7 @@
                 if(elSuratLapor) elSuratLapor.innerText = "-";
                 if(elLunas) elLunas.innerText = "-";
                 if(elNunggak) elNunggak.innerText = "-";
+                if(elPending) elPending.innerText = "Rp 0";
             }
         }
 
@@ -923,7 +968,6 @@
             document.getElementById('form-admin-pengumuman').reset();
         }
 
-        // FUNGSI TOGGLE DAN UPDATE DATA TAMBAHAN WARGA (HUNIAN & WIFI)
         function toggleWifiLainnya() {
             const selectWifi = document.getElementById('input-wifi').value;
             const containerLainnya = document.getElementById('container-wifi-lainnya');
@@ -983,7 +1027,6 @@
             document.getElementById('tempat-pengumuman').innerHTML = `<p>${res.data || 'Tidak ada pengumuman'}</p>`;
         }
 
-        // FUNGSI RENDER REKAP PROFIL (12 BULAN)
         function renderRekapProfil(nunggakStr, lunasArr, tahunDipilih) {
             const container = document.getElementById('profil-rekap-bulan');
             if(!container) return;
@@ -1038,14 +1081,9 @@
             container.innerHTML = html;
         }
 
-        // FUNGSI UNTUK MERENDER PILIHAN BULAN (DISABLE JIKA SUDAH LUNAS)
         function renderOpsiPembayaranBulanLuran(lunasArr, tahunDipilih) {
             const container = document.getElementById('grid-bulan');
             if(!container) return;
-
-            const currentMonthIdx = new Date().getMonth();
-            const currentYear = new Date().getFullYear();
-            const targetYear = parseInt(tahunDipilih);
 
             const namaBulanArrFull = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
             const namaBulanSingkat = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGS", "SEP", "OKT", "NOV", "DES"];
@@ -1057,7 +1095,6 @@
                 let valInput = nmFull.charAt(0) + nmFull.slice(1).toLowerCase(); 
 
                 if (lunasArr && lunasArr.includes(nmFull)) {
-                    // JIKA LUNAS: KOTAK ABU-ABU, TIDAK BISA DIKLIK, ADA TEKS LUNAS
                     html += `
                         <label class="cursor-not-allowed opacity-60 relative">
                             <input type="checkbox" value="${valInput}" class="peer hidden" disabled>
@@ -1068,11 +1105,10 @@
                         </label>
                     `;
                 } else {
-                    // JIKA BELUM LUNAS: BISA DIKLIK
                     html += `
                         <label class="cursor-pointer">
                             <input type="checkbox" value="${valInput}" class="peer hidden" onchange="hitungTotalIuran()">
-                            <div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition h-[38px] flex items-center justify-center">
+                            <div class="rounded-lg border py-2 text-center text-xs font-bold text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white uppercase transition h-[38px] flex items-center justify-center shadow-sm hover:bg-gray-50">
                                 ${nmSingkat}
                             </div>
                         </label>
@@ -1083,16 +1119,14 @@
             hitungTotalIuran(); 
         }
 
-        // FUNGSI CEK STATUS NUNGGAK/LUNAS WARGA DI DASBOR (DIPERBARUI)
+        // FUNGSI CEK STATUS NUNGGAK/LUNAS WARGA DI DASBOR
         async function cekStatusWarga(source = 'auto') {
             const container = document.getElementById('beranda-status-iuran');
             
-            // Sinkronisasi tahun antara tab Iuran dan Profil agar tidak bentrok
             const dropIuran = document.getElementById('input-tahun-iuran');
             const dropProfil = document.getElementById('profil-rekap-tahun');
             let tahunDipilih = new Date().getFullYear();
             
-            // AMBIL JENIS IURAN DARI DROPDOWN
             const dropJenis = document.getElementById('input-jenis-iuran');
             let jenisDipilih = dropJenis ? dropJenis.value : 'IuranPaguyuban';
 
@@ -1109,7 +1143,6 @@
 
             if(container) { container.classList.add('shimmer'); container.innerHTML = ''; }
             
-            // Tampilkan loading di UI Bulan Iuran saat mengecek status tahun baru
             const gridIuran = document.getElementById('grid-bulan');
             if (gridIuran) {
                 const els = gridIuran.querySelectorAll('input[type="checkbox"]');
@@ -1118,7 +1151,6 @@
             const loadingInd = document.getElementById('loading-tahun-indicator');
             if(loadingInd) loadingInd.style.display = 'block';
 
-            // MENGIRIM TAHUN DAN JENIS IURAN KE BACKEND
             let res = await fetchAPI("cekStatusBulanIni", { username: getUserUsername(), tahun: tahunDipilih, jenisIuran: jenisDipilih });
             
             if(container) container.classList.remove('shimmer');
@@ -1126,7 +1158,7 @@
 
             if(res && res.data) {
                 globalIuranLunasWarga = res.data.lunasDetail || [];
-                let labelKas = jenisDipilih === 'IuranBlok9' ? 'Iuran Blok 9' : 'Iuran Kas RT';
+                let labelKas = jenisDipilih === 'IuranBlok9' ? 'Iuran Blok 9' : 'Iuran Kas Paguyuban';
                 
                 if(container) {
                     if(res.data.status === 'Lunas') {
@@ -1175,7 +1207,7 @@
             }
         }
 
-        // FUNGSI TRANSPARANSI KAS / KEUANGAN (BERANDA)
+        // FUNGSI TRANSPARANSI KAS / KEUANGAN
         async function tarikDataKeuangan() {
             const containerWarga = document.getElementById('rekap-iuran-list');
             const containerAdmin = document.getElementById('admin-riwayat-keuangan-list'); 
@@ -1209,6 +1241,15 @@
             if(elTotalAdmin) elTotalAdmin.innerText = formatRupiah(data.saldoAkhir || 0);
             if(elMasukAdmin) elMasukAdmin.innerText = formatRupiah(data.totalMasuk || 0);
             if(elKeluarAdmin) elKeluarAdmin.innerText = formatRupiah(data.totalKeluar || 0);
+
+            // TAMPILKAN DI DASBOR UTAMA ADMIN (DITAMBAHKAN)
+            const elHomeSaldo = document.getElementById('admin-home-saldo');
+            const elHomeMasuk = document.getElementById('admin-home-masuk');
+            const elHomeKeluar = document.getElementById('admin-home-keluar');
+            
+            if(elHomeSaldo) elHomeSaldo.innerText = formatRupiah(data.saldoAkhir || 0);
+            if(elHomeMasuk) elHomeMasuk.innerText = formatRupiah(data.totalMasuk || 0);
+            if(elHomeKeluar) elHomeKeluar.innerText = formatRupiah(data.totalKeluar || 0);
 
             const containerWarga = document.getElementById('rekap-iuran-list');
             const containerAdmin = document.getElementById('admin-riwayat-keuangan-list'); 
@@ -1390,7 +1431,7 @@
                 const namaWarga = item.warga ? item.warga.toUpperCase() : 'WARGA';
                 let tagTipe = item.tipeIuran === 'BLOK 9' ? 
                     `<span class="bg-purple-100 text-purple-700 text-[8px] font-black px-1.5 py-0.5 rounded border border-purple-200">BLOK 9</span>` : 
-                    `<span class="bg-blue-100 text-blue-700 text-[8px] font-black px-1.5 py-0.5 rounded border border-blue-200">RT / PAGUYUBAN</span>`;
+                    `<span class="bg-blue-100 text-blue-700 text-[8px] font-black px-1.5 py-0.5 rounded border border-blue-200">KAS PAGUYUBAN</span>`;
 
                 list.innerHTML += `
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 flex items-start animate-slide-down">
@@ -1510,7 +1551,7 @@
                 
                 let tagTipe = item.tipeIuran === 'BLOK 9' ? 
                     `<span class="bg-purple-100 text-purple-700 text-[8px] font-black px-1.5 py-0.5 rounded border border-purple-200">BLOK 9</span>` : 
-                    `<span class="bg-blue-100 text-blue-700 text-[8px] font-black px-1.5 py-0.5 rounded border border-blue-200">RT / PAGUYUBAN</span>`;
+                    `<span class="bg-blue-100 text-blue-700 text-[8px] font-black px-1.5 py-0.5 rounded border border-blue-200">KAS PAGUYUBAN</span>`;
                 
                 container.innerHTML += `
                     <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-3 flex flex-col gap-3 relative transition-all duration-300">
@@ -1674,7 +1715,6 @@
             }
         }
 
-        // FUNGSI SHORTCUT FILTER DARI DASBOR ADMIN KE DAFTAR WARGA
         function bukaDaftarWargaFilter(status) {
             switchTab('admin-warga'); 
             setTimeout(() => {
@@ -1686,7 +1726,7 @@
             }, 150); 
         }
 
-        // 4. Daftar Warga & Fitur Pencarian (Otomatis dari Database)
+        // 4. Daftar Warga & Fitur Pencarian 
         async function tarikDataWargaAdmin() {
             const container = document.getElementById('admin-warga-list');
             if(!container) return;
@@ -1746,7 +1786,6 @@
             });
         }
 
-        // FUNGSI CARI & FILTER WARGA
         function cariWargaAdmin() {
             const keyword = document.getElementById('input-cari-warga').value.toLowerCase();
             const filterStatus = document.getElementById('filter-status-warga').value;
@@ -1768,7 +1807,6 @@
             tampilkanDataWargaAdminUI(filteredData);
         }
 
-        // --- UTILS ---
         function muatProfilData(userObj) {
             const nama = userObj.nama ? userObj.nama.toUpperCase() : 'WARGA';
             document.getElementById(userObj.role === 'admin' ? 'sapaan-admin' : 'sapaan-beranda').innerText = 'HALO, ' + nama + '!';
@@ -1890,7 +1928,6 @@
             document.getElementById('custom-modal').style.display = 'none'; 
         }
         
-        // ADMIN BUKTI MODAL
         function bukaModalBukti(urlGambar) {
             document.getElementById('img-bukti-transfer').src = urlGambar;
             document.getElementById('link-bukti-transfer').href = urlGambar;
@@ -1904,7 +1941,6 @@
             modal.style.display = 'none';
         }
 
-        // --- TAMBAHAN MODAL QRIS KHUSUS WARGA ---
         function bukaModalQRIS() {
             const modal = document.getElementById('qris-modal');
             if(modal) {
@@ -1920,7 +1956,6 @@
             }
         }
 
-        // CHAT WA ADMIN MODAL
         function hitungTotalWa() {
             document.getElementById('wa-nominal').value = document.querySelectorAll('#grid-wa-bulan input[type="checkbox"]:checked').length * 20000;
         }
