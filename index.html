@@ -628,16 +628,18 @@
             <h3 class="text-xl font-black text-gray-800 mb-1 uppercase tracking-wide mt-2">Peringatan WA</h3>
             <p class="text-[11px] text-gray-500 mb-4 font-bold pb-3 border-b">Kirim ke: <span id="wa-nama-warga" class="text-indigo-600 uppercase font-black"></span></p>
             
+            <!-- INPUT TERSEMBUNYI -->
             <input type="hidden" id="wa-no-hp">
             <input type="hidden" id="wa-nama">
             <input type="hidden" id="wa-username">
+            <input type="hidden" id="wa-no-rumah">
 
             <div class="mb-3 grid grid-cols-2 gap-2">
                 <div>
                     <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase">Jenis Tagihan</label>
                     <select id="wa-jenis" onchange="cekStatusWaWarga()" class="w-full p-2 border border-gray-200 rounded-xl bg-gray-50 text-xs font-bold focus:outline-none">
-                        <option value="IuranPaguyuban">Kas Paguyuban</option>
-                        <option value="IuranBlok9">Khusus Blok 9</option>
+                        <option value="IuranPaguyuban">Kas Paguyuban (Blok 9)</option>
+                        <option value="IuranBlok9">Khusus Blok 9 Saja</option>
                     </select>
                 </div>
                 <div>
@@ -829,7 +831,7 @@
             btn.innerHTML = 'Simpan Password Baru'; btn.disabled = false;
         }
 
-        // --- DASHBOARD ADMIN STATS (DIPERBARUI) ---
+        // --- DASHBOARD ADMIN STATS (DIPERBARUI DENGAN NOMINAL PENDING) ---
         async function loadAdminDashboardStats() {
             const elIuran = document.getElementById('count-iuran-menunggu');
             const elSuratLapor = document.getElementById('count-surat-laporan');
@@ -1746,7 +1748,7 @@
                             ${badgeHunian}
                             ${badgeWifi}
                         </div>
-                        <button onclick="bukaModalWA('${item.nama}', '${item.no_wa}', '${item.username}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl shadow-sm text-xs uppercase tracking-wide flex justify-center items-center transition">
+                        <button onclick="bukaModalWA('${item.nama}', '${item.no_wa}', '${item.username}', '${item.no_rumah}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl shadow-sm text-xs uppercase tracking-wide flex justify-center items-center transition">
                             <i class="fab fa-whatsapp text-lg mr-2"></i> Kirim Peringatan
                         </button>
                     </div>`;
@@ -1892,8 +1894,8 @@
         function bukaModalQRIS() { const modal = document.getElementById('qris-modal'); if(modal) { modal.classList.remove('hidden'); modal.style.display = 'flex'; } }
         function tutupModalQRIS() { const modal = document.getElementById('qris-modal'); if(modal) { modal.classList.add('hidden'); modal.style.display = 'none'; } }
 
-        // --- FUNGSI PERINGATAN WA ADMIN (DIPERBARUI) ---
-        function bukaModalWA(nama, noWa, username) {
+        // --- FUNGSI PERINGATAN WA ADMIN (DIPERBARUI DENGAN NOMOR RUMAH) ---
+        function bukaModalWA(nama, noWa, username, noRumah) {
             if(!noWa || noWa === "-" || noWa.trim() === "") {
                 tampilkanModal('Peringatan', 'Warga ini tidak memiliki data nomor WhatsApp di Database Excel.', 'gagal');
                 return;
@@ -1902,6 +1904,7 @@
             document.getElementById('wa-no-hp').value = noWa;
             document.getElementById('wa-nama').value = nama;
             document.getElementById('wa-username').value = username; 
+            document.getElementById('wa-no-rumah').value = noRumah || '-'; 
             
             document.getElementById('wa-nominal').value = '0';
             
@@ -1980,6 +1983,7 @@
             const nama = document.getElementById('wa-nama').value;
             const noWa = document.getElementById('wa-no-hp').value;
             const tahun = document.getElementById('wa-tahun').value;
+            const noRumah = document.getElementById('wa-no-rumah').value;
             
             const selectJenis = document.getElementById('wa-jenis');
             const jenisTeks = selectJenis.options[selectJenis.selectedIndex].text;
@@ -1999,7 +2003,8 @@
                 waClean = '62' + waClean.substring(1);
             }
             
-            const teks = `Halo Bpk/Ibu *${nama}*,\n\nKami dari Pengurus BLOK 9 BSR ingin menginformasikan bahwa *${jenisTeks}* Anda untuk tahun *${tahun}* pada bulan *${bulan}* dengan total *${nominal}* belum terbayar/terkonfirmasi.\n\nMohon untuk segera melakukan konfirmasi pembayaran melalui Aplikasi BLOK 9 BSR. Terima kasih 🙏`;
+            // PESAN WHATSAPP YANG BARU (DENGAN NOMOR RUMAH)
+            const teks = `Halo Bpk/Ibu *${nama}* (Blok/No: *${noRumah}*),\n\nKami dari Pengurus BLOK 9 BSR ingin menginformasikan bahwa *${jenisTeks}* Anda untuk tahun *${tahun}* pada bulan *${bulan}* dengan total *${nominal}* belum terbayar/terkonfirmasi.\n\nMohon untuk segera melakukan konfirmasi pembayaran melalui Aplikasi BLOK 9 BSR. Terima kasih 🙏`;
             
             const url = `https://wa.me/${waClean}?text=${encodeURIComponent(teks)}`;
             window.open(url, '_blank');
